@@ -1,0 +1,19 @@
+{
+  "canisters": {
+    "dashboard_frontend": {
+      "frontend": {
+        "entrypoint": "src/frontend/public/index.html"
+      },
+      "source": ["dist/frontend/"],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
