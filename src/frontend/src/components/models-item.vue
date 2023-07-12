@@ -7,9 +7,7 @@
       />
       <div class="models-card-info">
         <div class="models-card-title">Deliberate 1.1</div>
-        <div class="models-card-desc">
-          A powerful model created by XpucT that is great for both photorealism and artistic creations.
-        </div>
+        <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
         <div class="models-card-owner">
           <img
             class="models-card-owner-avtatr"
@@ -20,14 +18,7 @@
       </div>
       <div class="models-card-type"><span class="models-card-type-span">LORA</span></div>
       <div class="models-card-run">
-        <div class="models-card-run-image">
-          <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M2.5 13.0622L11.5 7.86603C12.1667 7.48113 12.1667 6.51888 11.5 6.13398L2.5 0.937822C1.83333 0.552922 1 1.03405 1 1.80385L0.999999 12.1962C0.999999 12.966 1.83333 13.4471 2.5 13.0622Z"
-              stroke="white"
-            />
-          </svg>
-        </div>
+        <img class="models-card-run-image" src="@/assets/icon_run.svg" />
         <span class="models-card-type-span">RUN</span>
       </div>
     </div>
@@ -133,9 +124,6 @@ import {} from 'vue';
   cursor: pointer;
 }
 .models-card-run-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 14px;
   height: 14px;
   margin-right: 4px;

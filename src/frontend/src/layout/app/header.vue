@@ -23,6 +23,28 @@
           <span class="header-user-text">Connect Wallet</span>
         </div>
       </template>
+      <NModal v-model:show="showModal" transform-origin="center">
+        <div class="header-modal">
+          <div class="header-modal-main">
+            <img src="@/assets/icon_connect_wallet.svg" />
+            <NSpace class="wallet-box" justify="space-between">
+              <template v-for="item in walletList">
+                <NSpace class="wallet-item" vertical align="center" style="gap: 0" @click="onSelectLogin(item.id)">
+                  <div class="wallet-item-icon-bgcolor">
+                    <div class="wallet-item-icon-fgcolor">
+                      <NSpace class="wallet-item-icon-fgcolor-main" align="center" justify="center">
+                        <img :src="item.icon" />
+                      </NSpace>
+                    </div>
+                  </div>
+                  <div class="wallet-item-title">{{ item.name }}</div>
+                  <div class="wallet-item-tips">Click to connect</div>
+                </NSpace>
+              </template>
+            </NSpace>
+          </div>
+        </div>
+      </NModal>
     </NSpace>
   </NSpace>
 </template>
@@ -32,6 +54,9 @@ import { NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, useMessage } from '
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
 import { useLogin } from '@/composables/use-login';
+import walletIcp from '@/assets/wallet_icp.png';
+import walletMe from '@/assets/wallet_me.png';
+import walletPlug from '@/assets/wallet_plug.png';
 
 type tabkey = number;
 
@@ -49,15 +74,30 @@ const tabConfigs: TabItem[] = [
 
 const initTabKey = -1;
 
+type WalletItem = {
+  id: number;
+  icon: any;
+  name: string;
+};
+
+const walletConfigs: WalletItem[] = [
+  { id: 1, icon: walletIcp, name: 'INTERNET IDENTITY' },
+  { id: 2, icon: walletMe, name: 'AstroX ME' },
+  { id: 3, icon: walletPlug, name: 'Plug' },
+];
+
 export default defineComponent({
   components: { RouterLink, NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal },
   setup() {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
+    const walletList = ref<WalletItem[]>(walletConfigs);
+
     const currentTabKey = ref<tabkey>(initTabKey);
     const isLogin = ref(false);
     const router = useRouter();
     const route = useRoute();
+    const showModal = ref(false);
 
     const { loginIC } = useLogin();
 
@@ -73,12 +113,18 @@ export default defineComponent({
     return {
       tabs,
       currentTabKey,
+      walletList,
       isLogin,
+      showModal,
       onPressUser() {
         //profile
       },
       onPressLogin() {
-        loginIC();
+        showModal.value = true;
+      },
+      onSelectLogin(id: number) {
+        console.log(id);
+        // loginIC();
       },
     };
   },
@@ -150,6 +196,64 @@ export default defineComponent({
 .header-user-text {
   font-size: 16px;
   font-weight: 600;
+}
+
+.header-modal {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+.header-modal-main {
+  padding: 56px 0 48px;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1f1f1f 0%, #111 100%);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.wallet-box {
+  padding: 56px 20px 0;
+}
+.wallet-item {
+  min-width: 180px;
+}
+.wallet-item-icon-bgcolor {
+  width: 120px;
+  height: 120px;
+  border-radius: 2px;
+  background: linear-gradient(45deg, #4142f1 0%, #0adac3 32.29%, #d356f3 68.23%, #f47e63 100%);
+  box-sizing: border-box;
+}
+.wallet-item-icon-fgcolor {
+  width: 120px;
+  height: 120px;
+  padding: 1px;
+  border-radius: 1.6px;
+  background-color: #26414b;
+  box-sizing: border-box;
+}
+.wallet-item-icon-fgcolor:hover {
+  background-color: transparent;
+  cursor: pointer;
+}
+.wallet-item-icon-fgcolor-main {
+  width: 100%;
+  height: 100%;
+  border-radius: 1.6px;
+  background-color: #13262f;
+}
+.wallet-item-title {
+  margin: 16px 0 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+}
+.wallet-item-tips {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 14px;
 }
 
 @media (prefers-color-scheme: light) {

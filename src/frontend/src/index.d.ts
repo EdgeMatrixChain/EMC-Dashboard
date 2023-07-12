@@ -29,6 +29,14 @@ declare module 'json-format' {
   export default function (data: any): string {}
 }
 
+declare module '*.svg';
+declare module '*.png';
+declare module '*.jpg';
+declare module '*.jpeg';
+declare module '*.gif';
+declare module '*.bmp';
+declare module '*.tiff';
+
 //webpack define plugin
 declare var __PUBLIC_PATH__: string;
 
