@@ -5,8 +5,10 @@ import type { MenuOption } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import Utils from '@/tools/utils';
 import { sendTelegram } from '@/tools/send';
-import { createActor } from '@/tools/actor';
-import { idlFactory } from '@/dids/xb3xh-uaaaa-aaaam-abi3a-cai.did';
+
+// import { createActor } from '@/tools/actor';
+// import { idlFactory } from '@/dids/xb3xh-uaaaa-aaaam-abi3a-cai.did';
+
 import { HttpAgent, Identity } from '@dfinity/agent';
 import type { Agent } from '@dfinity/agent';
 export const useUserStore = defineStore('user', () => {
