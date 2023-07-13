@@ -1,7 +1,6 @@
 import { nextTick } from 'vue';
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
 import { routes } from './routes';
-export const loadingBarApiRef: any = {};
 
 export default function createAppRouter(routes: any) {
   console.info(`create app router base url is ${__PUBLIC_PATH__}`);
@@ -13,8 +12,8 @@ export default function createAppRouter(routes: any) {
 
   router.beforeEach(function (to, from, next) {
     if (!from || to.path !== from.path) {
-      if (loadingBarApiRef.value) {
-        loadingBarApiRef.value.start();
+      if (window.$loadingBar) {
+        window.$loadingBar.start();
       }
     }
     next();
@@ -22,8 +21,8 @@ export default function createAppRouter(routes: any) {
 
   router.afterEach(function (to, from) {
     if (!from || to.path !== from.path) {
-      if (loadingBarApiRef.value) {
-        loadingBarApiRef.value.finish();
+      if (window.$loadingBar) {
+        window.$loadingBar.finish();
       }
       if (to.hash && to.hash !== from.hash) {
         nextTick(() => {
