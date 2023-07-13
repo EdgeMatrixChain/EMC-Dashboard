@@ -4,5 +4,7 @@ declare module '*.vue' {
   export default component;
 }
 
+declare module '*.png'
+
 //webpack define plugin
 declare var __PUBLIC_PATH__: string;

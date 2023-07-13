@@ -224,6 +224,7 @@ export default defineComponent({
 .wallet-box {
   padding: 56px 20px 0;
 }
+
 .wallet-item {
   min-width: 180px;
 }
