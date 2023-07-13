@@ -23,6 +23,7 @@
           <span class="header-user-text">Connect Wallet</span>
         </div>
       </template>
+      <Wallet :showWallet="showWallet" @close-modal="closeModal" />
       <NModal v-model:show="showModal" transform-origin="center">
         <div class="header-modal">
           <div class="header-modal-main">
@@ -54,6 +55,7 @@ import { NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, useMessage } from '
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
 import { useLogin } from '@/composables/use-login';
+import Wallet from '@/components/wallet.vue';
 import walletIcp from '@/assets/wallet_icp.png';
 import walletMe from '@/assets/wallet_me.png';
 import walletPlug from '@/assets/wallet_plug.png';
@@ -87,7 +89,7 @@ const walletConfigs: WalletItem[] = [
 ];
 
 export default defineComponent({
-  components: { RouterLink, NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal },
+  components: { RouterLink, NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, Wallet },
   setup() {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
@@ -98,6 +100,7 @@ export default defineComponent({
     const router = useRouter();
     const route = useRoute();
     const showModal = ref(false);
+    const showWallet = ref(false);
 
     const { loginIC } = useLogin();
 
@@ -116,6 +119,7 @@ export default defineComponent({
       walletList,
       isLogin,
       showModal,
+      showWallet,
       onPressUser() {
         //profile
       },
@@ -123,8 +127,13 @@ export default defineComponent({
         showModal.value = true;
       },
       onSelectLogin(id: number) {
+        showModal.value = false;
+        showWallet.value = true;
         console.log(id);
         // loginIC();
+      },
+      closeModal() {
+        showWallet.value = false;
       },
     };
   },
@@ -136,6 +145,7 @@ export default defineComponent({
   height: var(--header-height);
 }
 .header-cell {
+  position: relative;
   padding: 0 32px;
 }
 

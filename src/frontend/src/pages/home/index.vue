@@ -17,7 +17,7 @@
       <WorldMap></WorldMap>
     </div>
     <div class="nft-body">
-      <div class="nft-body-header">Trending NFT’s</div>
+      <div class="nft-body-header">AI Computing Power RWA-NFT</div>
       <div class="nft-body-card">
         <template v-for="index in 4">
           <div class="nft-card">
