@@ -1,5 +1,5 @@
 <template>
-  <NModal :show="isVisibled" :block-scroll="false" :on-mask-click="onPressMask">
+  <NModal v-model:show="isVisible" :block-scroll="false" :on-mask-click="onPressMask">
     <div class="wallet-bgcolor">
       <div class="wallet-mask">
         <div class="wallet-mask-header"></div>
@@ -16,7 +16,7 @@
             <div class="theme-font-style">Account ID</div>
             <div class="account-id">666a1...cc3a46d</div>
           </div>
-          <NButton class="logout-button" icon-placement="left" secondary strong>
+          <NButton class="logout-button" icon-placement="left" secondary strong @click="onPressLogout">
             <span class="logout-button-span">Log out</span>
             <template #icon>
               <img src="@/assets/icon_logout.svg" width="16" height="16" />
@@ -84,26 +84,32 @@ import { ref, watch, computed, defineComponent } from 'vue';
 import { NSpace, NModal, NButton } from 'naive-ui';
 
 export default defineComponent({
+  name: 'wallet',
   components: { NSpace, NModal, NButton },
   props: {
     showWallet: { type: Boolean, default: false },
   },
-  emits: ['close-modal'],
+  emits: ['close-wallet', 'isLogin'],
   setup(props, context) {
-    const isVisibled = ref(props.showWallet);
-
+    const isVisible = ref(props.showWallet);
     watch(
       () => props.showWallet,
       (newVal) => {
-        isVisibled.value = newVal;
+        isVisible.value = newVal;
       }
     );
+
     const onPressMask = () => {
-      context.emit('close-modal');
+      context.emit('close-wallet');
+    };
+    const onPressLogout = () => {
+      context.emit('isLogin', false);
+      context.emit('close-wallet');
     };
     return {
-      isVisibled,
+      isVisible,
       onPressMask,
+      onPressLogout,
     };
   },
 });
@@ -120,6 +126,7 @@ export default defineComponent({
   background-color: #181927;
   box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1), 0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05), 0px 100px 86px 0px rgba(131, 125, 176, 0.01),
     0px 338px 95px 0px rgba(131, 125, 176, 0);
+  /* transition: 1s all linear; */
   overflow: hidden;
   z-index: 1;
 }

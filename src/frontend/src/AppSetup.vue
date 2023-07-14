@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="theme">
+  <n-config-provider :theme="theme" :theme-overrides="themeOverrides">
     <!-- <n-theme-editor> </n-theme-editor> -->
     <n-loading-bar-provider>
       <n-message-provider>
@@ -16,16 +16,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import {
-  NConfigProvider,
-  NLoadingBarProvider,
-  NMessageProvider,
-  NNotificationProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  NThemeEditor,
-  darkTheme,
-} from 'naive-ui';
+import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
@@ -44,20 +35,38 @@ export default defineComponent({
   },
   setup() {
     const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null);
-
     const lightThemeOverrides = {
       common: {
         // primaryColor: '#000000',
       },
     };
-    
+
     const darkThemeOverrides = {
       common: {
         // primaryColor: '#FFFF00',
       },
+      Pagination: {
+        itemBorder: 'none',
+        itemColor: '#1C2025',
+        itemTextColor: '#fff',
+        itemBorderHover: 'none',
+        itemColorHover: '#ABA9FF',
+        itemTextColorHover: '#5C1AE5',
+        itemBorderActive: 'none',
+        itemColorActive: '#5C1AE5',
+        itemTextColorActive: '#fff',
+        itemColorActiveHover: '#5C1AE5',
+      },
+      Button: {
+        color: 'red',
+        textColor: 'red',
+        backgroundColor: 'red',
+      },
     };
 
-    return { theme, lightThemeOverrides, darkThemeOverrides };
+    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);
+
+    return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
   },
 });
 </script>

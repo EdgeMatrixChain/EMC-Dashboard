@@ -1,5 +1,7 @@
 <template>
   <div class="page">
+    <div class="mask-bgcolor-left"></div>
+    <div class="mask-bgcolor-center"></div>
     <div class="card-body">
       <template v-for="index in 4">
         <div class="card-body-item">
@@ -48,10 +50,15 @@
       <div class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
-          <div class="node-list-header-button">
-            <span class="node-list-header-button-span">View More</span>
-            <div class="node-list-header-button-tips">You can view more node models and choose the model you like to plot on the node.</div>
-          </div>
+
+          <NPopover :overlap="false" placement="left" trigger="hover" :delay="0">
+            <template #trigger>
+              <div class="node-list-header-button">
+                <span class="node-list-header-button-span">View More</span>
+              </div>
+            </template>
+            <div class="large-text" style="width: 240px">You can view more node models and choose the model you like to plot on the node.</div>
+          </NPopover>
         </div>
         <div class="node-list-subtitle">
           <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
@@ -62,7 +69,6 @@
             <div class="node-list-theader-item">Node ID</div>
             <div class="node-list-theader-item">Threshold value</div>
             <div class="node-list-theader-item">Model tag</div>
-            hover
           </div>
           <div class="node-list-body">
             <template v-for="item in 14">
@@ -112,17 +118,15 @@
         </template>
       </div>
     </div>
-    <!-- <ScreenMask>
-      <div class="screen-mask-bgcolor"></div>
-    </ScreenMask> -->
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { NPopover } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
-import ScreenMask from '@/components/screen-mask.vue';
+// import ScreenMask from '@/components/screen-mask.vue';
 
 onMounted(() => {});
 
@@ -132,11 +136,20 @@ onUnmounted(() => {});
 <style scoped>
 .page {
   position: relative;
-  z-index: 10;
 }
 
-.screen-mask-bgcolor {
-  position: absolute;
+.mask-bgcolor-left {
+  position: fixed;
+  width: 210px;
+  height: 210px;
+  left: 156px;
+  top: 100px;
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
+  filter: blur(50px);
+}
+
+.mask-bgcolor-center {
+  position: fixed;
   width: 210px;
   height: 210px;
   left: calc(50% - 210px / 2);
@@ -144,6 +157,7 @@ onUnmounted(() => {});
   background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.66) 13.45%, rgba(125, 81, 220, 0.66) 60.04%, rgba(37, 237, 255, 0.66) 88.4%);
   filter: blur(50px);
 }
+
 .card-body {
   display: flex;
   align-items: center;
@@ -215,6 +229,7 @@ onUnmounted(() => {});
 }
 .nft-body {
   margin-bottom: 64px;
+  position: relative;
 }
 .nft-body-header {
   margin-bottom: 48px;
@@ -300,9 +315,6 @@ onUnmounted(() => {});
   background: #131128;
   cursor: pointer;
 }
-.node-list-header-button:hover .node-list-header-button-tips {
-  display: block;
-}
 
 .node-list-header-button-span {
   color: #fff;
@@ -327,8 +339,9 @@ onUnmounted(() => {});
 }
 
 .node-list {
-  width: 886px;
-  height: 455px;
+  flex: 1;
+  height: 456px;
+  margin-right: 56px;
   padding: 24px 20px 0;
   border-radius: 15px;
   background: linear-gradient(169deg, #201e43 0%, rgba(32, 30, 67, 0.6) 100%);
@@ -389,6 +402,7 @@ onUnmounted(() => {});
   justify-content: space-between;
   height: 56px;
   border-top: 1px solid #56577a;
+  box-sizing: border-box;
 }
 .node-list-main-item {
   width: 100%;
@@ -400,8 +414,8 @@ onUnmounted(() => {});
 }
 
 .transactions {
-  width: 455px;
-  height: 455px;
+  width: 456px;
+  height: 456px;
   padding: 24px 20px 0;
   border-radius: 15px;
   background: linear-gradient(175deg, #201e43 0%, rgba(32, 30, 67, 0.6) 100%);
@@ -413,7 +427,8 @@ onUnmounted(() => {});
   display: none;
 }
 .transactions-header {
-  margin-bottom: 38px;
+  line-height: 30px;
+  margin-bottom: 32px;
 }
 .transactions-header-span {
   color: #fff;
@@ -450,6 +465,7 @@ onUnmounted(() => {});
   justify-content: space-between;
   height: 56px;
   border-top: 1px solid #56577a;
+  box-sizing: border-box;
 }
 .transactions-main-item {
   width: 100%;
