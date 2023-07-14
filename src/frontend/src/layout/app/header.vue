@@ -60,6 +60,8 @@ import walletIcp from '@/assets/wallet_icp.png';
 import walletMe from '@/assets/wallet_me.png';
 import walletPlug from '@/assets/wallet_plug.png';
 
+import { instance as emcAuthClient, AuthClient } from '@/tools/auth';
+
 type tabkey = number;
 
 type TabItem = {
@@ -102,8 +104,6 @@ export default defineComponent({
     const showModal = ref(false);
     const showWallet = ref(false);
 
-    const { loginIC } = useLogin();
-
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -124,7 +124,16 @@ export default defineComponent({
         //profile
       },
       onPressLogin() {
-        showModal.value = true;
+        // showModal.value = true;
+        emcAuthClient.login({
+          provider: 'http://localhost:8080',
+          onSuccess: (message) => {
+            console.info('success', message);
+          },
+          onError(message) {
+            console.info(message);
+          },
+        });
       },
       onSelectLogin(id: number) {
         showModal.value = false;
