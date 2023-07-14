@@ -1,44 +1,22 @@
 <template>
-  <NLayout content-style="padding-top: 84px;">
-    <NLayoutHeader class="n-header">
-      <Header />
-    </NLayoutHeader>
-    <NLayoutContent content-style="width:1440px;margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
-      <template v-if="ready">
-        <router-view v-slot="{ Component, route }">
-          <transition name="slide-fade">
-            <keep-alive :include="cacheRoutes">
-              <component :is="Component" :key="route.fullPath" />
-            </keep-alive>
-          </transition>
-        </router-view>
-      </template>
-      <template v-else>
-        <div class="loading">
-          <n-spin size="large" />
-        </div>
-      </template>
-    </NLayoutContent>
-  </NLayout>
+  <router-view v-slot="{ Component }">
+    <component :is="Component" />
+  </router-view>
 </template>
 
 <script lang="ts">
 import { ref, onMounted, defineComponent } from 'vue';
-import { useLoadingBar, NLayout, NLayoutHeader, NLayoutContent, NSpin } from 'naive-ui';
-import { loadingBarApiRef } from './routes/index';
-import { useIsMobile } from './composables/use-screen';
-import Header from '@/layout/app/header.vue';
-import Sider from '@/layout/app/sider.vue';
-import { useSiderStore } from './stores/sider';
-import { useRouter } from 'vue-router';
+import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
 
 export default defineComponent({
-  name: 'App',
-  components: { NLayout, NLayoutHeader, NLayoutContent, Header, Sider, NSpin },
+  name: 'app',
+  components: { NSpin },
   setup() {
     const ready = ref(false);
     const loadingBar = useLoadingBar();
+    const message = useMessage();
+
     const cacheRoutes = ref<string[]>([]);
     const routes = router?.options?.routes || [];
 
@@ -48,20 +26,15 @@ export default defineComponent({
 
     console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 
-    const isMobileRef = useIsMobile();
-
-    const siderStore = useSiderStore();
-
-    onMounted(async () => {
-      siderStore.initMenus();
-
-      loadingBarApiRef.value = loadingBar;
+    onMounted(() => {
+      window.$message = message;
+      window.$loadingBar = loadingBar;
       ready.value = true;
     });
+
     return {
       ready,
       cacheRoutes,
-      isMobile: isMobileRef,
     };
   },
 });

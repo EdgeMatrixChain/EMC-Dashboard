@@ -37,6 +37,8 @@ import { useLogin } from '@/composables/use-login';
 import Wallet from './wallet.vue';
 import ConnectWallet from '@/components/connect-wallet.vue';
 
+import { instance as emcAuthClient, AuthClient } from '@/tools/auth';
+
 type tabkey = number;
 
 type TabItem = {
@@ -66,8 +68,6 @@ export default defineComponent({
     const showModal = ref(false);
     const showWallet = ref(false);
 
-    const { loginIC } = useLogin();
-
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -93,7 +93,16 @@ export default defineComponent({
       },
 
       onPressLogin() {
-        showModal.value = true;
+        // showModal.value = true;
+        emcAuthClient.login({
+          provider: 'http://localhost:8080',
+          onSuccess: (message) => {
+            console.info('success', message);
+          },
+          onError(message) {
+            console.info(message);
+          },
+        });
       },
 
       closeModal() {
@@ -178,6 +187,68 @@ export default defineComponent({
   font-weight: 600;
 }
 
+<<<<<<< HEAD
+=======
+.header-modal {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+.header-modal-main {
+  padding: 56px 0 48px;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1f1f1f 0%, #111 100%);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.wallet-box {
+  padding: 56px 20px 0;
+}
+
+.wallet-item {
+  min-width: 180px;
+}
+.wallet-item-icon-bgcolor {
+  width: 120px;
+  height: 120px;
+  border-radius: 2px;
+  background: linear-gradient(45deg, #4142f1 0%, #0adac3 32.29%, #d356f3 68.23%, #f47e63 100%);
+  box-sizing: border-box;
+}
+.wallet-item-icon-fgcolor {
+  width: 120px;
+  height: 120px;
+  padding: 1px;
+  border-radius: 1.6px;
+  background-color: #26414b;
+  box-sizing: border-box;
+}
+.wallet-item-icon-fgcolor:hover {
+  background-color: transparent;
+  cursor: pointer;
+}
+.wallet-item-icon-fgcolor-main {
+  width: 100%;
+  height: 100%;
+  border-radius: 1.6px;
+  background-color: #13262f;
+}
+.wallet-item-title {
+  margin: 16px 0 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+}
+.wallet-item-tips {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 14px;
+}
+
+>>>>>>> 76b87380af2f6899455cd21c77acc66ffd4fe480
 @media (prefers-color-scheme: light) {
   .header-icon {
     content: url('@/assets/logo.light.png');

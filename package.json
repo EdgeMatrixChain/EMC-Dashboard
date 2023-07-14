@@ -15,7 +15,7 @@
     "start": "webpack serve --env development",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
-    "generate": "dfx generate edge_matrix_portal_backend"
+    "generate": "dfx generate"
   },
   "dependencies": {
     "@dfinity/agent": "^0.17.0",
