@@ -8,6 +8,9 @@ export const routes = [
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),
+    redirect: {
+      name: 'home',
+    },
     children: [
       {
         name: 'home',

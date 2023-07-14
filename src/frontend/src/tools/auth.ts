@@ -1,6 +1,6 @@
 //emc-auth-utility
 
-const EMC_PROVIDER_DEFAULT = 'https://identity.ic0.app';
+const EMC_PROVIDER_DEFAULT = 'https://hsujw-ciaaa-aaaap-qbj6a-cai.icp0.io/';
 const EMC_PROVIDER_ENDPOINT = '#auth';
 const INTERRUPT_CHECK_INTERVAL = 500;
 

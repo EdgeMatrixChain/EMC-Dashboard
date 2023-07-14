@@ -46,8 +46,8 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue';
+<script lang="ts">
+import { ref, defineComponent } from 'vue';
 import ModelsItem from '@/components/models-item.vue';
 import iconCpu from '@/assets/icon_cpu.svg';
 import iconGpu from '@/assets/icon_gpu.svg';
@@ -55,21 +55,32 @@ import iconDisk from '@/assets/icon_disk.svg';
 import iconStorage from '@/assets/icon_storage.svg';
 import iconPledge from '@/assets/icon_pledge.svg';
 
-const nodeList = ref([
-  { name: 'Node ID :', info: '42274b52a1...3e542e9ebc' },
-  { name: 'Round :', info: '12' },
-  { name: 'Total :', info: '2’881' },
-  { name: 'Node type :', info: '2’881' },
-  { name: 'Pledge :', info: 'Yes/No' },
-]);
+export default defineComponent({
+  components: {
+    ModelsItem,
+  },
+  setup() {
+    const nodeList = ref([
+      { name: 'Node ID :', info: '42274b52a1...3e542e9ebc' },
+      { name: 'Round :', info: '12' },
+      { name: 'Total :', info: '2’881' },
+      { name: 'Node type :', info: '2’881' },
+      { name: 'Pledge :', info: 'Yes/No' },
+    ]);
 
-const infoList = ref([
-  { name: 'CPU :', icon: iconCpu, info: 'AMD Ryzen Threadripper 3960X 24-Core' },
-  { name: 'GPU :', icon: iconGpu, info: 'NVIDIA GeForce RTX 3080' },
-  { name: 'Hard disk :', icon: iconDisk, info: 'WDC WDS500G2B0C-00PXH0' },
-  { name: 'Internal storage :', icon: iconStorage, info: '256 GB ( SAMSUNG DDR4 3000MHz 32GB x 8 )' },
-  { name: 'Pledge :', icon: iconPledge, info: 'Inter Wi-Fi 6 AX200 160MHz #2' },
-]);
+    const infoList = ref([
+      { name: 'CPU :', icon: iconCpu, info: 'AMD Ryzen Threadripper 3960X 24-Core' },
+      { name: 'GPU :', icon: iconGpu, info: 'NVIDIA GeForce RTX 3080' },
+      { name: 'Hard disk :', icon: iconDisk, info: 'WDC WDS500G2B0C-00PXH0' },
+      { name: 'Internal storage :', icon: iconStorage, info: '256 GB ( SAMSUNG DDR4 3000MHz 32GB x 8 )' },
+      { name: 'Pledge :', icon: iconPledge, info: 'Inter Wi-Fi 6 AX200 160MHz #2' },
+    ]);
+    return {
+      nodeList,
+      infoList
+    }
+  },
+});
 </script>
 
 <style scoped>

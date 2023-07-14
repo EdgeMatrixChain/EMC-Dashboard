@@ -26,12 +26,11 @@
 import { ref, onMounted, defineComponent } from 'vue';
 import { NLayout, NLayoutHeader, NLayoutContent, NSpin } from 'naive-ui';
 import Header from '@/layout/app/header.vue';
-import Sider from '@/layout/app/sider.vue';
 import { router } from '@/routes/index';
 
 export default defineComponent({
   name: 'layout',
-  components: { NLayout, NLayoutHeader, NLayoutContent, Header, Sider, NSpin },
+  components: { NLayout, NLayoutHeader, NLayoutContent, Header, NSpin },
   setup() {
     const ready = ref(false);
     const cacheRoutes = ref<string[]>([]);

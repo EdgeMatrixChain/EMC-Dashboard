@@ -6,14 +6,6 @@
       },
       "source": ["dist/frontend/"],
       "type": "assets"
-    },
-    "dashboard_backend": {
-      "type": "motoko",
-      "main": "src/backend/main.mo"
-    },
-    "dip20": {
-      "type": "pull",
-      "id": "aeex5-aqaaa-aaaam-abm3q-cai"
     }
   },
   "output_env_file": ".env",
