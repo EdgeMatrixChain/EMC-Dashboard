@@ -1,4 +1,19 @@
-//emc-auth-utility
+/**
+ * emc-auth-utility
+ * 
+ * Usage:
+ * import { instance as emcAuthClient } from '@/tools/auth';
+ *  
+ * emcAuthClient.login({
+      onSuccess: (message) => {
+        //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
+        console.info('success', message);
+      },
+      onError(message) {
+        console.info(message);
+      },
+   });
+ */
 
 const EMC_PROVIDER_DEFAULT = 'https://hsujw-ciaaa-aaaap-qbj6a-cai.icp0.io/';
 const EMC_PROVIDER_ENDPOINT = '#auth';

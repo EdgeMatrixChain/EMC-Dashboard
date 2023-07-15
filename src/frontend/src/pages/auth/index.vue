@@ -99,7 +99,7 @@ export default defineComponent({
   components: { NLayout, NSpace, NSpin, NH3 },
   setup() {
     const message = useMessage();
-    const { internetIdentityLogin } = useLogin();
+    const { internetIdentityLogin, plugLogin } = useLogin();
     const error = ref(-1);
     const errorText = ref('');
     const walletList = ref<WalletItem[]>(walletConfigs);
@@ -130,6 +130,13 @@ export default defineComponent({
           }
         } else if (item.id === 2) {
           message.info('🐔');
+        } else if (item.id === 3) {
+          const resp = await plugLogin();
+          if (resp._result === 0) {
+            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_SUCCESS, data: resp.principal }, '*');
+          } else {
+            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_FAILURE, data: resp._desc }, '*');
+          }
         }
       },
     };
