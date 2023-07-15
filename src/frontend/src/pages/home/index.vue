@@ -18,7 +18,7 @@
     <div class="map-body">
       <WorldMap></WorldMap>
     </div>
-    <div class="nft-body">
+    <!-- <div class="nft-body">
       <div class="nft-body-header">AI Computing Power RWA-NFT</div>
       <div class="nft-body-card">
         <template v-for="index in 4">
@@ -45,7 +45,7 @@
           </div>
         </template>
       </div>
-    </div>
+    </div> -->
     <div class="data-body">
       <div class="node-list">
         <div class="node-list-header">
@@ -57,9 +57,7 @@
                 <span class="node-list-header-button-span">View More</span>
               </div>
             </template>
-            <div class="large-text" style="width: 240px">
-              You can view more node models and choose the model you like to plot on the node.
-            </div>
+            <div class="large-text" style="width: 240px">You can view more node models and choose the model you like to plot on the node.</div>
           </NPopover>
         </div>
         <div class="node-list-subtitle">
@@ -106,7 +104,7 @@
         </div>
       </div>
     </div>
-    <div class="models-body">
+    <!-- <div class="models-body">
       <div class="models-body-header">
         <span class="models-body-header-span">Featured Models</span>
         <div class="models-body-header-explore">
@@ -119,7 +117,7 @@
           <ModelsItem />
         </template>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -134,7 +132,7 @@ export default defineComponent({
   components: {
     WorldMap,
     ModelsItem,
-    NPopover
+    NPopover,
   },
 });
 </script>
@@ -150,12 +148,7 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.3) 13.45%,
-    rgba(125, 81, 220, 0.3) 60.04%,
-    rgba(37, 237, 255, 0.3) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
   filter: blur(50px);
 }
 
@@ -165,12 +158,7 @@ export default defineComponent({
   height: 210px;
   left: calc(50% - 210px / 2);
   top: 300px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.66) 13.45%,
-    rgba(125, 81, 220, 0.66) 60.04%,
-    rgba(37, 237, 255, 0.66) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.66) 13.45%, rgba(125, 81, 220, 0.66) 60.04%, rgba(37, 237, 255, 0.66) 88.4%);
   filter: blur(50px);
 }
 

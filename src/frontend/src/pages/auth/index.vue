@@ -128,7 +128,7 @@ export default defineComponent({
           } else {
             window.opener.postMessage({ type: AUTH_MESSAGE_KIND_FAILURE, data: resp._desc }, '*');
           }
-        } else {
+        } else if (item.id === 2) {
           message.info('🐔');
         }
       },

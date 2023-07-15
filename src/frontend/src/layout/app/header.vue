@@ -17,7 +17,7 @@
         <div class="header-user" @click="onPressUser">
           <span class="header-user-text">User Name</span>
         </div>
-        <Wallet :showWallet="showWallet" @close-wallet="closeWallet" @isLogin="loginStatus" />
+        <Wallet :showWallet="showWallet" @close-wallet="closeWallet" @isLogin="loginStatus" :walletData="walletData" />
       </template>
       <template v-else>
         <div class="header-user" @click="onPressLogin">
@@ -36,7 +36,6 @@ import { useRouter, useRoute } from 'vue-router';
 import { useLogin } from '@/composables/use-login';
 import Wallet from './wallet.vue';
 import ConnectWallet from '@/components/connect-wallet.vue';
-
 import { instance as emcAuthClient, AuthClient } from '@/tools/auth';
 
 type tabkey = number;
@@ -52,6 +51,10 @@ const tabConfigs: TabItem[] = [
   { id: 2, name: 'Node', path: '/nodes' },
   { id: 3, name: 'Marketplace', path: '/market' },
 ];
+
+const walletData: { principal_id: string } = {
+  principal_id: '',
+};
 
 const initTabKey = -1;
 
@@ -70,7 +73,8 @@ export default defineComponent({
     Wallet,
     ConnectWallet,
   },
-  setup() {
+  emits: ['isLoading'],
+  setup(props, context) {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
 
@@ -78,8 +82,8 @@ export default defineComponent({
     const isLogin = ref(false);
     const router = useRouter();
     const route = useRoute();
-    const showModal = ref(false);
     const showWallet = ref(false);
+    const showModal = ref(false);
 
     watch(
       () => route.path,
@@ -95,27 +99,32 @@ export default defineComponent({
       currentTabKey,
       isLogin,
       showWallet,
+      walletData,
       showModal,
       onPressUser() {
         //profile
-        showWallet.value = true;
+        // showWallet.value = true;
       },
-
-      closeWallet() {
-        showWallet.value = false;
-      },
-
       onPressLogin() {
-        // showModal.value = true;
+        context.emit('isLoading', true);
         emcAuthClient.login({
           onSuccess: (message) => {
             console.info('success', message);
             //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
+            if (message.type === 'authorize-success') {
+              walletData.principal_id = message.data;
+              isLogin.value = true;
+              context.emit('isLoading', false);
+            }
           },
           onError(message) {
             console.info(message);
+            context.emit('isLoading', false);
           },
         });
+      },
+      closeWallet() {
+        showWallet.value = false;
       },
 
       closeModal() {

@@ -23,8 +23,9 @@
   </NModal>
 </template>
 <script lang="ts">
-import { ref, watch, computed, defineComponent } from 'vue';
+import { ref, watch, computed, defineComponent, onMounted } from 'vue';
 import { NSpace, NModal, NButton } from 'naive-ui';
+
 import walletIcp from '@/assets/wallet_icp.png';
 import walletMe from '@/assets/wallet_me.png';
 import walletPlug from '@/assets/wallet_plug.png';
@@ -62,9 +63,38 @@ export default defineComponent({
       context.emit('close-modal');
     };
 
-    const onSelectLogin = (id: number) => {
-      context.emit('isLogin', true);
-      context.emit('close-modal');
+    const onSelectLogin = async (id: number) => {
+      // context.emit('isLogin', true);
+      // context.emit('close-modal');
+      console.log(id);
+
+      if (id === 3) {
+        // if (window.ic.plug && 'Plug and play!') {
+        //   try {
+        //     await window.ic.plug.requestConnect().then(() => {
+        //       console.log(window.ic.plug.principalId);
+        //     });
+        //   } catch (e) {
+        //     console.log(e);
+        //   }
+        // } else {
+        //   // no plug
+        // }
+        try {
+          window.ic.plug && 'Plug and play!';
+          try {
+            await window.ic.plug.requestConnect().then(() => {
+              console.log('principalId:', window.ic.plug.principalId);
+              console.log('accountId:', window.ic.plug.accountId);
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      } else if (id === 2) {
+      }
     };
     return {
       walletList,
@@ -75,6 +105,7 @@ export default defineComponent({
   },
 });
 </script>
+
 <style scoped>
 .header-modal {
   padding: 16px;

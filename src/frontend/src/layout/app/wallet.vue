@@ -25,7 +25,7 @@
         </NSpace>
         <div class="wallet-main-principal">
           <div class="theme-font-style">Principal ID</div>
-          <div class="principal-id">m4zke-gjaul-agomz-q2uia-7afns-nmoxp-o4a5b-dbqk6-jhbg4-qvpe-svg</div>
+          <div class="principal-id">{{ data.principal_id }}</div>
         </div>
         <NSpace class="wallet-main-link" justify="space-between">
           <div class="wallet-main-link-item">
@@ -88,13 +88,15 @@ export default defineComponent({
   components: { NSpace, NModal, NButton },
   props: {
     showWallet: { type: Boolean, default: false },
+    walletData: { type: Object, default: {} },
   },
   emits: ['close-wallet', 'isLogin'],
   setup(props, context) {
     const isVisible = ref(props.showWallet);
+    const data = ref(props.walletData);
     watch(
       () => props.showWallet,
-      (newVal) => {
+      (newVal: boolean) => {
         isVisible.value = newVal;
       }
     );
@@ -107,6 +109,7 @@ export default defineComponent({
       context.emit('close-wallet');
     };
     return {
+      data,
       isVisible,
       onPressMask,
       onPressLogout,
