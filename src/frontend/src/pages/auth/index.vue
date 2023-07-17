@@ -16,9 +16,9 @@
             <NSpace class="wallet-item" vertical align="center" :size="[0, 0]" @click="onPressItem(item)">
               <div class="wallet-item-icon-bgcolor">
                 <div class="wallet-item-icon-fgcolor">
-                  <NSpace class="wallet-item-icon-fgcolor-main" align="center" justify="center">
+                  <div class="wallet-item-icon-fgcolor-main">
                     <img :src="item.icon" />
-                  </NSpace>
+                  </div>
                 </div>
               </div>
               <div class="wallet-item-name">{{ item.name }}</div>
@@ -191,6 +191,9 @@ export default defineComponent({
   cursor: pointer;
 }
 .wallet-item-icon-fgcolor-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   border-radius: 1.6px;

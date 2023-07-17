@@ -1,7 +1,9 @@
 <template>
   <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false">
     <NSpace class="header-cell">
-      <img class="header-icon" />
+      <RouterLink :to="{ path: '/' }">
+        <img class="header-icon" />
+      </RouterLink>
     </NSpace>
     <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false">
       <NSpace class="header-tabs" align="center" :size="[24, 0]" :wrap-item="false">

@@ -20,7 +20,7 @@
             <template v-for="(item, index) in paginatedData" :key="index">
               <RouterLink :to="{ name: 'node-detail', params: { id: index } }">
                 <div class="node-list-main">
-                  <div class="node-list-main-item">{{ item.id }}</div>
+                  <div class="node-list-main-item">{{ item.nodeID }}</div>
                   <!-- <div class="node-list-main-item">{{ item.power }}</div>
                 <div class="node-list-main-item">{{ item.model }}</div> -->
                 </div>
@@ -40,6 +40,14 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { NPagination, NSpace, NButton } from 'naive-ui';
+import axios from 'axios';
+import { Utils } from '@/tools/utils';
+
+type NodeListItem = {
+  nodeID: string;
+  nodeType: string;
+  registered: string;
+};
 
 export default defineComponent({
   name: 'nodes',
@@ -48,39 +56,41 @@ export default defineComponent({
   setup() {
     const page = ref(1);
     const pageSize: number = 10;
-    const tableData = ref([
-      // 100条数据
-      { id: '1' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-      { id: '21' },
-    ]);
+    const nodeList = ref<NodeListItem[]>([]);
 
-    const totalDataCount = computed(() => tableData.value.length);
+    axios
+      .get('http://36.155.7.130/api/v1/nodelist', {
+        params: {
+          type: 2,
+          start: 0,
+          size: 100,
+        },
+      })
+      .then((resp) => {
+        console.log(resp);
+
+        const data = resp.data;
+        if (data._result !== 0) return;
+        data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
+          item.nodeID = Utils.formatAddress(item.nodeID);
+          if (item.nodeType === '0') {
+            item.nodeType = 'router ';
+          } else if (item.nodeType === '1') {
+            item.nodeType = 'validator  ';
+          } else if (item.nodeType === '2') {
+            item.nodeType = 'computing ';
+          }
+          // item.registered = Utils.formatMoment(item.registered);
+        });
+        nodeList.value = data.data;
+      });
+
+    const totalDataCount = computed(() => nodeList.value.length);
     const pageCount = computed(() => Math.ceil(totalDataCount.value / pageSize));
     const paginatedData = computed(() => {
       const startIndex = (page.value - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      return tableData.value.slice(startIndex, endIndex);
+      return nodeList.value.slice(startIndex, endIndex);
     });
 
     const handlePageChange = (currentPage: number) => {};

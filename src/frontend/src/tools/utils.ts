@@ -79,6 +79,18 @@ function textOverflow(value: string = '', width: number = 10) {
   }
 }
 
+function formatAddress(value = '', width = 10) {
+  if (value.length < width * 2) {
+    return value;
+  }
+  if (typeof value.slice === 'function') {
+    return `${value.slice(0, width)}...${value.slice(-width)}`;
+  } else {
+    console.warn('the value is not a srting', value);
+    return '';
+  }
+}
+
 export const Utils = {
   getLocalStorage,
   setLocalStorage,
@@ -89,4 +101,5 @@ export const Utils = {
   parseJSON,
   toFixed,
   textOverflow,
+  formatAddress,
 };

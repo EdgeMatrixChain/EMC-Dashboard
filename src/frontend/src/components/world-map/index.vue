@@ -18,16 +18,16 @@ export default defineComponent({
       const myEcharts: any = document.getElementById('chart-container');
       if (typeof myEcharts !== null) {
         let myEchart = echart.init(myEcharts);
-        var geoCoordMap = [
-          { name: '芬兰', value: [34.909912, 60.169095], symbolSize: 4 },
-          { name: '德国', value: [13.402393, 52.518569], symbolSize: 8 },
-          { name: '英国', value: [-0.126608, 51.208425], symbolSize: 8 },
-          { name: '韩国', value: [126.979208, 37.53875], symbolSize: 8 },
-          { name: '日本', value: [139.710164, 35.706962], symbolSize: 8 },
+        var geoCoordMap: any = [
+          // { name: '', value: [34.909912, 60.169095], symbolSize: 4 },
+          // { name: '', value: [13.402393, 52.518569], symbolSize: 8 },
+          // { name: '', value: [-0.126608, 51.208425], symbolSize: 8 },
+          // { name: '', value: [126.979208, 37.53875], symbolSize: 8 },
+          // { name: '', value: [139.710164, 35.706962], symbolSize: 8 },
         ];
-        var data = [
-          { name: '澳大利亚', value: [135.193845, -25.304039], symbolSize: 8 },
-          { name: '美国', value: [-100.696295, 33.679979], symbolSize: 8 },
+        var data: any = [
+          // { name: '', value: [135.193845, -25.304039], symbolSize: 8 },
+          // { name: '', value: [-100.696295, 33.679979], symbolSize: 8 },
         ];
         let option = {
           legend: {
@@ -37,8 +37,8 @@ export default defineComponent({
           },
           geo: {
             type: 'map',
-            map: 'world', // 与引用进来的地图js名字一致
-            roam: true, // 禁止缩放平移
+            map: 'world',
+            roam: true,
             center: [116.46, 39.92],
             zoom: 5,
             label: {
@@ -60,19 +60,18 @@ export default defineComponent({
           },
           series: [
             {
-              name: '已注册国家',
+              name: '',
               type: 'scatter',
-              coordinateSystem: 'geo', // 表示使用的坐标系为地理坐标系
+              coordinateSystem: 'geo',
               zlevel: 3,
               rippleEffect: {
-                brushType: 'fill', // 波纹绘制效果
+                brushType: 'fill',
               },
               label: {
-                // 默认的文本标签显示样式
                 color: '#000',
                 show: true,
-                position: 'top', // 标签显示的位置
-                formatter: '{b}', // 标签内容格式器
+                position: 'top',
+                formatter: '{b}',
               },
               itemStyle: {
                 color: '#18849C',
@@ -82,16 +81,16 @@ export default defineComponent({
             {
               name: '可注册国家',
               type: 'scatter',
-              coordinateSystem: 'geo', // 表示使用的坐标系为地理坐标系
+              coordinateSystem: 'geo',
               zlevel: 3,
               rippleEffect: {
-                brushType: 'fill', // 波纹绘制效果
+                brushType: 'fill',
               },
               label: {
                 show: true,
                 color: '#000',
-                position: 'top', // 标签显示的位置
-                formatter: '{b}', // 标签内容格式器
+                position: 'top',
+                formatter: '{b}',
               },
               itemStyle: {
                 color: '#fff',

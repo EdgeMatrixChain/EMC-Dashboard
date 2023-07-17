@@ -3,7 +3,7 @@
     <div class="mask-bgcolor-left"></div>
     <div class="mask-bgcolor-center"></div>
     <div class="card-body">
-      <template v-for="index in 4">
+      <!-- <template v-for="index in 4">
         <div class="card-body-item">
           <div class="card-item-info">
             <div class="card-item-title">Blocks</div>
@@ -13,7 +13,25 @@
           <div class="card-body-item-bg-small"></div>
           <div class="card-body-item-bg-big"></div>
         </div>
-      </template>
+      </template> -->
+      <div class="card-body-item">
+        <div class="card-item-info">
+          <div class="card-item-title">Blocks</div>
+          <div class="card-item-data">{{ blockData }}</div>
+          <!-- <div class="card-item-footer">22.88</div> -->
+        </div>
+        <div class="card-body-item-bg-small"></div>
+        <div class="card-body-item-bg-big"></div>
+      </div>
+      <div class="card-body-item">
+        <div class="card-item-info">
+          <div class="card-item-title">Transactions</div>
+          <div class="card-item-data">{{ transactionsData }} <span style="color: #6f6376; font-size: 20px">TX/s</span></div>
+          <!-- <div class="card-item-footer">22.88</div> -->
+        </div>
+        <div class="card-body-item-bg-small"></div>
+        <div class="card-body-item-bg-big"></div>
+      </div>
     </div>
     <div class="map-body">
       <WorldMap></WorldMap>
@@ -67,21 +85,21 @@
         <div class="node-list-table">
           <div class="node-list-theader">
             <div class="node-list-theader-item">Node ID</div>
-            <div class="node-list-theader-item">Threshold value</div>
-            <div class="node-list-theader-item">Model tag</div>
+            <div class="node-list-theader-item">type</div>
+            <div class="node-list-theader-item">registered</div>
           </div>
           <div class="node-list-body">
-            <template v-for="item in 14">
+            <template v-for="item in nodeList" :key="item.nodeID">
               <div class="node-list-main">
-                <div class="node-list-main-item">5614c96583...d9c9919547</div>
-                <div class="node-list-main-item">3’503’924’809 E</div>
-                <div class="node-list-main-item">LOAR/CHECKPOINT/WILDCARDS...</div>
+                <div class="node-list-main-item">{{ item.nodeID }}</div>
+                <div class="node-list-main-item">{{ item.nodeType }}</div>
+                <div class="node-list-main-item">{{ item.registered }}</div>
               </div>
             </template>
           </div>
         </div>
       </div>
-      <div class="transactions">
+      <!-- <div class="transactions">
         <div class="transactions-header">
           <span class="transactions-header-span">Transactions</span>
         </div>
@@ -102,7 +120,7 @@
             </template>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- <div class="models-body">
       <div class="models-body-header">
@@ -122,17 +140,73 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, onUnmounted, defineComponent } from 'vue';
+import { ref, onMounted, onUnmounted, defineComponent, nextTick } from 'vue';
 import { NPopover } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
-// import ScreenMask from '@/components/screen-mask.vue';
+import axios from 'axios';
+import { Utils } from '@/tools/utils';
+
+type NodeListItem = {
+  nodeID: string;
+  nodeType: string;
+  registered: string;
+};
 
 export default defineComponent({
   components: {
     WorldMap,
     ModelsItem,
     NPopover,
+  },
+
+  setup() {
+    const blockData = ref('');
+    const transactionsData = ref('');
+    const nodeList = ref<NodeListItem[]>([]);
+
+    const formatData = (data: number) => {
+      return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+    };
+
+    onMounted(() => {
+      axios.get('http://36.155.7.130/api/v1/dip20transactions').then((resp) => {
+        const data = resp.data;
+        if (data._result !== 0) return;
+        transactionsData.value = formatData(data.data);
+      });
+      axios
+        .get('http://36.155.7.130/api/v1/nodelist', {
+          params: {
+            type: 2,
+            start: 0,
+            size: 10,
+          },
+        })
+        .then((resp) => {
+          const data = resp.data;
+          if (data._result !== 0) return;
+          data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
+            item.nodeID = Utils.formatAddress(item.nodeID);
+            if (item.nodeType === '0') {
+              item.nodeType = 'router ';
+            } else if (item.nodeType === '1') {
+              item.nodeType = 'validator  ';
+            } else if (item.nodeType === '2') {
+              item.nodeType = 'computing ';
+            }
+            // item.registered = Utils.formatMoment(item.registered);
+          });
+          nodeList.value = data.data;
+        });
+      axios.get('http://36.155.7.130/api/v1/blocks').then((resp) => {
+        const data = resp.data;
+        if (data._result !== 0) return;
+        blockData.value = formatData(data.data);
+      });
+    });
+
+    return { blockData, transactionsData, nodeList };
   },
 });
 </script>
@@ -165,7 +239,7 @@ export default defineComponent({
 .card-body {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 80px;
   padding-top: 98px;
 }
@@ -180,6 +254,7 @@ export default defineComponent({
   background: linear-gradient(180deg, #292929 0%, #121212 64.06%, #000 100%);
   overflow: hidden;
   box-sizing: border-box;
+  margin-right: 64px;
 }
 
 .card-body-item-bg-small {
@@ -343,7 +418,8 @@ export default defineComponent({
 }
 
 .node-list {
-  flex: 1;
+  /* flex: 1; */
+  width: 880px;
   height: 456px;
   margin-right: 56px;
   padding: 24px 20px 0;
