@@ -26,7 +26,7 @@
               <div class="main-table-item">
                 <div class="main-table-item-name" style="flex: 0.35">
                   <img class="main-table-item-icon" :src="item.icon" />
-                  <span class="main-table-item-name-span">{{ item.name }}</span>
+                  <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info" style="flex: 0.65">
                   <span class="main-table-item-info-span">{{ item.info }}</span>
@@ -37,12 +37,15 @@
         </div>
       </div>
     </div>
-    <div class="main-header">Deployed Application——Stable diffusion</div>
-    <div class="deployed-bgcolor">
-      <template v-for="item in 4">
-        <ModelsItem />
-      </template>
-    </div>
+    <template v-if="modelList.length !== 0">
+      <div class="main-header">Deployed Application——Stable diffusion</div>
+      <div class="deployed-bgcolor">
+        <template v-for="item in modelList">
+          <ModelsItem class="mode-item" :item="item" />
+        </template>
+      </div>
+    </template>
+    <template v-else> </template>
   </div>
 </template>
 
@@ -68,23 +71,23 @@ export default defineComponent({
     const nodeInfo = ref({});
     const nodeList = ref([
       { name: 'Node ID', info: '' },
-      { name: 'Round :', info: '12' },
-      { name: 'Total :', info: '2’881' },
-      { name: 'Node type :', info: '2’881' },
-      { name: 'Pledge :', info: 'Yes/No' },
+      { name: 'Round', info: '' },
+      { name: 'Total', info: '' },
+      { name: 'Node type', info: '' },
+      { name: 'Pledge', info: '' },
     ]);
 
     const infoList = ref([
-      { name: 'CPU :', icon: iconCpu, info: 'AMD Ryzen Threadripper 3960X 24-Core' },
-      { name: 'GPU :', icon: iconGpu, info: 'NVIDIA GeForce RTX 3080' },
-      { name: 'Hard disk :', icon: iconDisk, info: 'WDC WDS500G2B0C-00PXH0' },
-      { name: 'Internal storage :', icon: iconStorage, info: '256 GB ( SAMSUNG DDR4 3000MHz 32GB x 8 )' },
-      { name: 'Pledge :', icon: iconPledge, info: 'Inter Wi-Fi 6 AX200 160MHz #2' },
+      { name: 'CPU', icon: iconCpu, info: '' },
+      { name: 'GPU', icon: iconGpu, info: '' },
+      { name: 'Hard disk', icon: iconDisk, info: '' },
+      { name: 'Internal storage', icon: iconStorage, info: '' },
+      { name: 'Pledge', icon: iconPledge, info: '' },
     ]);
 
+    const modelList = ref([]);
     onMounted(() => {
-      const nodeId = router.currentRoute.value.params.id;
-      // const nodeId = '16Uiu2HAkwckTXU5KPKdeNRWNeL74bdQMqFeeiNGgVxW3rvLiX8e2';
+      const nodeId: string = <string>router.currentRoute.value.params.id;
 
       axios
         .get('http://36.155.7.130/api/v1/nodeinfo', {
@@ -93,14 +96,48 @@ export default defineComponent({
         .then((resp) => {
           const data = resp.data;
           if (data._result !== 0) return;
-          // nodeInfo.value = data.data;
           const dataInfo = data?.data;
-          console.log(Object.keys(dataInfo).length !== 0);
-          nodeList.value.findIndex((item) => {
-            if (item.name === 'Node ID') {
-              item.info = Utils.formatAddress(dataInfo._id);
-            }
-          });
+          if (Object.keys(dataInfo).length !== 0) {
+            nodeList.value.findIndex((item) => {
+              if (item.name === 'Node ID') {
+                item.info = Utils.formatAddress(dataInfo._id);
+              } else {
+                item.info = '--';
+              }
+            });
+            infoList.value.findIndex((item) => {
+              if (item.name === 'CPU') {
+                if (dataInfo.cpuInfo) {
+                  item.info = JSON.parse(dataInfo.cpuInfo).ModelName;
+                }
+              } else {
+                item.info = '--';
+              }
+            });
+          } else {
+            nodeList.value.findIndex((item) => {
+              if (item.name === 'Node ID') {
+                item.info = Utils.formatAddress(nodeId);
+              } else {
+                item.info = '--';
+              }
+            });
+            infoList.value.findIndex((item) => {
+              item.info = '--';
+            });
+          }
+        });
+      // -
+      axios
+        .get('http://36.155.7.130/api/v1/nodesdmodels', {
+          params: { nodeid: nodeId },
+        })
+        .then((resp) => {
+          const data = resp.data;
+          if (data._result !== 0) return;
+          if (data.data) {
+            modelList.value = JSON.parse(data.data);
+          }
         });
     });
 
@@ -108,6 +145,7 @@ export default defineComponent({
       Utils,
       nodeList,
       infoList,
+      modelList,
     };
   },
 });
@@ -187,14 +225,23 @@ export default defineComponent({
 .deployed-bgcolor {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  flex-wrap: wrap;
   width: 100%;
-  padding: 24px 14px 24px 10px;
+  padding: 24px 16px 0px 10px;
   background-color: #1c2025;
   backdrop-filter: blur(60px);
   border-radius: 12px;
   border-left: 4px solid #14acff;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.mode-item {
+  margin-right: 54px;
+  margin-bottom: 36px;
+}
+.mode-item:nth-child(4n) {
+  margin-right: 0px;
 }
 </style>

@@ -1,42 +1,61 @@
 <template>
-  <div class="models-page">
-    <div class="models-card">
-      <img
-        class="models-card-cover"
-        src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"
-      />
-      <div class="models-card-info">
-        <div class="models-card-title">Deliberate 1.1</div>
-        <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
+  <div class="models-card">
+    <template v-if="!item.hash">
+      <img src="@/assets/icon_not_image.png" width="200" height="200" />
+    </template>
+    <template v-else>
+      <img src="@/assets/icon_not_image.png" width="200" height="200" />
+    </template>
+    <div class="models-card-info">
+      <div class="models-card-title">{{ item.model_name }}</div>
+      <!-- <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
         <div class="models-card-owner">
           <img
             class="models-card-owner-avtatr"
             src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"
           />
           <div class="models-card-owner-name">Hery</div>
-        </div>
-      </div>
-      <div class="models-card-type"><span class="models-card-type-span">LORA</span></div>
-      <div class="models-card-run">
-        <img class="models-card-run-image" src="@/assets/icon_run.svg" />
-        <span class="models-card-type-span">RUN</span>
-      </div>
+        </div> -->
+    </div>
+    <div class="models-card-type"><span class="models-card-type-span">LORA</span></div>
+    <div class="models-card-run">
+      <img class="models-card-run-image" src="@/assets/icon_run.svg" />
+      <span class="models-card-type-span">RUN</span>
     </div>
   </div>
 </template>
 
+<script lang="ts">
+import { ref, defineComponent, onMounted } from 'vue';
+export default defineComponent({
+  props: {
+    item: { type: Object, default: {} },
+  },
+  components: {},
+  setup(props) {
+    const item = ref(props.item);
+
+    return { item };
+  },
+});
+</script>
 <style scoped>
 .models-card {
   position: relative;
   width: 300px;
   height: 400px;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
+
 .models-card-cover {
   position: absolute;
   width: 100%;
   height: 100%;
+  border-radius: 12px;
   object-fit: cover;
 }
 .models-card-info {
@@ -49,7 +68,7 @@
   backdrop-filter: blur(2px);
 }
 .models-card-title {
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
   color: #fff;
   font-size: 14px;
   font-weight: 500;

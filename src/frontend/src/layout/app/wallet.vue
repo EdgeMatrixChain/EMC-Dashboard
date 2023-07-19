@@ -14,8 +14,8 @@
         <NSpace class="wallet-main-account" justify="space-between">
           <div>
             <div class="theme-font-style">Account ID</div>
-            <div class="account-id" @click="onPressCopy(principalId)">
-              <span>666a1...cc3a46d</span>
+            <div class="account-id" @click="onPressCopy(account)">
+              <span>{{ Utils.formatAddress(account, 6) }}</span>
               <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 0px 4px" />
             </div>
           </div>
@@ -28,8 +28,8 @@
         </NSpace>
         <div class="wallet-main-principal">
           <div class="theme-font-style">Principal ID</div>
-          <div class="principal-id" @click="onPressCopy(principalId)">
-            <span>{{ principalId }}</span>
+          <div class="principal-id" @click="onPressCopy(principal)">
+            <span>{{ principal }}</span>
             <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 -1px 4px" />
           </div>
         </div>
@@ -124,6 +124,7 @@
 <script lang="ts">
 import { ref, watch, onMounted, computed, defineComponent } from 'vue';
 import { NSpace, NModal, NButton, useMessage } from 'naive-ui';
+import { Utils } from '@/tools/utils';
 import axios from 'axios';
 import copy from 'copy-to-clipboard';
 
@@ -132,13 +133,14 @@ export default defineComponent({
   components: { NSpace, NModal, NButton },
   props: {
     showWallet: { type: Boolean, default: false },
-    principalId: { type: String, default: '' },
+    userInfo: { type: Object, default: {} },
   },
   emits: ['close-wallet', 'isLogin', 'walletBalance'],
   setup(props, context) {
     const isVisible = ref(props.showWallet);
     const message = useMessage();
-    const principalId = ref(props.principalId);
+    const principal = ref(props.userInfo.principal);
+    const account = ref(props.userInfo.account);
     const metaData = ref({
       symbol: '',
       logo: '',
@@ -174,7 +176,7 @@ export default defineComponent({
       metaData.value = JSON.parse(data.data);
       const respBalance = await axios.get('http://36.155.7.130/api/v1/dip20balance', {
         params: {
-          principal: principalId.value,
+          principal: principal.value,
         },
       });
       const dataBalance = respBalance.data;
@@ -209,7 +211,7 @@ export default defineComponent({
 
       const respBalance = await axios.get('http://36.155.7.130/api/v1/icrc1balance', {
         params: {
-          principal: principalId.value,
+          principal: principal.value,
         },
       });
       const dataBalance = respBalance.data;
@@ -246,10 +248,12 @@ export default defineComponent({
       message.success('copied');
     };
     return {
+      Utils,
       isVisible,
       onPressMask,
       onPressLogout,
-      principalId,
+      account,
+      principal,
       metaData,
       ICPMetaData,
       EMCBalance,
@@ -263,7 +267,7 @@ export default defineComponent({
 <style scoped>
 .wallet-bgcolor {
   position: absolute;
-  top: 88px;
+  top: 72px;
   right: 32px;
   width: 380px;
   height: 390px;

@@ -32,7 +32,7 @@
                 </div>
               </div>
               <div class="carousel-item">
-                <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span>
+                <span class="header-user-text">{{ Utils.formatAddress(userInfo.principal, 5) }}</span>
               </div>
             </NCarousel>
           </template>
@@ -43,7 +43,7 @@
           <!-- <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span> -->
           <!-- <img src="@/assets/icon_drop_down.svg" width="24" height="24" /> -->
         </div>
-        <Wallet :showWallet="showWallet" :principalId="principal_id" @close-wallet="closeWallet" @isLogin="loginStatus" @walletBalance="getWalletBalance" />
+        <Wallet :showWallet="showWallet" :userInfo="userInfo" @close-wallet="closeWallet" @isLogin="loginStatus" @walletBalance="getWalletBalance" />
       </template>
       <template v-else>
         <div class="header-user" @click="onPressLogin">
@@ -112,8 +112,10 @@ export default defineComponent({
     const route = useRoute();
     const showWallet = ref(false);
     const showModal = ref(false);
-    const principal_id = ref('');
-    // zsgyz-ps7ql-le4vu-bod5j-ekxs6-py26a-mkj4r-f7aqx-to5wz-lvkp5-wqe
+    const userInfo = ref({
+      principal: '',
+      account: '',
+    });
     const walletBalance = ref({
       EMCBalance: '',
       ICPBalance: '',
@@ -132,7 +134,7 @@ export default defineComponent({
       currentTabKey,
       isLogin,
       showWallet,
-      principal_id,
+      userInfo,
       showModal,
       walletBalance,
       Utils,
@@ -148,9 +150,7 @@ export default defineComponent({
             console.info('success', message);
             //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
             if (message.type === 'authorize-success') {
-              // walletData.principal_id = Utils.formatAddress(message.data, 5);
-              // walletData.principal_id = message.data;
-              principal_id.value = message.data;
+              userInfo.value = message.data;
               isLogin.value = true;
               context.emit('isLoading', false);
             }
@@ -171,6 +171,11 @@ export default defineComponent({
 
       loginStatus(val: boolean) {
         isLogin.value = val;
+        if (isLogin.value === false) {
+          userInfo.value.principal = '';
+          userInfo.value.account = '';
+          message.success('Logout successful');
+        }
       },
       getWalletBalance(val: { EMCBalance: string; ICPBalance: string }) {
         // walletBalance.value = val;
