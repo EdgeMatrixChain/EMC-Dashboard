@@ -25,9 +25,9 @@
         </NSpace>
         <div class="wallet-main-principal">
           <div class="theme-font-style">Principal ID</div>
-          <div class="principal-id">{{ data.principal_id }}</div>
+          <div class="principal-id">{{ principalId }}</div>
         </div>
-        <NSpace class="wallet-main-link" justify="space-between">
+        <!-- <NSpace class="wallet-main-link" justify="space-between">
           <div class="wallet-main-link-item">
             <span class="theme-font-style">My NFTS</span>
             <img class="wallet-main-link-icon" src="@/assets/icon_arrow_right_theme.svg" />
@@ -36,19 +36,20 @@
             <span class="theme-font-style">My nodes</span>
             <img class="wallet-main-link-icon" src="@/assets/icon_arrow_right_theme.svg" />
           </div>
-        </NSpace>
+        </NSpace> -->
         <NSpace class="coin-info" justify="space-between" align="center">
           <NSpace class="coin-info-left" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-icon">
               <img src="@/assets/icon_coin_emc.png" width="28" height="28" />
+              <!-- <img :src="metaData.logo" width="24" height="24" /> -->
             </div>
-            <div class="coin-info-name">EMC</div>
+            <div class="coin-info-name">{{ metaData.symbol }}</div>
             <img src="@/assets/icon_arrow_down.svg" width="12" height="6" />
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">4.41130 EMC</div>
+              <div class="coin-info-number">{{ EMCBalance }} EMC</div>
             </div>
           </NSpace>
         </NSpace>
@@ -57,43 +58,163 @@
             <div class="coin-info-icon">
               <img src="@/assets/icon_coin_icp.png" width="28" height="28" />
             </div>
-            <div class="coin-info-name">ICP</div>
+            <div class="coin-info-name">{{ ICPMetaData.symbol }}</div>
             <img src="@/assets/icon_arrow_down.svg" width="12" height="6" />
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">1.44458741 ICP</div>
-              <div class="coin-info-number-probably">
+              <div class="coin-info-number">{{ ICPBalance }} ICP</div>
+              <!-- <div class="coin-info-number-probably">
                 <span>≈ </span>
                 <span>0.00081243</span>
-              </div>
+              </div> -->
             </div>
           </NSpace>
         </NSpace>
-        <div class="swap-button">
-          <div class="swap-button-mask">Swap</div>
-        </div>
+        <NSpace justify="space-between" align="center" :wrap-item="false" :size="0" style="margin: 12px 8px 0">
+          <a href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks#/" target="_blank">
+            <div class="wallet-footer-button">
+              <div class="wallet-footer-button-bgcolor">
+                <div class="wallet-footer-icon">
+                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                </div>
+                <span class="wallet-footer-span">Top up ICP</span>
+              </div>
+              <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
+            </div>
+          </a>
+          <a href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai" target="_blank">
+            <div class="wallet-footer-button">
+              <NSpace justify="space-between" align="center" class="wallet-footer-button-bgcolor" style="padding: 0 12px">
+                <div class="wallet-info-icon">
+                  <img src="@/assets/icon_coin_emc.png" width="20" height="20" />
+                </div>
+                <div class="wallet-footer-icon" style="margin: 0">
+                  <img src="@/assets/icon_swap.svg" width="16" height="16" />
+                </div>
+                <div class="wallet-info-icon">
+                  <img src="@/assets/icon_coin_icp.png" width="20" height="20" />
+                </div>
+              </NSpace>
+              <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
+            </div>
+          </a>
+        </NSpace>
+        <!-- <a href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai">
+          <div class="swap-button">
+            <div class="swap-button-mask">Swap</div>
+          </div>
+        </a> -->
       </div>
     </div>
   </NModal>
 </template>
 
 <script lang="ts">
-import { ref, watch, computed, defineComponent } from 'vue';
+import { ref, watch, onMounted, computed, defineComponent } from 'vue';
 import { NSpace, NModal, NButton } from 'naive-ui';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'wallet',
   components: { NSpace, NModal, NButton },
   props: {
     showWallet: { type: Boolean, default: false },
-    walletData: { type: Object, default: {} },
+    principalId: { type: String, default: '' },
   },
-  emits: ['close-wallet', 'isLogin'],
+  emits: ['close-wallet', 'isLogin', 'walletBalance'],
   setup(props, context) {
     const isVisible = ref(props.showWallet);
-    const data = ref(props.walletData);
+
+    const principalId = ref(props.principalId);
+    const metaData = ref({
+      symbol: '',
+      logo: '',
+      decimals: 0,
+    });
+
+    const ICPMetaData = ref({
+      symbol: '',
+      logo: '',
+      decimals: 0,
+    });
+    const EMCBalance = ref('--');
+    const ICPBalance = ref('--');
+
+    // dip20 method name 'getMetadata' | 'getTokenFee' | 'getTokenInfo' | 'historySize' | 'logo' | 'name' | 'symbol' | 'totalSupply'
+    const getMetadata = ref('getMetadata');
+    onMounted(async () => {
+      const [EMCBalance, ICPBalance] = await Promise.all([getEMCBalance(), getICPBalance()]);
+      context.emit('walletBalance', {
+        EMCBalance: EMCBalance,
+        ICPBalance: ICPBalance,
+      });
+    });
+
+    async function getEMCBalance() {
+      const resp = await axios.get('http://36.155.7.130/api/v1/dip20simple', {
+        params: {
+          method: getMetadata.value,
+        },
+      });
+      const data = resp.data;
+      if (data._result !== 0) return;
+      metaData.value = JSON.parse(data.data);
+      const respBalance = await axios.get('http://36.155.7.130/api/v1/dip20balance', {
+        params: {
+          principal: principalId.value,
+        },
+      });
+      const dataBalance = respBalance.data;
+      if (dataBalance._result !== 0) return;
+      const balance = dataBalance.data;
+      if (balance > 0) {
+        let result = balance / Math.pow(10, metaData.value.decimals);
+        // EMCBalance.value = result.toString();
+        return result.toString();
+      } else {
+        // EMCBalance.value = balance;
+        return balance;
+      }
+      // if (balance.toString().length > 15) {
+      //   let balanceString = balance.toString();
+      //   let dividedBalance = BigInt(Math.floor(Number(balanceString) / Math.pow(10, metaData.value.decimals)));
+      //   let decimalPart = balanceString.substring(balanceString.length - metaData.value.decimals);
+      //   let result = dividedBalance.toString() + '.' + decimalPart;
+      //   EMCBalance.value = result;
+      // } else {
+      // .toFixed(metaData.value.decimals);
+
+      // }
+    }
+
+    async function getICPBalance() {
+      const resp = await axios.get('http://36.155.7.130/api/v1/icrc1metadata');
+      const data = resp.data;
+      if (data._result !== 0) return;
+
+      ICPMetaData.value = data.data;
+
+      const respBalance = await axios.get('http://36.155.7.130/api/v1/icrc1balance', {
+        params: {
+          principal: principalId.value,
+        },
+      });
+      const dataBalance = respBalance.data;
+      if (dataBalance._result !== 0) return;
+
+      const balance = dataBalance.data;
+      if (balance > 0) {
+        const result = balance / Math.pow(10, ICPMetaData.value.decimals);
+        // ICPBalance.value = result.toString();
+        return result.toString();
+      } else {
+        // ICPBalance.value = balance;
+        return balance;
+      }
+    }
+
     watch(
       () => props.showWallet,
       (newVal: boolean) => {
@@ -109,10 +230,16 @@ export default defineComponent({
       context.emit('close-wallet');
     };
     return {
-      data,
       isVisible,
       onPressMask,
       onPressLogout,
+      principalId,
+      metaData,
+      ICPMetaData,
+      EMCBalance,
+      ICPBalance,
+      // getEMCBalance,
+      // getICPBalance,
     };
   },
 });
@@ -360,5 +487,49 @@ export default defineComponent({
   border: 1px solid #202020;
   background: radial-gradient(37.5% 37.5% at 50% 50%, rgba(20, 0, 54, 0.2204) 0%, rgba(0, 0, 0, 0.38) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   box-sizing: border-box;
+}
+.wallet-footer-button {
+  width: 140px;
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #861bb87c;
+  padding: 4px;
+  position: relative;
+}
+.wallet-footer-button-bgcolor {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #340695 0%, #851bb8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.wallet-footer-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(119deg, #5c19f1 0%, #920fd8 100%);
+  margin-right: 12px;
+}
+.wallet-footer-span {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+}
+
+.wallet-info-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #212653;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

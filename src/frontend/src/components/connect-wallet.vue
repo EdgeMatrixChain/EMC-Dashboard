@@ -18,6 +18,23 @@
             </NSpace>
           </template>
         </NSpace>
+        <div style="width: 100px; height: 100px; background-color: red">
+          <!-- <Connect2ICProvider :client="client">
+            <Example />
+          </Connect2ICProvider> -->
+          <ConnectButton
+            :onConnect="
+              () => {
+                /* connected */
+              }
+            "
+            :onDisconnect="
+              () => {
+                /* disconnected */
+              }
+            "
+          />
+        </div>
       </div>
     </div>
   </NModal>
@@ -25,7 +42,6 @@
 <script lang="ts">
 import { ref, watch, computed, defineComponent, onMounted } from 'vue';
 import { NSpace, NModal, NButton } from 'naive-ui';
-
 import walletIcp from '@/assets/wallet_icp.png';
 import walletMe from '@/assets/wallet_me.png';
 import walletPlug from '@/assets/wallet_plug.png';
@@ -44,7 +60,6 @@ const walletConfigs: WalletItem[] = [
 
 export default defineComponent({
   name: 'connect-wallet',
-  components: { NSpace, NModal, NButton },
   props: {
     showModal: { type: Boolean, default: false },
   },

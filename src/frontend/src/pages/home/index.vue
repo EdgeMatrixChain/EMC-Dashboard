@@ -26,7 +26,10 @@
       <div class="card-body-item">
         <div class="card-item-info">
           <div class="card-item-title">Transactions</div>
-          <div class="card-item-data">{{ transactionsData }} <span style="color: #6f6376; font-size: 20px">TX/s</span></div>
+          <div class="card-item-data">
+            {{ transactionsData }}
+            <!-- <span style="color: #6f6376; font-size: 20px">TX/s</span> -->
+          </div>
           <!-- <div class="card-item-footer">22.88</div> -->
         </div>
         <div class="card-body-item-bg-small"></div>
@@ -419,7 +422,8 @@ export default defineComponent({
 
 .node-list {
   /* flex: 1; */
-  width: 880px;
+  /* width: 880px; */
+  width: 100%;
   height: 456px;
   margin-right: 56px;
   padding: 24px 20px 0;

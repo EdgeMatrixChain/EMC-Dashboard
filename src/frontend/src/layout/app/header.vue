@@ -17,9 +17,33 @@
       </NSpace>
       <template v-if="isLogin">
         <div class="header-user" @click="onPressUser">
-          <span class="header-user-text">User Name</span>
+          <template v-if="walletBalance.EMCBalance !== '' && walletBalance.ICPBalance !== ''">
+            <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
+              <div class="carousel-item">
+                {{ walletBalance.EMCBalance }} EMC
+                <div class="carousel-item-icon">
+                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                </div>
+              </div>
+              <div class="carousel-item">
+                {{ walletBalance.ICPBalance }} ICP
+                <div class="carousel-item-icon">
+                  <img src="@/assets/icon_swap.svg" width="16" height="16" />
+                </div>
+              </div>
+              <div class="carousel-item">
+                <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span>
+              </div>
+            </NCarousel>
+          </template>
+          <template v-else>
+            <NSpin size="small" />
+          </template>
+
+          <!-- <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span> -->
+          <!-- <img src="@/assets/icon_drop_down.svg" width="24" height="24" /> -->
         </div>
-        <Wallet :showWallet="showWallet" @close-wallet="closeWallet" @isLogin="loginStatus" :walletData="walletData" />
+        <Wallet :showWallet="showWallet" :principalId="principal_id" @close-wallet="closeWallet" @isLogin="loginStatus" @walletBalance="getWalletBalance" />
       </template>
       <template v-else>
         <div class="header-user" @click="onPressLogin">
@@ -27,14 +51,15 @@
         </div>
       </template>
     </NSpace>
-    <ConnectWallet :showModal="showModal" @close-modal="closeModal" @isLogin="loginStatus" />
+    <!-- <ConnectWallet :showModal="showModal" @close-modal="closeModal" @isLogin="loginStatus" /> -->
   </NSpace>
 </template>
 <script lang="ts">
-import { ref, defineComponent, watch } from 'vue';
-import { NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, NCollapse, NCollapseItem, useMessage } from 'naive-ui';
+import { ref, defineComponent, watch, nextTick } from 'vue';
+import { NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, NCarousel, NCollapse, NCollapseItem, useMessage } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import { useRouter, useRoute } from 'vue-router';
+import { Utils } from '@/tools/utils';
 import { useLogin } from '@/composables/use-login';
 import Wallet from './wallet.vue';
 import ConnectWallet from '@/components/connect-wallet.vue';
@@ -51,12 +76,12 @@ type TabItem = {
 const tabConfigs: TabItem[] = [
   { id: 1, name: 'Home', path: '/home' },
   { id: 2, name: 'Node', path: '/nodes' },
-  { id: 3, name: 'Marketplace', path: '/market' },
+  // { id: 3, name: 'Marketplace', path: '/market' },
 ];
 
-const walletData: { principal_id: string } = {
-  principal_id: '',
-};
+// const walletData: { principal_id: string } = {
+//   principal_id: '',
+// };
 
 const initTabKey = -1;
 
@@ -67,6 +92,7 @@ export default defineComponent({
     NSpin,
     NSpace,
     NMenu,
+    NCarousel,
     NCard,
     NTag,
     NModal,
@@ -86,7 +112,11 @@ export default defineComponent({
     const route = useRoute();
     const showWallet = ref(false);
     const showModal = ref(false);
-
+    const principal_id = ref('');
+    const walletBalance = ref({
+      EMCBalance: '',
+      ICPBalance: '',
+    });
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -101,11 +131,13 @@ export default defineComponent({
       currentTabKey,
       isLogin,
       showWallet,
-      walletData,
+      principal_id,
       showModal,
+      walletBalance,
+      Utils,
       onPressUser() {
         //profile
-        // showWallet.value = true;
+        showWallet.value = true;
       },
       onPressLogin() {
         context.emit('isLoading', true);
@@ -115,7 +147,9 @@ export default defineComponent({
             console.info('success', message);
             //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
             if (message.type === 'authorize-success') {
-              walletData.principal_id = message.data;
+              // walletData.principal_id = Utils.formatAddress(message.data, 5);
+              // walletData.principal_id = message.data;
+              principal_id.value = message.data;
               isLogin.value = true;
               context.emit('isLoading', false);
             }
@@ -136,6 +170,10 @@ export default defineComponent({
 
       loginStatus(val: boolean) {
         isLogin.value = val;
+      },
+      getWalletBalance(val: { EMCBalance: string; ICPBalance: string }) {
+        walletBalance.value = val;
+        console.log(val);
       },
     };
   },
@@ -170,6 +208,25 @@ export default defineComponent({
   height: var(--header-height);
 }
 
+.carousel-item {
+  width: 100%;
+  height: 52px;
+  line-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  filter: drop-shadow(0px 2px 4px rgba(37, 0, 54, 0.1));
+  margin-left: 4px;
+}
 .header-tabs-item::after {
   content: '';
   display: none;
@@ -196,6 +253,7 @@ export default defineComponent({
 }
 
 .header-user {
+  position: relative;
   background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
   border-radius: 6px;
   padding: 0 8px;
@@ -203,7 +261,7 @@ export default defineComponent({
   height: 52px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
   text-align: center;
 }

@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { NPagination, NSpace, NButton } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
@@ -57,6 +57,7 @@ export default defineComponent({
     const page = ref(1);
     const pageSize: number = 10;
     const nodeList = ref<NodeListItem[]>([]);
+    onMounted(() => {});
 
     axios
       .get('http://36.155.7.130/api/v1/nodelist', {
@@ -67,8 +68,6 @@ export default defineComponent({
         },
       })
       .then((resp) => {
-        console.log(resp);
-
         const data = resp.data;
         if (data._result !== 0) return;
         data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
@@ -187,7 +186,7 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 56px;
   cursor: pointer;

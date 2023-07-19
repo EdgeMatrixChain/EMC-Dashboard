@@ -67,11 +67,7 @@ export default defineComponent({
         itemTextColorActive: '#fff',
         itemColorActiveHover: '#5C1AE5',
       },
-      Button: {
-        color: 'red',
-        textColor: 'red',
-        backgroundColor: 'red',
-      },
+
     };
 
     const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);

@@ -4,14 +4,7 @@ declare module '*.vue' {
   export default component;
 }
 
-// declare module '@/tools/http.ts' {
-//   interface Http {
-//     get(options: { url: string; data?: any }): Promise<any>;
-//     post(options: { url: string; data?: any }): Promise<any>;
-//   }
-//   const http: Http;
-//   export default http;
-// }
+declare module '@connect2ic/vue';
 
 declare module '*.png';
 declare module '*.svg';
