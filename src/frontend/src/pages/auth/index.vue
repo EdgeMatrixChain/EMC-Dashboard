@@ -124,7 +124,7 @@ export default defineComponent({
           //internet identity
           const resp = await internetIdentityLogin();
           if (resp._result === 0) {
-            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_SUCCESS, data: resp.principal }, '*');
+            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_SUCCESS, data: resp.data }, '*');
           } else {
             window.opener.postMessage({ type: AUTH_MESSAGE_KIND_FAILURE, data: resp._desc }, '*');
           }
@@ -133,7 +133,7 @@ export default defineComponent({
         } else if (item.id === 3) {
           const resp = await plugLogin();
           if (resp._result === 0) {
-            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_SUCCESS, data: resp.principal }, '*');
+            window.opener.postMessage({ type: AUTH_MESSAGE_KIND_SUCCESS, data: resp.data }, '*');
           } else {
             window.opener.postMessage({ type: AUTH_MESSAGE_KIND_FAILURE, data: resp._desc }, '*');
           }
