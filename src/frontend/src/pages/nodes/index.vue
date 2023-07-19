@@ -17,14 +17,19 @@
             <div class="node-list-theader-item">Model Tag</div>
           </div>
           <div class="node-list-body">
-            <template v-for="(item, index) in paginatedData" :key="index">
-              <RouterLink :to="{ name: 'node-detail', params: { id: index } }">
-                <div class="node-list-main">
-                  <div class="node-list-main-item">{{ item.nodeID }}</div>
-                  <!-- <div class="node-list-main-item">{{ item.power }}</div>
+            <template v-if="paginatedData.length !== 0">
+              <template v-for="(item, index) in paginatedData" :key="item.nodeID">
+                <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
+                  <div class="node-list-main">
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
+                    <!-- <div class="node-list-main-item">{{ item.power }}</div>
                 <div class="node-list-main-item">{{ item.model }}</div> -->
-                </div>
-              </RouterLink>
+                  </div>
+                </RouterLink>
+              </template>
+            </template>
+            <template v-else>
+              <NSpin size="small" />
             </template>
           </div>
         </div>
@@ -39,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
-import { NPagination, NSpace, NButton } from 'naive-ui';
+import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
 
@@ -51,7 +56,7 @@ type NodeListItem = {
 
 export default defineComponent({
   name: 'nodes',
-  components: { NPagination, NSpace, NButton },
+  components: { NPagination, NSpace, NButton, NSpin },
 
   setup() {
     const page = ref(1);
@@ -71,7 +76,6 @@ export default defineComponent({
         const data = resp.data;
         if (data._result !== 0) return;
         data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
-          item.nodeID = Utils.formatAddress(item.nodeID);
           if (item.nodeType === '0') {
             item.nodeType = 'router ';
           } else if (item.nodeType === '1') {
@@ -95,6 +99,7 @@ export default defineComponent({
     const handlePageChange = (currentPage: number) => {};
 
     return {
+      Utils,
       page,
       pageCount,
       paginatedData,
@@ -122,6 +127,7 @@ export default defineComponent({
 .node-list {
   width: 100%;
   height: 100%;
+  min-height: 680px;
   padding: 24px 24px 4px;
   border-radius: 15px;
   background-color: #1c2025;

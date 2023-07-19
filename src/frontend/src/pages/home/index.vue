@@ -3,22 +3,33 @@
     <div class="mask-bgcolor-left"></div>
     <div class="mask-bgcolor-center"></div>
     <div class="card-body">
-      <!-- <template v-for="index in 4">
+      <template v-for="(item, index) in dataInfo">
         <div class="card-body-item">
           <div class="card-item-info">
-            <div class="card-item-title">Blocks</div>
-            <div class="card-item-data">2132</div>
-            <div class="card-item-footer">22.88</div>
+            <template v-if="item.data !== ''">
+              <div class="card-item-title">
+                <span>{{ item.name }}</span>
+                <template v-if="index === 2 || index === 3">
+                  <img src="@/assets/icon_arrow_top_right.png" width="16" height="16" style="margin: 0px 0px -2px 4px" />
+                </template>
+              </div>
+              <div class="card-item-data">{{ item.data }}</div>
+            </template>
+            <template v-else>
+              <NSpin size="small" />
+            </template>
+            <!-- <div class="card-item-footer">{{ item.name }}.88</div> -->
           </div>
           <div class="card-body-item-bg-small"></div>
           <div class="card-body-item-bg-big"></div>
         </div>
-      </template> -->
-      <div class="card-body-item">
+      </template>
+
+      <!-- <div class="card-body-item">
         <div class="card-item-info">
           <div class="card-item-title">Blocks</div>
           <div class="card-item-data">{{ blockData }}</div>
-          <!-- <div class="card-item-footer">22.88</div> -->
+          <div class="card-item-footer">22.88</div>
         </div>
         <div class="card-body-item-bg-small"></div>
         <div class="card-body-item-bg-big"></div>
@@ -28,13 +39,11 @@
           <div class="card-item-title">Transactions</div>
           <div class="card-item-data">
             {{ transactionsData }}
-            <!-- <span style="color: #6f6376; font-size: 20px">TX/s</span> -->
           </div>
-          <!-- <div class="card-item-footer">22.88</div> -->
         </div>
         <div class="card-body-item-bg-small"></div>
         <div class="card-body-item-bg-big"></div>
-      </div>
+      </div> -->
     </div>
     <div class="map-body">
       <WorldMap></WorldMap>
@@ -144,7 +153,7 @@
 
 <script lang="ts">
 import { ref, onMounted, onUnmounted, defineComponent, nextTick } from 'vue';
-import { NPopover } from 'naive-ui';
+import { NPopover, NSpin } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
@@ -156,28 +165,53 @@ type NodeListItem = {
   registered: string;
 };
 
+type DataInfoItem = {
+  name: string;
+  data: string;
+};
+
 export default defineComponent({
   components: {
     WorldMap,
     ModelsItem,
     NPopover,
+    NSpin,
   },
 
   setup() {
     const blockData = ref('');
     const transactionsData = ref('');
     const nodeList = ref<NodeListItem[]>([]);
+    const dataInfo = ref<DataInfoItem[]>([
+      { name: 'Blocks', data: '' },
+      { name: 'Transactions', data: '' },
+      { name: 'Total Nodes', data: '' },
+      { name: 'POC Nodes', data: '' },
+    ]);
 
     const formatData = (data: number) => {
       return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
     };
 
     onMounted(() => {
+      axios.get('http://36.155.7.130/api/v1/blocks').then((resp) => {
+        const data = resp.data;
+        if (data._result !== 0) return;
+        // blockData.value = formatData(data.data);
+        dataInfo.value[0].data = formatData(data.data);
+      });
       axios.get('http://36.155.7.130/api/v1/dip20transactions').then((resp) => {
         const data = resp.data;
         if (data._result !== 0) return;
-        transactionsData.value = formatData(data.data);
+        dataInfo.value[1].data = formatData(data.data);
       });
+      axios.get('http://36.155.7.130/api/v1/nodes').then((resp) => {
+        const data = resp.data;
+        if (data._result !== 0) return;
+        dataInfo.value[2].data = formatData(data.data.total);
+        dataInfo.value[3].data = formatData(data.data.poctotal);
+      });
+
       axios
         .get('http://36.155.7.130/api/v1/nodelist', {
           params: {
@@ -202,14 +236,9 @@ export default defineComponent({
           });
           nodeList.value = data.data;
         });
-      axios.get('http://36.155.7.130/api/v1/blocks').then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        blockData.value = formatData(data.data);
-      });
     });
 
-    return { blockData, transactionsData, nodeList };
+    return { blockData, transactionsData, nodeList, dataInfo };
   },
 });
 </script>
@@ -242,7 +271,7 @@ export default defineComponent({
 .card-body {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin-bottom: 80px;
   padding-top: 98px;
 }
@@ -257,7 +286,7 @@ export default defineComponent({
   background: linear-gradient(180deg, #292929 0%, #121212 64.06%, #000 100%);
   overflow: hidden;
   box-sizing: border-box;
-  margin-right: 64px;
+  /* margin-right: 64px; */
 }
 
 .card-body-item-bg-small {

@@ -113,6 +113,7 @@ export default defineComponent({
     const showWallet = ref(false);
     const showModal = ref(false);
     const principal_id = ref('');
+    // zsgyz-ps7ql-le4vu-bod5j-ekxs6-py26a-mkj4r-f7aqx-to5wz-lvkp5-wqe
     const walletBalance = ref({
       EMCBalance: '',
       ICPBalance: '',
@@ -172,7 +173,11 @@ export default defineComponent({
         isLogin.value = val;
       },
       getWalletBalance(val: { EMCBalance: string; ICPBalance: string }) {
-        walletBalance.value = val;
+        // walletBalance.value = val;
+
+        walletBalance.value.EMCBalance = Number(val.EMCBalance).toFixed(2);
+        walletBalance.value.ICPBalance = Number(val.ICPBalance).toFixed(2);
+
         console.log(val);
       },
     };
@@ -256,7 +261,6 @@ export default defineComponent({
   position: relative;
   background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
   border-radius: 6px;
-  padding: 0 8px;
   width: 152px;
   height: 52px;
   cursor: pointer;

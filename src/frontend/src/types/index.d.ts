@@ -4,7 +4,7 @@ declare module '*.vue' {
   export default component;
 }
 
-declare module '@connect2ic/vue';
+declare module 'copy-to-clipboard';
 
 declare module '*.png';
 declare module '*.svg';

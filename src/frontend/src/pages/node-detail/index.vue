@@ -8,7 +8,7 @@
             <template v-for="item in nodeList">
               <div class="main-table-item">
                 <div class="main-table-item-name" style="flex: 0.25">
-                  <span class="main-table-item-name-span">{{ item.name }}</span>
+                  <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info" style="flex: 0.75">
                   <span class="main-table-item-info-span">{{ item.info }}</span>
@@ -47,7 +47,11 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, defineComponent, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { Utils } from '@/tools/utils';
+
+import axios from 'axios';
 import ModelsItem from '@/components/models-item.vue';
 import iconCpu from '@/assets/icon_cpu.svg';
 import iconGpu from '@/assets/icon_gpu.svg';
@@ -60,8 +64,10 @@ export default defineComponent({
     ModelsItem,
   },
   setup() {
+    const router = useRouter();
+    const nodeInfo = ref({});
     const nodeList = ref([
-      { name: 'Node ID :', info: '42274b52a1...3e542e9ebc' },
+      { name: 'Node ID', info: '' },
       { name: 'Round :', info: '12' },
       { name: 'Total :', info: '2’881' },
       { name: 'Node type :', info: '2’881' },
@@ -75,10 +81,34 @@ export default defineComponent({
       { name: 'Internal storage :', icon: iconStorage, info: '256 GB ( SAMSUNG DDR4 3000MHz 32GB x 8 )' },
       { name: 'Pledge :', icon: iconPledge, info: 'Inter Wi-Fi 6 AX200 160MHz #2' },
     ]);
+
+    onMounted(() => {
+      const nodeId = router.currentRoute.value.params.id;
+      // const nodeId = '16Uiu2HAkwckTXU5KPKdeNRWNeL74bdQMqFeeiNGgVxW3rvLiX8e2';
+
+      axios
+        .get('http://36.155.7.130/api/v1/nodeinfo', {
+          params: { nodeid: nodeId },
+        })
+        .then((resp) => {
+          const data = resp.data;
+          if (data._result !== 0) return;
+          // nodeInfo.value = data.data;
+          const dataInfo = data?.data;
+          console.log(Object.keys(dataInfo).length !== 0);
+          nodeList.value.findIndex((item) => {
+            if (item.name === 'Node ID') {
+              item.info = Utils.formatAddress(dataInfo._id);
+            }
+          });
+        });
+    });
+
     return {
+      Utils,
       nodeList,
-      infoList
-    }
+      infoList,
+    };
   },
 });
 </script>
