@@ -142,7 +142,7 @@ export default defineComponent({
       onPressLogin() {
         context.emit('isLoading', true);
         emcAuthClient.login({
-          provider: 'http://localhost:8080',
+          // provider: 'http://localhost:8080',
           onSuccess: (message) => {
             console.info('success', message);
             //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
