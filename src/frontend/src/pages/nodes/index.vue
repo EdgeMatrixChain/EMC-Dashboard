@@ -14,16 +14,16 @@
           <div class="node-list-theader">
             <div class="node-list-theader-item">Node ID</div>
             <div class="node-list-theader-item">E Power</div>
-            <div class="node-list-theader-item">Model Tag</div>
+            <div class="node-list-theader-item">EMC Reward</div>
           </div>
           <div class="node-list-body">
-            <template v-if="paginatedData.length !== 0">
-              <template v-for="(item, index) in paginatedData" :key="item.nodeID">
-                <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
+            <template v-if="nodeInfoList.length !== 0">
+              <template v-for="(item, index) in nodeInfoList" :key="item._id">
+                <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
-                    <!-- <div class="node-list-main-item">{{ item.power }}</div>
-                <div class="node-list-main-item">{{ item.model }}</div> -->
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item._id) }}</div>
+                    <div class="node-list-main-item">{{ item.avgPower }}</div>
+                    <div class="node-list-main-item">≈ {{ item.reward }}</div>
                   </div>
                 </RouterLink>
               </template>
@@ -37,21 +37,21 @@
     </div>
     <!--v-model:page-size="pageSize" show-size-picker :page-sizes="[10]" -->
     <NSpace class="pagination" justify="center">
-      <NPagination v-model:page="page" :page-count="pageCount" @update:page="handlePageChange" size="large" />
+      <NPagination v-model:page="pageSize" :page-count="pageCount" @update:page="handlePageChange" size="large" />
     </NSpace>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
+import { defineComponent, ref, computed, onMounted, ComputedRef } from 'vue';
 import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
 
 type NodeListItem = {
-  nodeID: string;
-  nodeType: string;
-  registered: string;
+  _id: string;
+  avgPower: string;
+  reward: string;
 };
 
 export default defineComponent({
@@ -59,50 +59,56 @@ export default defineComponent({
   components: { NPagination, NSpace, NButton, NSpin },
 
   setup() {
-    const page = ref(1);
-    const pageSize: number = 10;
-    const nodeList = ref<NodeListItem[]>([]);
-    onMounted(() => {});
+    const pageSize = ref(1);
+    const pageCount = ref(100);
+    const nodeInfoList = ref<NodeListItem[]>([]);
 
-    axios
-      .get('https://api.edgematrix.pro/api/v1/nodelist', {
-        params: {
-          type: 2,
-          start: 0,
-          size: 100,
-        },
-      })
-      .then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
-          if (item.nodeType === '0') {
-            item.nodeType = 'router ';
-          } else if (item.nodeType === '1') {
-            item.nodeType = 'validator  ';
-          } else if (item.nodeType === '2') {
-            item.nodeType = 'computing ';
-          }
-          // item.registered = Utils.formatMoment(item.registered);
-        });
-        nodeList.value = data.data;
-      });
-
-    const totalDataCount = computed(() => nodeList.value.length);
-    const pageCount = computed(() => Math.ceil(totalDataCount.value / pageSize));
-    const paginatedData = computed(() => {
-      const startIndex = (page.value - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      return nodeList.value.slice(startIndex, endIndex);
+    onMounted(() => {
+      init(1);
     });
 
-    const handlePageChange = (currentPage: number) => {};
+    const init = (index: number) => {
+      const rewardData = Utils.getLocalStorage('rewardData');
+      const rewardList = rewardData.reward;
+
+      // const totalDataCount = rewardList.length;
+      const nodeIDs = rewardList[index].map((item: any) => item.nodeID);
+      const strNodeIDs = nodeIDs.join(',');
+      axios
+        .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
+          params: {
+            nodeids: strNodeIDs,
+            page: 1,
+            size: 10,
+          },
+        })
+        .then((resp) => {
+          const data = resp.data;
+          if (data._result !== 0) return;
+          const nodeList = data.data;
+
+          const updatedNodeList = nodeList.map((item1: { _id: string }) => {
+            const matchingItem = rewardList[index].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
+
+            return matchingItem ? { ...item1, reward: matchingItem.reward / Math.pow(10, 8) } : item1;
+          });
+
+          nodeInfoList.value = updatedNodeList;
+
+          pageCount.value = rewardList.length;
+        });
+    };
+
+    const handlePageChange = (currentPage: number) => {
+      init(currentPage);
+    };
 
     return {
       Utils,
-      page,
+      pageSize,
       pageCount,
-      paginatedData,
+      init,
+      nodeInfoList,
       handlePageChange,
     };
   },
@@ -200,8 +206,5 @@ export default defineComponent({
 
 .pagination {
   text-align: center;
-}
-
-.page /deep/ .n-pagination-item--active {
 }
 </style>

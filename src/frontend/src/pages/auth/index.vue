@@ -90,7 +90,7 @@ const waitForAuthRequest = (): Promise<AuthResult> => {
 
 const walletConfigs: WalletItem[] = [
   { id: 1, icon: IconWalletIcp, name: 'INTERNET IDENTITY' },
-  { id: 2, icon: IconWalletMe, name: 'AstroX ME' },
+  // { id: 2, icon: IconWalletMe, name: 'AstroX ME' },
   { id: 3, icon: IconWalletPlug, name: 'Plug' },
 ];
 

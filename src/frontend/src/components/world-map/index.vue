@@ -38,9 +38,9 @@ export default defineComponent({
           geo: {
             type: 'map',
             map: 'world',
-            roam: true,
-            center: [116.46, 39.92],
-            zoom: 5,
+            roam: false,
+            center: [0.46, 26.92],
+            zoom: 2,
             label: {
               show: false,
               // emphasis: {

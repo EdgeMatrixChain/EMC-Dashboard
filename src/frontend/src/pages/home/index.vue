@@ -80,15 +80,6 @@
       <div class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
-
-          <NPopover :overlap="false" placement="left" trigger="hover" :delay="0">
-            <template #trigger>
-              <div class="node-list-header-button">
-                <span class="node-list-header-button-span">View More</span>
-              </div>
-            </template>
-            <div class="large-text" style="width: 240px">You can view more node models and choose the model you like to plot on the node.</div>
-          </NPopover>
         </div>
         <div class="node-list-subtitle">
           <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
@@ -97,42 +88,55 @@
         <div class="node-list-table">
           <div class="node-list-theader">
             <div class="node-list-theader-item">Node ID</div>
-            <div class="node-list-theader-item">type</div>
-            <div class="node-list-theader-item">registered</div>
+            <div class="node-list-theader-item">EMC Reward</div>
           </div>
           <div class="node-list-body">
-            <template v-for="item in nodeList" :key="item.nodeID">
-              <div class="node-list-main">
-                <div class="node-list-main-item">{{ item.nodeID }}</div>
-                <div class="node-list-main-item">{{ item.nodeType }}</div>
-                <div class="node-list-main-item">{{ item.registered }}</div>
-              </div>
+            <template v-if="nodeList.length !== 0">
+              <template v-for="(item, index) in nodeList" :key="item.nodeID">
+                <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
+                  <div class="node-list-main">
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
+                    <div class="node-list-main-item">{{ item.reward }}</div>
+                  </div>
+                </RouterLink>
+              </template>
+            </template>
+            <template v-else>
+              <NSpin size="small" />
             </template>
           </div>
         </div>
       </div>
-      <!-- <div class="transactions">
-        <div class="transactions-header">
-          <span class="transactions-header-span">Transactions</span>
+      <div class="node-list">
+        <div class="node-list-header">
+          <span class="node-list-header-span">Node list</span>
         </div>
-
-        <div class="transactions-table">
-          <div class="transactions-theader">
-            <div class="transactions-theader-item">From</div>
-            <div class="transactions-theader-item">To</div>
-            <div class="transactions-theader-item">Amount</div>
+        <div class="node-list-subtitle">
+          <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
+          <span class="node-list-subtitle-span">Last updated node</span>
+        </div>
+        <div class="node-list-table">
+          <div class="node-list-theader">
+            <div class="node-list-theader-item">Node ID</div>
+            <div class="node-list-theader-item">EMC Reward</div>
           </div>
-          <div class="transactions-body">
-            <template v-for="item in 14">
-              <div class="transactions-main">
-                <div class="transactions-main-item">5614c...d9c99</div>
-                <div class="transactions-main-item">5614c...d9c99</div>
-                <div class="transactions-main-item">0.9999</div>
-              </div>
+          <div class="node-list-body">
+            <template v-if="nodeList1.length !== 0">
+              <template v-for="(item, index) in nodeList1" :key="item.nodeID">
+                <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
+                  <div class="node-list-main">
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
+                    <div class="node-list-main-item">{{ item.reward }}</div>
+                  </div>
+                </RouterLink>
+              </template>
+            </template>
+            <template v-else>
+              <NSpin size="small" />
             </template>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
     <!-- <div class="models-body">
       <div class="models-body-header">
@@ -161,8 +165,7 @@ import { Utils } from '@/tools/utils';
 
 type NodeListItem = {
   nodeID: string;
-  nodeType: string;
-  registered: string;
+  reward: string;
 };
 
 type DataInfoItem = {
@@ -182,6 +185,8 @@ export default defineComponent({
     const blockData = ref('');
     const transactionsData = ref('');
     const nodeList = ref<NodeListItem[]>([]);
+    const nodeList1 = ref<NodeListItem[]>([]);
+
     const dataInfo = ref<DataInfoItem[]>([
       { name: 'Blocks', data: '' },
       { name: 'Transactions', data: '' },
@@ -193,7 +198,7 @@ export default defineComponent({
       return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       axios.get('https://api.edgematrix.pro/api/v1/blocks').then((resp) => {
         const data = resp.data;
         if (data._result !== 0) return;
@@ -212,33 +217,31 @@ export default defineComponent({
         dataInfo.value[3].data = formatData(data.data.poctotal);
       });
 
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodelist', {
-          params: {
-            type: 2,
-            start: 0,
-            size: 10,
-          },
-        })
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          data.data.forEach((item: { nodeID: string; nodeType: string; registered: string }) => {
-            item.nodeID = Utils.formatAddress(item.nodeID);
-            if (item.nodeType === '0') {
-              item.nodeType = 'router ';
-            } else if (item.nodeType === '1') {
-              item.nodeType = 'validator  ';
-            } else if (item.nodeType === '2') {
-              item.nodeType = 'computing ';
-            }
-            // item.registered = Utils.formatMoment(item.registered);
-          });
-          nodeList.value = data.data;
-        });
+      const rewardData = Utils.getLocalStorage('rewardData');
+      const rewardList = rewardData.reward;
+
+      rewardList[0].forEach((item: any) => {
+        item.reward = item.reward / Math.pow(10, 8);
+      });
+      rewardList[1].forEach((item: any) => {
+        item.reward = item.reward / Math.pow(10, 8);
+      });
+
+      nodeList.value = rewardList[0];
+      nodeList1.value = rewardList[1];
+
+      //  Utils.rewardtoday().then((resp) => {
+      //   const data = resp.data;
+      //   if (data._result !== 0) return;
+      //   localStorage.setItem('rewardData', JSON.stringify(data.data));
+      //   data.data.forEach((item: any) => {
+      //     item.reward = item.reward / Math.pow(10, metaData.decimals);
+      //   });
+      //   nodeList.value = data.data;
+      // });
     });
 
-    return { blockData, transactionsData, nodeList, dataInfo };
+    return { Utils, blockData, transactionsData, nodeList, nodeList1, dataInfo };
   },
 });
 </script>
@@ -450,11 +453,10 @@ export default defineComponent({
 }
 
 .node-list {
-  /* flex: 1; */
+  flex: 0.475;
   /* width: 880px; */
-  width: 100%;
+  width: 0;
   height: 456px;
-  margin-right: 56px;
   padding: 24px 20px 0;
   border-radius: 15px;
   background: linear-gradient(169deg, #201e43 0%, rgba(32, 30, 67, 0.6) 100%);

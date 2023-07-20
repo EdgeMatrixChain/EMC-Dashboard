@@ -49,13 +49,14 @@
               <img src="@/assets/icon_coin_emc.png" width="28" height="28" />
               <!-- <img :src="metaData.logo" width="24" height="24" /> -->
             </div>
-            <div class="coin-info-name">{{ metaData.symbol }}</div>
-            <img src="@/assets/icon_arrow_down.svg" width="12" height="6" />
+            <!-- {{ metaData.symbol }} -->
+            <div class="coin-info-name">EMC</div>
+            <!-- <img src="@/assets/icon_arrow_down.svg" width="12" height="6" /> -->
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">{{ EMCBalance }} EMC</div>
+              <div class="coin-info-number">{{ EMCBalance }}</div>
             </div>
           </NSpace>
         </NSpace>
@@ -64,13 +65,14 @@
             <div class="coin-info-icon">
               <img src="@/assets/icon_coin_icp.png" width="28" height="28" />
             </div>
-            <div class="coin-info-name">{{ ICPMetaData.symbol }}</div>
-            <img src="@/assets/icon_arrow_down.svg" width="12" height="6" />
+            <!-- {{ ICPMetaData.symbol }} -->
+            <div class="coin-info-name">ICP</div>
+            <!-- <img src="@/assets/icon_arrow_down.svg" width="12" height="6" /> -->
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">{{ ICPBalance }} ICP</div>
+              <div class="coin-info-number">{{ ICPBalance }}</div>
               <!-- <div class="coin-info-number-probably">
                 <span>≈ </span>
                 <span>0.00081243</span>
@@ -84,9 +86,9 @@
               <div class="wallet-footer-button-bgcolor">
                 <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center">
                   <div class="wallet-footer-icon">
-                    <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                    <img src="@/assets/icon_wallet.svg" width="14" height="14" />
                   </div>
-                  <span class="wallet-footer-span">Top up ICP</span>
+                  <span class="wallet-footer-span">Buy ICP</span>
                 </NSpace>
                 <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
               </div>
@@ -166,14 +168,7 @@ export default defineComponent({
     });
 
     async function getEMCBalance() {
-      const resp = await axios.get('https://api.edgematrix.pro/api/v1/dip20simple', {
-        params: {
-          method: getMetadata.value,
-        },
-      });
-      const data = resp.data;
-      if (data._result !== 0) return;
-      metaData.value = JSON.parse(data.data);
+      const metaData: any = await Utils.metaData();
       const respBalance = await axios.get('https://api.edgematrix.pro/api/v1/dip20balance', {
         params: {
           principal: principal.value,
@@ -183,7 +178,7 @@ export default defineComponent({
       if (dataBalance._result !== 0) return;
       const balance = dataBalance.data;
       if (balance > 0) {
-        let result = balance / Math.pow(10, metaData.value.decimals);
+        let result = Utils.toFixed(balance / Math.pow(10, metaData.decimals), 4);
         EMCBalance.value = result.toString();
         return result.toString();
       } else {
@@ -197,7 +192,6 @@ export default defineComponent({
       //   let result = dividedBalance.toString() + '.' + decimalPart;
       //   EMCBalance.value = result;
       // } else {
-      // .toFixed(metaData.value.decimals);
 
       // }
     }
@@ -219,7 +213,7 @@ export default defineComponent({
 
       const balance = dataBalance.data;
       if (balance > 0) {
-        const result = balance / Math.pow(10, ICPMetaData.value.decimals);
+        const result = Utils.toFixed(balance / Math.pow(10, ICPMetaData.value.decimals), 4);
         ICPBalance.value = result.toString();
         return result.toString();
       } else {
@@ -461,7 +455,7 @@ export default defineComponent({
   line-height: 8px;
 }
 .coin-info-balance-box {
-  width: 156px;
+  width: 144px;
   padding: 6px 0;
   background: linear-gradient(90deg, #191a37 0%, #23234f 54.17%, #191a37 100%);
   text-align: center;

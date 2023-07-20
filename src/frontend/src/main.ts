@@ -2,9 +2,12 @@ import { createApp } from 'vue';
 import AppSetup from './AppSetup.vue';
 import { router } from './routes/index';
 import { Utils } from './tools/utils';
+import moment from 'moment';
 
 import { pinia } from './stores/index';
 import './style.css';
+
+moment.locale('zh-cn');
 
 const app = createApp(AppSetup);
 

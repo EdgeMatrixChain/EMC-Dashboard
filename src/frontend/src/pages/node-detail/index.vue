@@ -53,44 +53,65 @@
 import { ref, defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
+import { NDatePicker } from 'naive-ui';
+import moment from 'moment';
 
 import axios from 'axios';
 import ModelsItem from '@/components/models-item.vue';
 import iconCpu from '@/assets/icon_cpu.svg';
 import iconGpu from '@/assets/icon_gpu.svg';
-import iconDisk from '@/assets/icon_disk.svg';
-import iconStorage from '@/assets/icon_storage.svg';
-import iconPledge from '@/assets/icon_pledge.svg';
+import iconIP from '@/assets/icon_ip.png';
+import iconMemory from '@/assets/icon_memory.png';
+import iconModel from '@/assets/icon_model.png';
+
+type ModelItem = {
+  hash: string;
+  model_name: string;
+};
 
 export default defineComponent({
   components: {
     ModelsItem,
+    NDatePicker,
   },
   setup() {
     const router = useRouter();
     const nodeInfo = ref({});
     const nodeList = ref([
-      { name: 'Node ID', info: '' },
-      { name: 'Round', info: '' },
-      { name: 'Total', info: '' },
-      { name: 'Node type', info: '' },
-      { name: 'Pledge', info: '' },
+      { name: 'Node ID', info: '--' },
+      { name: 'Startup Time', info: '--' },
+      { name: 'Run Time', info: '--' },
+      { name: 'Reward', info: '--' },
+      { name: 'AvgPower', info: '--' },
     ]);
 
     const infoList = ref([
-      { name: 'CPU', icon: iconCpu, info: '' },
-      { name: 'GPU', icon: iconGpu, info: '' },
-      { name: 'Hard disk', icon: iconDisk, info: '' },
-      { name: 'Internal storage', icon: iconStorage, info: '' },
-      { name: 'Pledge', icon: iconPledge, info: '' },
+      { name: 'CPU', icon: iconCpu, info: '--' },
+      { name: 'GPU', icon: iconGpu, info: '--' },
+      { name: 'IP Address', icon: iconIP, info: '--' },
+      { name: 'Memory', icon: iconMemory, info: '--' },
+      { name: 'Model Name', icon: iconModel, info: '--' },
     ]);
 
-    const modelList = ref([]);
+    const modelList = ref<ModelItem[]>([]);
     onMounted(() => {
       const nodeId: string = <string>router.currentRoute.value.params.id;
 
       axios
-        .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
+        .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
+          params: { nodeid: nodeId },
+        })
+        .then((resp) => {
+          const data = resp.data;
+          if (data._result !== 0 || data.data === '') return;
+          const dataList = JSON.parse(data.data);
+          if (dataList && dataList.detail !== 'Not Found') {
+            modelList.value = dataList;
+          }
+        });
+
+      axios
+        .get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
           params: { nodeid: nodeId },
         })
         .then((resp) => {
@@ -98,47 +119,75 @@ export default defineComponent({
           if (data._result !== 0) return;
           const dataInfo = data?.data;
           if (Object.keys(dataInfo).length !== 0) {
-            nodeList.value.findIndex((item) => {
-              if (item.name === 'Node ID') {
-                item.info = Utils.formatAddress(dataInfo._id);
-              } else {
-                item.info = '--';
-              }
-            });
-            infoList.value.findIndex((item) => {
-              if (item.name === 'CPU') {
-                if (dataInfo.cpuInfo) {
-                  item.info = JSON.parse(dataInfo.cpuInfo).ModelName;
-                }
-              } else {
-                item.info = '--';
-              }
-            });
+            dataInfoFunction(dataInfo);
           } else {
-            nodeList.value.findIndex((item) => {
-              if (item.name === 'Node ID') {
-                item.info = Utils.formatAddress(nodeId);
+            axios
+              .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
+                params: { nodeid: nodeId },
+              })
+              .then((resp) => {
+                const data = resp.data;
+                if (data._result !== 0) return;
+                dataInfoFunction(dataInfo);
+              });
+          }
+        });
+      // ---------
+      const dataInfoFunction = (data: any) => {
+        nodeList.value.findIndex((item) => {
+          if (item.name === 'Node ID') {
+            item.info = Utils.formatAddress(data._id);
+          } else if (item.name === 'Startup Time') {
+            item.info = moment(data.startupTime).format('YYYY-MM-DD HH:MM');
+          } else if (item.name === 'Run Time') {
+            item.info = moment(data.runTime).format('YYYY-MM-DD HH:MM');
+          } else if (item.name === 'Reward') {
+            // const metaData: any = Utils.metaData();
+            const rewardData = Utils.getLocalStorage('rewardData');
+            const rewardList = rewardData.reward;
+
+            rewardList.forEach((item1: any) => {
+              const reward = item1.find((item: any) => item.nodeID === nodeId);
+              if (!reward) return;
+              if (reward.reward !== '0') {
+                item.info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
+              } else {
+                item.info = reward.reward;
+              }
+            });
+          } else if (item.name === 'AvgPower') {
+            item.info = data.avgPower;
+          }
+        });
+        infoList.value.findIndex((item) => {
+          if (item.name === 'CPU') {
+            if (data.cpuInfo) {
+              item.info = JSON.parse(data.cpuInfo).ModelName;
+            }
+          } else if (item.name === 'IP Address') {
+            if (Object.keys(data.ipInfo).length === 0) return;
+
+            item.info = data.ipInfo.ipAddr;
+          } else if (item.name === 'GPU') {
+            item.info = '--';
+          } else if (item.name === 'Memory') {
+            if (!data.memoryInfo) return;
+            const memoryInfo = JSON.parse(data.memoryInfo).used_percent;
+            const formatMemory = JSON.parse(data.memoryInfo);
+            item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
+          } else if (item.name === 'Model Name') {
+            setTimeout(() => {
+              if (modelList.value.length === 0 || !data.appSpec) return;
+              const findObject = modelList.value.find((item) => item.hash === data.appSpec);
+              if (findObject) {
+                item.info = findObject.model_name;
               } else {
                 item.info = '--';
               }
-            });
-            infoList.value.findIndex((item) => {
-              item.info = '--';
-            });
+            }, 1000);
           }
         });
-      // -
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
-          params: { nodeid: nodeId },
-        })
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          if (data.data) {
-            modelList.value = JSON.parse(data.data);
-          }
-        });
+      };
     });
 
     return {
