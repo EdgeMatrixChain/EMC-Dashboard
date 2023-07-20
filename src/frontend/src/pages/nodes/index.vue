@@ -65,7 +65,7 @@ export default defineComponent({
     onMounted(() => {});
 
     axios
-      .get('http://36.155.7.130/api/v1/nodelist', {
+      .get('https://api.edgematrix.pro/api/v1/nodelist', {
         params: {
           type: 2,
           start: 0,

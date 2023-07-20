@@ -166,7 +166,7 @@ export default defineComponent({
     });
 
     async function getEMCBalance() {
-      const resp = await axios.get('http://36.155.7.130/api/v1/dip20simple', {
+      const resp = await axios.get('https://api.edgematrix.pro/api/v1/dip20simple', {
         params: {
           method: getMetadata.value,
         },
@@ -174,7 +174,7 @@ export default defineComponent({
       const data = resp.data;
       if (data._result !== 0) return;
       metaData.value = JSON.parse(data.data);
-      const respBalance = await axios.get('http://36.155.7.130/api/v1/dip20balance', {
+      const respBalance = await axios.get('https://api.edgematrix.pro/api/v1/dip20balance', {
         params: {
           principal: principal.value,
         },
@@ -203,13 +203,13 @@ export default defineComponent({
     }
 
     async function getICPBalance() {
-      const resp = await axios.get('http://36.155.7.130/api/v1/icrc1metadata');
+      const resp = await axios.get('https://api.edgematrix.pro/api/v1/icrc1metadata');
       const data = resp.data;
       if (data._result !== 0) return;
 
       ICPMetaData.value = data.data;
 
-      const respBalance = await axios.get('http://36.155.7.130/api/v1/icrc1balance', {
+      const respBalance = await axios.get('https://api.edgematrix.pro/api/v1/icrc1balance', {
         params: {
           principal: principal.value,
         },

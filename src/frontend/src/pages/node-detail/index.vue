@@ -90,7 +90,7 @@ export default defineComponent({
       const nodeId: string = <string>router.currentRoute.value.params.id;
 
       axios
-        .get('http://36.155.7.130/api/v1/nodeinfo', {
+        .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
           params: { nodeid: nodeId },
         })
         .then((resp) => {
@@ -129,7 +129,7 @@ export default defineComponent({
         });
       // -
       axios
-        .get('http://36.155.7.130/api/v1/nodesdmodels', {
+        .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
           params: { nodeid: nodeId },
         })
         .then((resp) => {

@@ -194,18 +194,18 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      axios.get('http://36.155.7.130/api/v1/blocks').then((resp) => {
+      axios.get('https://api.edgematrix.pro/api/v1/blocks').then((resp) => {
         const data = resp.data;
         if (data._result !== 0) return;
         // blockData.value = formatData(data.data);
         dataInfo.value[0].data = formatData(data.data);
       });
-      axios.get('http://36.155.7.130/api/v1/dip20transactions').then((resp) => {
+      axios.get('https://api.edgematrix.pro/api/v1/dip20transactions').then((resp) => {
         const data = resp.data;
         if (data._result !== 0) return;
         dataInfo.value[1].data = formatData(data.data);
       });
-      axios.get('http://36.155.7.130/api/v1/nodes').then((resp) => {
+      axios.get('https://api.edgematrix.pro/api/v1/nodes').then((resp) => {
         const data = resp.data;
         if (data._result !== 0) return;
         dataInfo.value[2].data = formatData(data.data.total);
@@ -213,7 +213,7 @@ export default defineComponent({
       });
 
       axios
-        .get('http://36.155.7.130/api/v1/nodelist', {
+        .get('https://api.edgematrix.pro/api/v1/nodelist', {
           params: {
             type: 2,
             start: 0,
