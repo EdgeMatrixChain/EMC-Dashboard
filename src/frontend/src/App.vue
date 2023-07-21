@@ -33,33 +33,32 @@ export default defineComponent({
       window.$message = message;
       window.$loadingBar = loadingBar;
       ready.value = true;
-      return new Promise((resolve, reject) => {
-        // axios.get('https://api.edgematrix.pro/api/v1/noderewardtoday').then((resp) => {
-        //   const data = resp.data;
-        //   if (data._result !== 0) return;
-        //   const reward = data.data;
+      console.log(1);
 
-        //   const newReward = [];
-        //   let group: any = [];
-        //   reward.forEach((item: any) => {
-        //     group.push(item);
-        //     if (group.length === 10) {
-        //       newReward.push(group);
-        //       group = [];
-        //     }
-        //   });
-        //   if (group.length > 0) {
-        //     newReward.push(group);
-        //   }
+      axios.get('https://api.edgematrix.pro/api/v1/noderewardtoday').then((resp) => {
+        const data = resp.data;
+        if (data._result !== 0) return;
+        const reward = data.data;
 
-        //   const timestamp = Date.now();
-        //   const rewardData = {
-        //     reward: newReward,
-        //     timestamp: timestamp,
-        //   };
-        //   Utils.setLocalStorage('rewardData', rewardData);
-        //   resolve(reward);
-        // });
+        const newReward = [];
+        let group: any = [];
+        reward.forEach((item: any) => {
+          group.push(item);
+          if (group.length === 10) {
+            newReward.push(group);
+            group = [];
+          }
+        });
+        if (group.length > 0) {
+          newReward.push(group);
+        }
+
+        const timestamp = Date.now();
+        const rewardData = {
+          reward: newReward,
+          timestamp: timestamp,
+        };
+        Utils.setLocalStorage('rewardData', rewardData);
       });
     });
 

@@ -92,6 +92,7 @@ export default defineComponent({
       { name: 'Memory', icon: iconMemory, info: '--' },
       { name: 'Model Name', icon: iconModel, info: '--' },
     ]);
+    let requestCount = 0;
 
     const modelList = ref<ModelItem[]>([]);
     onMounted(() => {
@@ -142,19 +143,28 @@ export default defineComponent({
           } else if (item.name === 'Run Time') {
             item.info = moment(data.runTime).format('YYYY-MM-DD HH:MM');
           } else if (item.name === 'Reward') {
-            // const metaData: any = Utils.metaData();
-            const rewardData = Utils.getLocalStorage('rewardData');
-            const rewardList = rewardData.reward;
-
-            rewardList.forEach((item1: any) => {
-              const reward = item1.find((item: any) => item.nodeID === nodeId);
-              if (!reward) return;
-              if (reward.reward !== '0') {
-                item.info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
+            const makeRequest = () => {
+              const rewardData = Utils.getLocalStorage('rewardData') || [];
+              const rewardList = rewardData.reward || [];
+              if (rewardList.length > 0) {
+                rewardList.forEach((item1: any) => {
+                  const reward = item1.find((item: any) => item.nodeID === nodeId);
+                  if (!reward) return;
+                  if (reward.reward !== '0') {
+                    item.info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
+                  } else {
+                    item.info = reward.reward;
+                  }
+                });
+                clearInterval(requestInterval);
               } else {
-                item.info = reward.reward;
+                requestCount++;
+                if (requestCount >= 5) {
+                  clearInterval(requestInterval);
+                }
               }
-            });
+            };
+            const requestInterval = setInterval(makeRequest, 10000);
           } else if (item.name === 'AvgPower') {
             item.info = data.avgPower;
           }

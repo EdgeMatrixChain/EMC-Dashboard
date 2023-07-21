@@ -60,54 +60,62 @@ export default defineComponent({
 
   setup() {
     const pageSize = ref(1);
-    const pageCount = ref(100);
+    const pageCount = ref(1);
     const nodeInfoList = ref<NodeListItem[]>([]);
+    let requestCount: number = 0;
 
     onMounted(() => {
-      init(1);
+      makeRequest(1);
     });
 
-    const init = (index: number) => {
-      const rewardData = Utils.getLocalStorage('rewardData');
-      const rewardList = rewardData.reward;
+    const makeRequest = (index: number) => {
+      const rewardData = Utils.getLocalStorage('rewardData') || [];
+      const rewardList = rewardData.reward || [];
+      if (rewardList.length > 0) {
+        const nodeIDs = rewardList[index || 1].map((item: any) => item.nodeID);
+        const strNodeIDs = nodeIDs.join(',');
+        axios
+          .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
+            params: {
+              nodeids: strNodeIDs,
+              page: 1,
+              size: 10,
+            },
+          })
+          .then((resp) => {
+            const data = resp.data;
+            if (data._result !== 0) return;
+            const nodeList = data.data;
 
-      // const totalDataCount = rewardList.length;
-      const nodeIDs = rewardList[index].map((item: any) => item.nodeID);
-      const strNodeIDs = nodeIDs.join(',');
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
-          params: {
-            nodeids: strNodeIDs,
-            page: 1,
-            size: 10,
-          },
-        })
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          const nodeList = data.data;
+            const updatedNodeList = nodeList.map((item1: { _id: string }) => {
+              const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
 
-          const updatedNodeList = nodeList.map((item1: { _id: string }) => {
-            const matchingItem = rewardList[index].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
+              return matchingItem ? { ...item1, reward: matchingItem.reward / Math.pow(10, 8) } : item1;
+            });
 
-            return matchingItem ? { ...item1, reward: matchingItem.reward / Math.pow(10, 8) } : item1;
+            nodeInfoList.value = updatedNodeList;
+
+            pageCount.value = rewardList.length;
           });
-
-          nodeInfoList.value = updatedNodeList;
-
-          pageCount.value = rewardList.length;
-        });
+        clearInterval(requestInterval);
+      } else {
+        requestCount++;
+        if (requestCount >= 5) {
+          clearInterval(requestInterval);
+        }
+      }
     };
+    const requestInterval = setInterval(makeRequest, 10000);
 
     const handlePageChange = (currentPage: number) => {
-      init(currentPage);
+      makeRequest(currentPage);
     };
 
     return {
       Utils,
       pageSize,
       pageCount,
-      init,
+      makeRequest,
       nodeInfoList,
       handlePageChange,
     };
