@@ -137,7 +137,7 @@ export default defineComponent({
           if (item.name === 'Node ID') {
             item.info = Utils.formatAddress(data._id);
           } else if (item.name === 'Startup Time') {
-            item.info = moment(data.startupTime).format('YYYY-MM-DD HH:MM');
+            item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
           } else if (item.name === 'Run Time') {
             if (data.startupTime === data.runTime) return;
             const time = data.runTime / 1000;

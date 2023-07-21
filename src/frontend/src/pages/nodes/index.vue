@@ -13,8 +13,10 @@
         <div class="node-list-table">
           <div class="node-list-theader">
             <div class="node-list-theader-item">Node ID</div>
-            <div class="node-list-theader-item">E Power</div>
-            <div class="node-list-theader-item">EMC Reward</div>
+            <div class="node-list-theader-item">Avg E-Power</div>
+            <div class="node-list-theader-item">Today Reward</div>
+            <div class="node-list-theader-item">Last Update</div>
+            <div class="node-list-theader-item">Run Time</div>
           </div>
           <div class="node-list-body">
             <template v-if="nodeInfoList.length !== 0">
@@ -22,8 +24,11 @@
                 <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
                   <div class="node-list-main">
                     <div class="node-list-main-item">{{ Utils.formatAddress(item._id) }}</div>
-                    <div class="node-list-main-item">{{ item.avgPower }}</div>
+                    <div class="node-list-main-item">{{ item.avgPower == '0' || !item.avgPower ? '--' : item.avgPower }}</div>
                     <div class="node-list-main-item">≈ {{ item.reward }}</div>
+                    <div class="node-list-main-item">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
+
+                    <div class="node-list-main-item">{{ item.runTime === item.createTime ? '--' : Utils.formatDate(item.runTime) }}</div>
                   </div>
                 </RouterLink>
               </template>
@@ -49,11 +54,15 @@ import axios from 'axios';
 import { Utils } from '@/tools/utils';
 import { useRoute } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
+import moment from 'moment';
 
 type NodeListItem = {
   _id: string;
   avgPower: string;
   reward: string;
+  updateTime: string;
+  createTime: string;
+  runTime: string;
 };
 
 export default defineComponent({
@@ -99,7 +108,8 @@ export default defineComponent({
     const init = async (index: number) => {
       const { total, list } = await useReward.getNodeRewardList(index, 10);
       nodeInfoList.value = list;
-      pageCount.value = total;
+      pageCount.value = Math.floor(total / 10);
+
       // const rewardList = rewardData.value || [];
 
       // if (rewardList.length > 0) {
@@ -135,6 +145,7 @@ export default defineComponent({
 
     return {
       Utils,
+      moment,
       page,
       pageCount,
       rewardData,
@@ -153,12 +164,7 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.3) 13.45%,
-    rgba(125, 81, 220, 0.3) 60.04%,
-    rgba(37, 237, 255, 0.3) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
   filter: blur(50px);
 }
 

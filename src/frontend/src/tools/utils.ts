@@ -113,6 +113,23 @@ function metaData() {
   });
 }
 
+function formatDate(date: any) {
+  const time = date / 1000;
+  let beforeTime = '';
+  if (time / 86400 > 1) {
+    beforeTime = Math.trunc(time / 86400) + ' days';
+  } else if (time / 3600 > 1) {
+    beforeTime = Math.trunc(time / 3600) + ' hours';
+  } else if (time / 60 > 1) {
+    beforeTime = Math.trunc(time / 60) + ' min';
+  } else if (time > 1) {
+    beforeTime = Math.trunc(time) + ' sec';
+  } else {
+    beforeTime = 'less than 1 second';
+  }
+  return beforeTime;
+}
+
 export const Utils = {
   getLocalStorage,
   setLocalStorage,
@@ -124,5 +141,6 @@ export const Utils = {
   toFixed,
   textOverflow,
   formatAddress,
+  formatDate,
   metaData,
 };

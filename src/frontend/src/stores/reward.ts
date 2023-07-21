@@ -60,6 +60,7 @@ export const useRewardStore = defineStore('reward', () => {
       ...(nodeMap[item.nodeID] || {}),
       _id: item.nodeID,
     }));
+
     caches[page] = { total, list };
     return caches[page];
   }
