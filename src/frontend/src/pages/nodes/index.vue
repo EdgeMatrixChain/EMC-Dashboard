@@ -80,12 +80,11 @@ export default defineComponent({
     onActivated(() => {
       console.info('activited back?', route.meta.isBack);
       if (route.meta.isBack) {
-        init(page.value);
+        // init(page.value);
       } else {
         page.value = 1;
         pageCount.value = 1;
         nodeInfoList.value = [];
-        init(1);
       }
     });
 
@@ -93,7 +92,7 @@ export default defineComponent({
       () => useReward.rewardData,
       (val) => {
         rewardData.value = val || [];
-        // init(1);
+        init(1);
       }
     );
 
