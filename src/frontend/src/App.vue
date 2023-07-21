@@ -29,15 +29,12 @@ export default defineComponent({
       if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
     });
 
-    const useReward = useRewardStore();
     console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
       ready.value = true;
-      console.log(11111111);
-      useReward.update();
     });
 
     return {

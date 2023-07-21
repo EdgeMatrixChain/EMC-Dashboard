@@ -78,52 +78,55 @@ export default defineComponent({
     const useReward = useRewardStore() || [];
     const rewardData = ref<any[]>([]);
     onActivated(() => {
-      console.info('activited back?', route.meta.isBack);
       if (route.meta.isBack) {
-        // init(page.value);
+        init(page.value);
       } else {
         page.value = 1;
         pageCount.value = 1;
         nodeInfoList.value = [];
+        init(page.value);
       }
     });
 
-    watch(
-      () => useReward.rewardData,
-      (val) => {
-        rewardData.value = val || [];
-        init(1);
-      }
-    );
+    // watch(
+    //   () => useReward.rewardData,
+    //   (val) => {
+    //     rewardData.value = val || [];
+    //     init(1);
+    //   }
+    // );
 
-    const init = (index: number) => {
-      const rewardList = rewardData.value || [];
+    const init = async (index: number) => {
+      const { total, list } = await useReward.getNodeRewardList(index, 10);
+      nodeInfoList.value = list;
+      pageCount.value = total;
+      // const rewardList = rewardData.value || [];
 
-      if (rewardList.length > 0) {
-        const nodeIDs = rewardList[index || 1].map((item: any) => item.nodeID);
-        const strNodeIDs = nodeIDs.join(',');
-        axios
-          .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
-            params: {
-              nodeids: strNodeIDs,
-              page: 1,
-              size: 10,
-            },
-          })
-          .then((resp) => {
-            const data = resp.data;
-            if (data._result !== 0) return;
-            const nodeList = data.data;
+      // if (rewardList.length > 0) {
+      //   const nodeIDs = rewardList[index || 1].map((item: any) => item.nodeID);
+      //   const strNodeIDs = nodeIDs.join(',');
+      //   axios
+      //     .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
+      //       params: {
+      //         nodeids: strNodeIDs,
+      //         page: 1,
+      //         size: 10,
+      //       },
+      //     })
+      //     .then((resp) => {
+      //       const data = resp.data;
+      //       if (data._result !== 0) return;
+      //       const nodeList = data.data;
 
-            const updatedNodeList = nodeList.map((item1: { _id: string }) => {
-              const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
+      //       const updatedNodeList = nodeList.map((item1: { _id: string }) => {
+      //         const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
 
-              return matchingItem ? { ...item1, reward: matchingItem.reward } : item1;
-            });
-            nodeInfoList.value = updatedNodeList;
-            pageCount.value = rewardList.length - 1;
-          });
-      }
+      //         return matchingItem ? { ...item1, reward: matchingItem.reward } : item1;
+      //       });
+      //       nodeInfoList.value = updatedNodeList;
+      //       pageCount.value = rewardList.length - 1;
+      //     });
+      // }
     };
 
     const handlePageChange = (currentPage: number) => {
@@ -150,7 +153,12 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
+  background: linear-gradient(
+    130.04deg,
+    rgba(253, 153, 42, 0.3) 13.45%,
+    rgba(125, 81, 220, 0.3) 60.04%,
+    rgba(37, 237, 255, 0.3) 88.4%
+  );
   filter: blur(50px);
 }
 

@@ -1,11 +1,68 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { Http } from '@/tools/http';
+import { Utils } from '@/tools/utils';
+let rewardPromise: any = null;
+
+const _fetchRewardNodes = async () => {
+  const localList = Utils.getLocalStorage('icp.reward.list');
+  if (localList) return Promise.resolve(localList);
+  const http = Http.getInstance();
+  const resp = await http.get({
+    url: 'https://api.edgematrix.pro/api/v1/noderewardtoday',
+  });
+  const list = resp.data || [];
+  Utils.setLocalStorage('icp.reward.list', list);
+  return list;
+};
+
+const fetchRewardNodes = () => {
+  if (rewardPromise) {
+    return rewardPromise;
+  }
+  rewardPromise = _fetchRewardNodes().then((rewards: any[]) => {
+    const newReward: Array<any[]> = [];
+    rewards.forEach((item: any, index: number) => {
+      item.reward = item.reward / Math.pow(10, 8);
+      if (index % 10 === 0) {
+        newReward.push([]);
+      }
+      const list = newReward[newReward.length - 1];
+      list.push(item);
+    });
+    return { total: rewards.length, groupList: newReward };
+  });
+  return rewardPromise;
+};
+
+const caches: { [page: string]: any } = {};
 
 export const useRewardStore = defineStore('reward', () => {
   const rewardData = ref<Array<any[]>>([]);
 
   const http = Http.getInstance();
+
+  async function getNodeRewardList(page: number, size: number) {
+    if (caches[page]) return caches[page];
+    const { total, groupList } = await fetchRewardNodes();
+    const currList = groupList[page];
+    const resp = await http.get({
+      url: '/nodelistsnapshot',
+      params: { nodeids: currList.map((item: any) => item.nodeID).join(','), page: 1, size: 10 },
+    });
+    const nodeList = resp.data || [];
+    const nodeMap: { [k: string]: any } = {};
+    nodeList.forEach((item: any) => {
+      nodeMap[item._id] = item;
+    });
+    const list = currList.map((item: any) => ({
+      ...item,
+      ...(nodeMap[item.nodeID] || {}),
+      _id: item.nodeID,
+    }));
+    caches[page] = { total, list };
+    return caches[page];
+  }
   /**
    * update data
    */
@@ -32,6 +89,7 @@ export const useRewardStore = defineStore('reward', () => {
 
   return {
     rewardData,
+    getNodeRewardList,
     update,
   };
 });
