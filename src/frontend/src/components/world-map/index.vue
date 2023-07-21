@@ -62,6 +62,11 @@ export default defineComponent({
             label: {
               show: false,
             },
+            // tooltip: {
+            //   trigger: 'item',
+            //   borderColor: '#666',
+            //   formatter: function (params: any) {},
+            // },
             itemStyle: {
               opacity: 0.6,
               borderColor: '#444444',
@@ -82,7 +87,7 @@ export default defineComponent({
           },
           series: [
             {
-              name: 'qiumanzou',
+              name: '',
               type: 'effectScatter',
               coordinateSystem: 'geo',
               data: newIPMap,
@@ -105,7 +110,7 @@ export default defineComponent({
                 show: false,
               },
               itemStyle: {
-                color: '#7B00A672', // 圆点颜色
+                color: '#7B00A672',
                 shadowBlur: 10,
                 shadowColor: '#7B00A6',
               },

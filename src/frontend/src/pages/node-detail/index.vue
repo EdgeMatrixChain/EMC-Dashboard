@@ -194,9 +194,8 @@ export default defineComponent({
     });
 
     const reward = async () => {
-      // const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
-      // console.log(list);
-      const localList = Utils.getLocalStorage('icp.reward.list');
+      const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
+      const localList = Utils.getLocalStorage('icp.reward.list') || [];
       if (localList.length === 0) return;
 
       const reward = localList.find((item: any) => item.nodeID === nodeId.value);
