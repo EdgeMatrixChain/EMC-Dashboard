@@ -78,7 +78,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const useReward = useRewardStore() || [];
+    const useReward = useRewardStore();
 
     const nodeList = ref([
       { name: 'Node ID', info: '--' },
@@ -158,6 +158,7 @@ export default defineComponent({
             }
             item.info = beforeTime;
           } else if (item.name === 'Reward') {
+            reward();
           } else if (item.name === 'AvgPower') {
             item.info = data.avgPower;
           }
@@ -175,7 +176,6 @@ export default defineComponent({
             item.info = '--';
           } else if (item.name === 'Memory') {
             if (!data.memoryInfo) return;
-            const memoryInfo = JSON.parse(data.memoryInfo).used_percent;
             const formatMemory = JSON.parse(data.memoryInfo);
             item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
           } else if (item.name === 'Model Name') {
@@ -193,22 +193,37 @@ export default defineComponent({
       };
     });
 
-    watch(
-      () => useReward.rewardData,
-      (val) => {
-        const rewardList = val || [];
-        if (rewardList.length === 0) return;
-        rewardList.forEach((item1: any) => {
-          const reward = item1.find((item: any) => item.nodeID === nodeId.value);
-          if (!reward) return;
-          if (reward.reward !== '0') {
-            nodeList.value[3].info = '≈ ' + reward.reward + ' EMC';
-          } else {
-            nodeList.value[3].info = reward.reward;
-          }
-        });
+    const reward = async () => {
+      // const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
+      // console.log(list);
+      const localList = Utils.getLocalStorage('icp.reward.list');
+      if (localList.length === 0) return;
+
+      const reward = localList.find((item: any) => item.nodeID === nodeId.value);
+      if (!reward) return;
+
+      if (reward.reward !== '0') {
+        nodeList.value[3].info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
+      } else {
+        nodeList.value[3].info = reward.reward;
       }
-    );
+    };
+    // watch(
+    //   () => useReward.rewardData,
+    //   (val) => {
+    //     const rewardList = val || [];
+    //     if (rewardList.length === 0) return;
+    //     rewardList.forEach((item1: any) => {
+    //       const reward = item1.find((item: any) => item.nodeID === nodeId.value);
+    //       if (!reward) return;
+    //       if (reward.reward !== '0') {
+    //         nodeList.value[3].info = '≈ ' + reward.reward + ' EMC';
+    //       } else {
+    //         nodeList.value[3].info = reward.reward;
+    //       }
+    //     });
+    //   }
+    // );
 
     return {
       Utils,
@@ -308,8 +323,10 @@ export default defineComponent({
 }
 
 .mode-item {
-  margin-right: 54px;
+  margin-right: 50px;
   margin-bottom: 36px;
+  border: 1px solid #464646;
+  background-color: #191d22;
 }
 .mode-item:nth-child(4n) {
   margin-right: 0px;

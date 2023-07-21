@@ -27,7 +27,7 @@ export default defineComponent({
       const newIPMap: any = [];
       IPMap.forEach((item: any) => {
         const data = {
-          nodes: item.nodes,
+          name: item.nodes,
           value: [item.longitude, item.latitude],
           symbolSize: item.nodes > 30 ? 30 : item.nodes,
         };
@@ -36,27 +36,7 @@ export default defineComponent({
 
       if (typeof myEcharts !== null) {
         let myEchart = echarts.init(myEcharts);
-        // var data: any = [
-        //   { name: '', value: [0, 0], symbolSize: 58 },
-        //   { name: '', value: [-100.696295, 33.679979], symbolSize: 8 },
-        // ];
-        // const convertData = function (data: any) {
-        //   console.log(data);
 
-        //   const result: any = [];
-        //   data.forEach(function (item: any) {
-        //     var geoCoord = newIPMap[item.name];
-        //     if (geoCoord) {
-        //       result.push({
-        //         name: item.name,
-        //         value: geoCoord.concat(item.value),
-        //       });
-        //     }
-        //   });
-        //   console.log(result);
-
-        //   return result;
-        // };
         let option = {
           legend: {
             top: 0,
@@ -101,62 +81,58 @@ export default defineComponent({
             },
           },
           series: [
-            // {
-            //   name: 'qiumanzou',
-            //   type: 'effectScatter',
-            //   coordinateSystem: 'geo',
-            //   data: convertData(
-            //     newIPMap
-            //       .sort(function (a: any, b: any) {
-            //         return b.symbolSize - a.symbolSize;
-            //       })
-            //       .slice(0, 5)
-            //   ), // 数量最多的5条数据，有bling bling 的效果
-            //   symbolSize: function (val: any) {
-            //     return val[2] / 1;
-            //   },
-            //   encode: {
-            //     value: 2,
-            //   },
-            //   showEffectOn: 'render',
-            //   rippleEffect: {
-            //     brushType: 'stroke',
-            //   },
-            //   hoverAnimation: true,
-            //   label: {
-            //     formatter: '{b}',
-            //     position: 'right',
-            //     show: false,
-            //   },
-            //   itemStyle: {
-            //     color: '#ff0000', // 圆点颜色
-            //     shadowBlur: 10,
-            //     shadowColor: '#00ff00',
-            //   },
-            //   zlevel: 1,
-            // },
             {
-              name: '',
-              type: 'scatter',
+              name: 'qiumanzou',
+              type: 'effectScatter',
               coordinateSystem: 'geo',
-              // legendHoverLink: true,
-              zlevel: 3,
+              data: newIPMap,
+              // symbolSize: function (val: any) {
+              //   return val[2] / 1;
+              // },
+
+              showEffectOn: 'render',
               rippleEffect: {
-                brushType: 'fill',
+                brushType: 'stroke',
+                color: '#BD6FD948',
+                number: 3,
+                period: 4,
+                scale: 2.5,
               },
+              hoverAnimation: true,
               label: {
-                color: '#000',
-                show: true,
-                position: 'top',
                 formatter: '{b}',
+                position: 'right',
+                show: false,
               },
               itemStyle: {
-                borderColor: '#7B00A6',
-                borderWidth: 2,
-                color: '#BD6FD948',
+                color: '#7B00A672', // 圆点颜色
+                shadowBlur: 10,
+                shadowColor: '#7B00A6',
               },
-              data: newIPMap,
+              zlevel: 1,
             },
+            // {
+            //   name: '',
+            //   type: 'scatter',
+            //   coordinateSystem: 'geo',
+            //   // legendHoverLink: true,
+            //   zlevel: 3,
+            //   rippleEffect: {
+            //     brushType: 'fill',
+            //   },
+            //   label: {
+            //     color: '#000',
+            //     show: true,
+            //     position: 'top',
+            //     formatter: '{b}',
+            //   },
+            //   itemStyle: {
+            //     borderColor: '#7B00A6',
+            //     borderWidth: 2,
+            //     color: '#BD6FD948',
+            //   },
+            //   data: newIPMap,
+            // },
           ],
           textStyle: {
             fontSize: 12,
