@@ -1,68 +1,145 @@
 <template>
   <div class="chart-map">
     <div id="chart-container" :style="{ width: '1400px', height: '440px' }"></div>
+    <template v-if="isWhell">
+      <div class="chart-mask">HHHHHHHHHHHHHHHHHHHHHHHHHHHH</div>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { onMounted, defineComponent } from 'vue';
+import { onMounted, defineComponent, ref } from 'vue';
 import * as echarts from 'echarts';
 import './map/js/world.js';
+import { Http } from '@/tools/http';
+
 // import 'echarts/map/js/china.js';
+const http = Http.getInstance();
 
 export default defineComponent({
   setup() {
-    onMounted(() => {
-      let echart = echarts;
+    const isWhell = ref(false);
 
+    onMounted(async () => {
       const myEcharts: any = document.getElementById('chart-container');
+      const resp = await http.get({ url: 'https://api.edgematrix.pro/api/v1/ipmap' });
+      const IPMap = resp.data || [];
+      const newIPMap: any = [];
+      IPMap.forEach((item: any) => {
+        const data = {
+          nodes: item.nodes,
+          value: [item.longitude, item.latitude],
+          symbolSize: item.nodes > 30 ? 30 : item.nodes,
+        };
+        newIPMap.push(data);
+      });
+
       if (typeof myEcharts !== null) {
-        let myEchart = echart.init(myEcharts);
-        var geoCoordMap: any = [
-          // { name: '', value: [34.909912, 60.169095], symbolSize: 4 },
-          // { name: '', value: [13.402393, 52.518569], symbolSize: 8 },
-          // { name: '', value: [-0.126608, 51.208425], symbolSize: 8 },
-          // { name: '', value: [126.979208, 37.53875], symbolSize: 8 },
-          // { name: '', value: [139.710164, 35.706962], symbolSize: 8 },
-        ];
-        var data: any = [
-          // { name: '', value: [135.193845, -25.304039], symbolSize: 8 },
-          // { name: '', value: [-100.696295, 33.679979], symbolSize: 8 },
-        ];
+        let myEchart = echarts.init(myEcharts);
+        // var data: any = [
+        //   { name: '', value: [0, 0], symbolSize: 58 },
+        //   { name: '', value: [-100.696295, 33.679979], symbolSize: 8 },
+        // ];
+        // const convertData = function (data: any) {
+        //   console.log(data);
+
+        //   const result: any = [];
+        //   data.forEach(function (item: any) {
+        //     var geoCoord = newIPMap[item.name];
+        //     if (geoCoord) {
+        //       result.push({
+        //         name: item.name,
+        //         value: geoCoord.concat(item.value),
+        //       });
+        //     }
+        //   });
+        //   console.log(result);
+
+        //   return result;
+        // };
         let option = {
           legend: {
             top: 0,
-            left: 130,
+            left: 0,
             data: [],
           },
           geo: {
             type: 'map',
             map: 'world',
-            roam: false,
+            roam: true,
+            scaleLimit: {
+              min: 1.6,
+              max: 100,
+            },
+
             center: [0.46, 26.92],
             zoom: 2,
+            // top: 0,
+            // left: 0,
+            // right: 0,
+            // bottom: 0,
+            // scaleLimit.max: 10,   // scorll max
             label: {
               show: false,
-              // emphasis: {
-              //   show: false,
-              // },
             },
             itemStyle: {
               opacity: 0.6,
               borderColor: '#444444',
               areaColor: '#383838',
               borderWidth: 1,
-              // emphasis: {
-              //   show: false,
-              //   areaColor: 'red',
-              // },
+            },
+            emphasis: {
+              disabled: false,
+              // focus: 'self',
+              areaColor: '#fff',
+              label: {
+                show: false,
+              },
+              itemStyle: {
+                areaColor: '#eee',
+              },
             },
           },
           series: [
+            // {
+            //   name: 'qiumanzou',
+            //   type: 'effectScatter',
+            //   coordinateSystem: 'geo',
+            //   data: convertData(
+            //     newIPMap
+            //       .sort(function (a: any, b: any) {
+            //         return b.symbolSize - a.symbolSize;
+            //       })
+            //       .slice(0, 5)
+            //   ), // 数量最多的5条数据，有bling bling 的效果
+            //   symbolSize: function (val: any) {
+            //     return val[2] / 1;
+            //   },
+            //   encode: {
+            //     value: 2,
+            //   },
+            //   showEffectOn: 'render',
+            //   rippleEffect: {
+            //     brushType: 'stroke',
+            //   },
+            //   hoverAnimation: true,
+            //   label: {
+            //     formatter: '{b}',
+            //     position: 'right',
+            //     show: false,
+            //   },
+            //   itemStyle: {
+            //     color: '#ff0000', // 圆点颜色
+            //     shadowBlur: 10,
+            //     shadowColor: '#00ff00',
+            //   },
+            //   zlevel: 1,
+            // },
             {
               name: '',
               type: 'scatter',
               coordinateSystem: 'geo',
+              // legendHoverLink: true,
               zlevel: 3,
               rippleEffect: {
                 brushType: 'fill',
@@ -74,40 +151,43 @@ export default defineComponent({
                 formatter: '{b}',
               },
               itemStyle: {
-                color: '#18849C',
+                borderColor: '#7B00A6',
+                borderWidth: 2,
+                color: '#BD6FD948',
               },
-              data: geoCoordMap,
-            },
-            {
-              name: '可注册国家',
-              type: 'scatter',
-              coordinateSystem: 'geo',
-              zlevel: 3,
-              rippleEffect: {
-                brushType: 'fill',
-              },
-              label: {
-                show: true,
-                color: '#000',
-                position: 'top',
-                formatter: '{b}',
-              },
-              itemStyle: {
-                color: '#fff',
-                borderColor: '#18849C',
-                borderWidth: 1,
-              },
-              data: data,
+              data: newIPMap,
             },
           ],
           textStyle: {
             fontSize: 12,
           },
         };
+
+        // console.log(myEcharts);
+        // myEcharts.addEventListener('mouseover', function (event: any) {
+        //   console.log('Mouse is over the element!');
+        //   myEcharts.addEventListener('mousewheel', handleWheelEvent);
+        // });
+
+        // const handleWheelEvent = (event: any) => {
+        //   // event.preventDefault();
+        //   isWhell.value = true;
+        //   console.log('1');
+
+        //   if (event.ctrlKey) {
+        //     console.log(1);
+
+        //     isWhell.value = false;
+        //   }
+        // };
+
         myEchart.setOption(option);
       }
       // window.addEventListener('resize', function () {});
     });
+    return {
+      isWhell,
+    };
   },
 });
 </script>
@@ -121,5 +201,18 @@ export default defineComponent({
   position: relative;
   background-color: #171717;
   overflow: hidden;
+}
+.chart-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  background-color: rgba(0, 0, 0, 0.377);
+  z-index: 10;
 }
 </style>

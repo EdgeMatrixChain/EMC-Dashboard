@@ -133,10 +133,10 @@ class Http {
       let result = { _result: 0, _desc: '' };
       if (!response.status) {
         result._result = 99;
-        result._desc = '连接超时或网络错误';
+        result._desc = 'Network error';
       } else if (response.status !== 200) {
         result._result = 96;
-        result._desc = `服务器异常[${response.status}]`;
+        result._desc = `Server Error[${response.status}]`;
       } else {
         if (response.headers['content-type'].includes('application/json')) {
           if (typeof response.data === 'string') {
@@ -144,14 +144,14 @@ class Http {
               result = JSON.parse(response.data);
             } catch (e) {
               result._result = 98;
-              result._desc = '解析网络数据失败';
+              result._desc = 'Failed to parse network data';
             }
           } else if (typeof response.data === 'object') {
             result = response.data;
           }
         } else {
           result._result = 97;
-          result._desc = '网络数据格式错误';
+          result._desc = 'Network data format error';
         }
       }
 

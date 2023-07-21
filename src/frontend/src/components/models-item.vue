@@ -17,11 +17,11 @@
           <div class="models-card-owner-name">Hery</div>
         </div> -->
     </div>
-    <div class="models-card-type"><span class="models-card-type-span">LORA</span></div>
-    <div class="models-card-run">
+    <!-- <div class="models-card-type"><span class="models-card-type-span">LORA</span></div> -->
+    <!-- <div class="models-card-run">
       <img class="models-card-run-image" src="@/assets/icon_run.svg" />
       <span class="models-card-type-span">RUN</span>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -26,6 +26,7 @@ export const useRewardStore = defineStore('reward', () => {
       newReward.push(group);
     }
     rewardData.value = newReward;
+
     return newReward;
   }
 

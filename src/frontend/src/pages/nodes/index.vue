@@ -37,17 +37,18 @@
     </div>
     <!--v-model:page-size="pageSize" show-size-picker :page-sizes="[10]" -->
     <NSpace class="pagination" justify="center">
-      <NPagination v-model:page="pageSize" :page-count="pageCount" @update:page="handlePageChange" size="large" />
+      <NPagination v-model:page="page" :page-count="pageCount" @update:page="handlePageChange" size="large" />
     </NSpace>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onActivated, ComputedRef } from 'vue';
+import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
 import { useRoute } from 'vue-router';
+import { useRewardStore } from '@/stores/reward';
 
 type NodeListItem = {
   _id: string;
@@ -70,27 +71,35 @@ export default defineComponent({
     next();
   },
   setup() {
-    const pageSize = ref(1);
+    const page = ref(1);
     const pageCount = ref(1);
     const nodeInfoList = ref<NodeListItem[]>([]);
     const route = useRoute();
-    let requestCount: number = 0;
-
+    const useReward = useRewardStore() || [];
+    const rewardData = ref<any[]>([]);
     onActivated(() => {
       console.info('activited back?', route.meta.isBack);
       if (route.meta.isBack) {
-        makeRequest(pageSize.value);
+        init(page.value);
       } else {
-        pageSize.value = 1;
+        page.value = 1;
         pageCount.value = 1;
         nodeInfoList.value = [];
-        makeRequest(1);
+        init(1);
       }
     });
 
-    const makeRequest = (index: number) => {
-      const rewardData = Utils.getLocalStorage('rewardData') || [];
-      const rewardList = rewardData.reward || [];
+    watch(
+      () => useReward.rewardData,
+      (val) => {
+        rewardData.value = val || [];
+        // init(1);
+      }
+    );
+
+    const init = (index: number) => {
+      const rewardList = rewardData.value || [];
+
       if (rewardList.length > 0) {
         const nodeIDs = rewardList[index || 1].map((item: any) => item.nodeID);
         const strNodeIDs = nodeIDs.join(',');
@@ -108,36 +117,26 @@ export default defineComponent({
             const nodeList = data.data;
 
             const updatedNodeList = nodeList.map((item1: { _id: string }) => {
-              const matchingItem = rewardList[index || 1].find(
-                (item2: { nodeID: string }) => item2.nodeID === item1._id
-              );
+              const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
 
-              return matchingItem ? { ...item1, reward: matchingItem.reward / Math.pow(10, 8) } : item1;
+              return matchingItem ? { ...item1, reward: matchingItem.reward } : item1;
             });
-
             nodeInfoList.value = updatedNodeList;
-
-            pageCount.value = rewardList.length;
+            pageCount.value = rewardList.length - 1;
           });
-        clearInterval(requestInterval);
-      } else {
-        requestCount++;
-        if (requestCount >= 5) {
-          clearInterval(requestInterval);
-        }
       }
     };
-    const requestInterval = setInterval(makeRequest, 10000);
 
     const handlePageChange = (currentPage: number) => {
-      makeRequest(currentPage);
+      init(currentPage);
     };
 
     return {
       Utils,
-      pageSize,
+      page,
       pageCount,
-      makeRequest,
+      rewardData,
+      init,
       nodeInfoList,
       handlePageChange,
     };
@@ -152,12 +151,7 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.3) 13.45%,
-    rgba(125, 81, 220, 0.3) 60.04%,
-    rgba(37, 237, 255, 0.3) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
   filter: blur(50px);
 }
 

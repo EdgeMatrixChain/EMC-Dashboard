@@ -93,39 +93,6 @@ function formatAddress(value = '', width = 10) {
   }
 }
 
-function rewardtoday() {
-  return new Promise((resolve, reject) => {
-    axios.get('https://api.edgematrix.pro/api/v1/noderewardtoday').then((resp) => {
-      const data = resp.data;
-      if (data._result !== 0) return;
-      const reward = data.data;
-
-      const newReward = [];
-      let group: any = [];
-      reward.forEach((item: any) => {
-        group.push(item);
-        if (group.length === 10) {
-          newReward.push(group);
-          group = [];
-        }
-      });
-      if (group.length > 0) {
-        newReward.push(group);
-      }
-
-      console.log(newReward);
-
-      const timestamp = Date.now();
-      const rewardData = {
-        reward: newReward,
-        timestamp: timestamp,
-      };
-      Utils.setLocalStorage('rewardData', rewardData);
-      resolve(reward);
-    });
-  });
-}
-
 function metaData() {
   return new Promise((resolve, reject) => {
     axios
@@ -157,6 +124,5 @@ export const Utils = {
   toFixed,
   textOverflow,
   formatAddress,
-  rewardtoday,
   metaData,
 };

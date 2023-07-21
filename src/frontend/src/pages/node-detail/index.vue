@@ -50,10 +50,12 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from 'vue';
+import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { NDatePicker } from 'naive-ui';
+import { useRewardStore } from '@/stores/reward';
+
 import moment from 'moment';
 
 import axios from 'axios';
@@ -76,7 +78,8 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const nodeInfo = ref({});
+    const useReward = useRewardStore() || [];
+
     const nodeList = ref([
       { name: 'Node ID', info: '--' },
       { name: 'Startup Time', info: '--' },
@@ -92,15 +95,13 @@ export default defineComponent({
       { name: 'Memory', icon: iconMemory, info: '--' },
       { name: 'Model Name', icon: iconModel, info: '--' },
     ]);
-    let requestCount = 0;
 
     const modelList = ref<ModelItem[]>([]);
+    const nodeId = ref(router.currentRoute.value.params.id);
     onMounted(() => {
-      const nodeId: string = <string>router.currentRoute.value.params.id;
-
       axios
         .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
-          params: { nodeid: nodeId },
+          params: { nodeid: nodeId.value },
         })
         .then((resp) => {
           const data = resp.data;
@@ -113,7 +114,7 @@ export default defineComponent({
 
       axios
         .get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
-          params: { nodeid: nodeId },
+          params: { nodeid: nodeId.value },
         })
         .then((resp) => {
           const data = resp.data;
@@ -124,7 +125,7 @@ export default defineComponent({
           } else {
             axios
               .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
-                params: { nodeid: nodeId },
+                params: { nodeid: nodeId.value },
               })
               .then((resp) => {
                 const data = resp.data;
@@ -141,30 +142,22 @@ export default defineComponent({
           } else if (item.name === 'Startup Time') {
             item.info = moment(data.startupTime).format('YYYY-MM-DD HH:MM');
           } else if (item.name === 'Run Time') {
-            item.info = moment(data.runTime).format('YYYY-MM-DD HH:MM');
+            if (data.startupTime === data.runTime) return;
+            const time = data.runTime / 1000;
+            let beforeTime = '';
+            if (time / 86400 > 1) {
+              beforeTime = Math.trunc(time / 86400) + ' days';
+            } else if (time / 3600 > 1) {
+              beforeTime = Math.trunc(time / 3600) + ' hours';
+            } else if (time / 60 > 1) {
+              beforeTime = Math.trunc(time / 60) + ' min';
+            } else if (time > 1) {
+              beforeTime = Math.trunc(time) + ' sec';
+            } else {
+              return 'less than 1 second';
+            }
+            item.info = beforeTime;
           } else if (item.name === 'Reward') {
-            const makeRequest = () => {
-              const rewardData = Utils.getLocalStorage('rewardData') || [];
-              const rewardList = rewardData.reward || [];
-              if (rewardList.length > 0) {
-                rewardList.forEach((item1: any) => {
-                  const reward = item1.find((item: any) => item.nodeID === nodeId);
-                  if (!reward) return;
-                  if (reward.reward !== '0') {
-                    item.info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
-                  } else {
-                    item.info = reward.reward;
-                  }
-                });
-                clearInterval(requestInterval);
-              } else {
-                requestCount++;
-                if (requestCount >= 5) {
-                  clearInterval(requestInterval);
-                }
-              }
-            };
-            const requestInterval = setInterval(makeRequest, 10000);
           } else if (item.name === 'AvgPower') {
             item.info = data.avgPower;
           }
@@ -200,8 +193,26 @@ export default defineComponent({
       };
     });
 
+    watch(
+      () => useReward.rewardData,
+      (val) => {
+        const rewardList = val || [];
+        if (rewardList.length === 0) return;
+        rewardList.forEach((item1: any) => {
+          const reward = item1.find((item: any) => item.nodeID === nodeId.value);
+          if (!reward) return;
+          if (reward.reward !== '0') {
+            nodeList.value[3].info = '≈ ' + reward.reward + ' EMC';
+          } else {
+            nodeList.value[3].info = reward.reward;
+          }
+        });
+      }
+    );
+
     return {
       Utils,
+      nodeId,
       nodeList,
       infoList,
       modelList,

@@ -10,12 +10,7 @@
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
                 <template v-if="index === 2 || index === 3">
-                  <img
-                    src="@/assets/icon_arrow_top_right.png"
-                    width="16"
-                    height="16"
-                    style="margin: 0px 0px -2px 4px"
-                  />
+                  <img src="@/assets/icon_arrow_top_right.png" width="16" height="16" style="margin: 0px 0px -2px 4px" />
                 </template>
               </div>
               <div class="card-item-data">{{ item.data }}</div>
@@ -224,6 +219,7 @@ export default defineComponent({
     });
 
     const useReward = useRewardStore();
+
     return {
       Utils,
       blockData,
@@ -247,12 +243,7 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.3) 13.45%,
-    rgba(125, 81, 220, 0.3) 60.04%,
-    rgba(37, 237, 255, 0.3) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
   filter: blur(50px);
 }
 
@@ -262,12 +253,7 @@ export default defineComponent({
   height: 210px;
   left: calc(50% - 210px / 2);
   top: 300px;
-  background: linear-gradient(
-    130.04deg,
-    rgba(253, 153, 42, 0.66) 13.45%,
-    rgba(125, 81, 220, 0.66) 60.04%,
-    rgba(37, 237, 255, 0.66) 88.4%
-  );
+  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.66) 13.45%, rgba(125, 81, 220, 0.66) 60.04%, rgba(37, 237, 255, 0.66) 88.4%);
   filter: blur(50px);
 }
 

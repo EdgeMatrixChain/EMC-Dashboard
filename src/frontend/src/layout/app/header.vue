@@ -281,7 +281,8 @@ export default defineComponent({
 
 @media (prefers-color-scheme: light) {
   .header-icon {
-    content: url('@/assets/logo.light.png');
+    /* content: url('@/assets/logo.light.png'); */
+    content: url('@/assets/logo.png');
   }
 }
 </style>
