@@ -63,7 +63,8 @@ import { Utils } from '@/tools/utils';
 import { useLogin } from '@/composables/use-login';
 import Wallet from './wallet.vue';
 import ConnectWallet from '@/components/connect-wallet.vue';
-import { instance as emcAuthClient, AuthClient } from '@/tools/auth';
+import { instance as emcAuthClient, AuthClient } from '@emcecosystem/auth-client';
+
 
 type tabkey = number;
 
