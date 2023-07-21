@@ -12,6 +12,8 @@ import { router } from '@/routes/index';
 import { Utils } from '@/tools/utils';
 import axios from 'axios';
 
+import {useRewardStore } from '@/stores/reward';
+
 export default defineComponent({
   name: 'app',
   components: { NSpin },
@@ -27,39 +29,40 @@ export default defineComponent({
       if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
     });
 
+    const useReward = useRewardStore();
     console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
       ready.value = true;
-      console.log(1);
+      console.log(11111111);
+      useReward.update();
+      // axios.get('https://api.edgematrix.pro/api/v1/noderewardtoday').then((resp) => {
+      //   const data = resp.data;
+      //   if (data._result !== 0) return;
+      //   const reward = data.data;
 
-      axios.get('https://api.edgematrix.pro/api/v1/noderewardtoday').then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        const reward = data.data;
+      //   const newReward = [];
+      //   let group: any = [];
+      //   reward.forEach((item: any) => {
+      //     group.push(item);
+      //     if (group.length === 10) {
+      //       newReward.push(group);
+      //       group = [];
+      //     }
+      //   });
+      //   if (group.length > 0) {
+      //     newReward.push(group);
+      //   }
 
-        const newReward = [];
-        let group: any = [];
-        reward.forEach((item: any) => {
-          group.push(item);
-          if (group.length === 10) {
-            newReward.push(group);
-            group = [];
-          }
-        });
-        if (group.length > 0) {
-          newReward.push(group);
-        }
-
-        const timestamp = Date.now();
-        const rewardData = {
-          reward: newReward,
-          timestamp: timestamp,
-        };
-        Utils.setLocalStorage('rewardData', rewardData);
-      });
+      //   const timestamp = Date.now();
+      //   const rewardData = {
+      //     reward: newReward,
+      //     timestamp: timestamp,
+      //   };
+      //   Utils.setLocalStorage('rewardData', rewardData);
+      // });
     });
 
     return {

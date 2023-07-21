@@ -18,7 +18,7 @@ interface HttpConfig {
 }
 
 const _defaultHttpConfig = {
-  baseURL: 'https://saas.yfw365.com/saas/wxos',
+  baseURL: 'https://api.edgematrix.pro/api/v1',
   timeout: 60000,
 };
 
@@ -155,15 +155,7 @@ class Http {
         }
       }
 
-      if (result._result === 400) {
-        setTimeout(() => {
-          const currentRouteName = router.currentRoute?.value?.name;
-          if (currentRouteName !== 'login') {
-            router.push({ name: 'login', query: { redirect: currentRouteName } } as RouteLocationRaw);
-            window.$message.warning('登录失效，请重新登录。');
-          }
-        }, 100);
-      } else if (result._result !== 0) {
+      if (result._result !== 0) {
         if (!options.noAutoHint) {
           window.$message.warning(result._desc);
         }

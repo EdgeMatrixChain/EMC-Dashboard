@@ -10,7 +10,12 @@
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
                 <template v-if="index === 2 || index === 3">
-                  <img src="@/assets/icon_arrow_top_right.png" width="16" height="16" style="margin: 0px 0px -2px 4px" />
+                  <img
+                    src="@/assets/icon_arrow_top_right.png"
+                    width="16"
+                    height="16"
+                    style="margin: 0px 0px -2px 4px"
+                  />
                 </template>
               </div>
               <div class="card-item-data">{{ item.data }}</div>
@@ -156,13 +161,13 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, onUnmounted, defineComponent, nextTick } from 'vue';
+import { ref, onMounted, computed, onUnmounted, defineComponent, nextTick } from 'vue';
 import { NPopover, NSpin } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
-
+import { useRewardStore } from '@/stores/reward';
 type NodeListItem = {
   nodeID: string;
   reward: string;
@@ -184,8 +189,8 @@ export default defineComponent({
   setup() {
     const blockData = ref('');
     const transactionsData = ref('');
-    const nodeList = ref<NodeListItem[]>([]);
-    const nodeList1 = ref<NodeListItem[]>([]);
+    // const nodeList = ref<NodeListItem[]>([]);
+    // const nodeList1 = ref<NodeListItem[]>([]);
 
     const dataInfo = ref<DataInfoItem[]>([
       { name: 'Blocks', data: '' },
@@ -216,38 +221,17 @@ export default defineComponent({
         dataInfo.value[2].data = formatData(data.data.total);
         dataInfo.value[3].data = formatData(data.data.poctotal);
       });
-
-      makeRequest();
     });
-    let requestCount = 0;
 
-    const makeRequest = () => {
-      const rewardData = Utils.getLocalStorage('rewardData') || [];
-      const rewardList = rewardData?.reward || [];
-
-      if (rewardList.length > 0) {
-        rewardList[0].forEach((item: any) => {
-          item.reward = item.reward / Math.pow(10, 8);
-        });
-        rewardList[1].forEach((item: any) => {
-          item.reward = item.reward / Math.pow(10, 8);
-        });
-
-        nodeList.value = rewardList[0];
-        nodeList1.value = rewardList[1];
-
-        clearInterval(requestInterval);
-      } else {
-        requestCount++;
-
-        if (requestCount >= 5) {
-          clearInterval(requestInterval);
-        }
-      }
+    const useReward = useRewardStore();
+    return {
+      Utils,
+      blockData,
+      transactionsData,
+      nodeList: computed(() => useReward.rewardData[0] || []),
+      nodeList1: computed(() => useReward.rewardData[1] || []),
+      dataInfo,
     };
-    const requestInterval = setInterval(makeRequest, 10000);
-
-    return { Utils, blockData, transactionsData, nodeList, nodeList1, dataInfo };
   },
 });
 </script>
@@ -263,7 +247,12 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
+  background: linear-gradient(
+    130.04deg,
+    rgba(253, 153, 42, 0.3) 13.45%,
+    rgba(125, 81, 220, 0.3) 60.04%,
+    rgba(37, 237, 255, 0.3) 88.4%
+  );
   filter: blur(50px);
 }
 
@@ -273,7 +262,12 @@ export default defineComponent({
   height: 210px;
   left: calc(50% - 210px / 2);
   top: 300px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.66) 13.45%, rgba(125, 81, 220, 0.66) 60.04%, rgba(37, 237, 255, 0.66) 88.4%);
+  background: linear-gradient(
+    130.04deg,
+    rgba(253, 153, 42, 0.66) 13.45%,
+    rgba(125, 81, 220, 0.66) 60.04%,
+    rgba(37, 237, 255, 0.66) 88.4%
+  );
   filter: blur(50px);
 }
 

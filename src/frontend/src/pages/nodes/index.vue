@@ -43,10 +43,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, ComputedRef } from 'vue';
+import { defineComponent, ref, computed, onMounted, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
+import { useRoute } from 'vue-router';
 
 type NodeListItem = {
   _id: string;
@@ -57,15 +58,34 @@ type NodeListItem = {
 export default defineComponent({
   name: 'nodes',
   components: { NPagination, NSpace, NButton, NSpin },
-
+  beforeRouteEnter(to, from, next) {
+    if (typeof to.meta !== 'object') {
+      to.meta = {};
+    }
+    if (from.name === 'node-detail') {
+      to.meta.isBack = true;
+    } else {
+      to.meta.isBack = false;
+    }
+    next();
+  },
   setup() {
     const pageSize = ref(1);
     const pageCount = ref(1);
     const nodeInfoList = ref<NodeListItem[]>([]);
+    const route = useRoute();
     let requestCount: number = 0;
 
-    onMounted(() => {
-      makeRequest(1);
+    onActivated(() => {
+      console.info('activited back?', route.meta.isBack);
+      if (route.meta.isBack) {
+        makeRequest(pageSize.value);
+      } else {
+        pageSize.value = 1;
+        pageCount.value = 1;
+        nodeInfoList.value = [];
+        makeRequest(1);
+      }
     });
 
     const makeRequest = (index: number) => {
@@ -88,7 +108,9 @@ export default defineComponent({
             const nodeList = data.data;
 
             const updatedNodeList = nodeList.map((item1: { _id: string }) => {
-              const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
+              const matchingItem = rewardList[index || 1].find(
+                (item2: { nodeID: string }) => item2.nodeID === item1._id
+              );
 
               return matchingItem ? { ...item1, reward: matchingItem.reward / Math.pow(10, 8) } : item1;
             });
@@ -130,7 +152,12 @@ export default defineComponent({
   height: 210px;
   left: 156px;
   top: 100px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
+  background: linear-gradient(
+    130.04deg,
+    rgba(253, 153, 42, 0.3) 13.45%,
+    rgba(125, 81, 220, 0.3) 60.04%,
+    rgba(37, 237, 255, 0.3) 88.4%
+  );
   filter: blur(50px);
 }
 
