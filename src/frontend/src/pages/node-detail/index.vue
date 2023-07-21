@@ -41,7 +41,14 @@
       <div class="main-header">Deployed Application——Stable diffusion</div>
       <div class="deployed-bgcolor">
         <template v-for="item in modelList">
-          <ModelsItem class="mode-item" :item="item" />
+          <template v-if="modelName === item.model_name" :key="item.hash">
+            <ModelsItem class="mode-item" :item="item" :modelName="modelName" :nodeID="nodeId" />
+          </template>
+        </template>
+        <template v-for="item in modelList">
+          <template v-if="modelName !== item.model_name" :key="item.hash">
+            <ModelsItem class="mode-item" :item="item" />
+          </template>
         </template>
       </div>
     </template>
@@ -79,6 +86,8 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const useReward = useRewardStore();
+    const modelName = ref('');
+    const nodeinfo = ref({});
 
     const nodeList = ref([
       { name: 'Node ID', info: '--' },
@@ -90,28 +99,15 @@ export default defineComponent({
 
     const infoList = ref([
       { name: 'CPU', icon: iconCpu, info: '--' },
-      { name: 'GPU', icon: iconGpu, info: '--' },
+      { name: 'Mac Address', icon: iconGpu, info: '--' },
       { name: 'IP Address', icon: iconIP, info: '--' },
       { name: 'Memory', icon: iconMemory, info: '--' },
       { name: 'Model Name', icon: iconModel, info: '--' },
     ]);
 
     const modelList = ref<ModelItem[]>([]);
-    const nodeId = ref(router.currentRoute.value.params.id);
-    onMounted(() => {
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
-          params: { nodeid: nodeId.value },
-        })
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0 || data.data === '') return;
-          const dataList = JSON.parse(data.data);
-          if (dataList && dataList.detail !== 'Not Found') {
-            modelList.value = dataList;
-          }
-        });
-
+    const nodeId: any = ref(router.currentRoute.value.params.id);
+    onMounted(async () => {
       axios
         .get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
           params: { nodeid: nodeId.value },
@@ -121,7 +117,7 @@ export default defineComponent({
           if (data._result !== 0) return;
           const dataInfo = data?.data;
           if (Object.keys(dataInfo).length !== 0) {
-            dataInfoFunction(dataInfo);
+            dataInfoFunction(data.data);
           } else {
             axios
               .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
@@ -130,10 +126,11 @@ export default defineComponent({
               .then((resp) => {
                 const data = resp.data;
                 if (data._result !== 0) return;
-                dataInfoFunction(dataInfo);
+                dataInfoFunction(data.data);
               });
           }
         });
+
       // ---------
       const dataInfoFunction = (data: any) => {
         nodeList.value.findIndex((item) => {
@@ -160,7 +157,12 @@ export default defineComponent({
           } else if (item.name === 'Reward') {
             reward();
           } else if (item.name === 'AvgPower') {
-            item.info = data.avgPower;
+            if (!data.avgPower) return;
+            if (data.avgPower !== 0) {
+              item.info = data.avgPower;
+            } else {
+              item.info = '--';
+            }
           }
         });
         infoList.value.findIndex((item) => {
@@ -169,25 +171,49 @@ export default defineComponent({
               item.info = JSON.parse(data.cpuInfo).ModelName;
             }
           } else if (item.name === 'IP Address') {
+            if (!data.ipInfo) return;
             if (Object.keys(data.ipInfo).length === 0) return;
 
             item.info = data.ipInfo.ipAddr;
-          } else if (item.name === 'GPU') {
-            item.info = '--';
+          } else if (item.name === 'Mac Address') {
+            if (!data.macAddr) return;
+            item.info = data.macAddr;
           } else if (item.name === 'Memory') {
             if (!data.memoryInfo) return;
             const formatMemory = JSON.parse(data.memoryInfo);
             item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
           } else if (item.name === 'Model Name') {
-            setTimeout(() => {
-              if (modelList.value.length === 0 || !data.appSpec) return;
-              const findObject = modelList.value.find((item) => item.hash === data.appSpec);
-              if (findObject) {
-                item.info = findObject.model_name;
-              } else {
-                item.info = '--';
-              }
-            }, 1000);
+            axios
+              .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
+                params: { nodeid: nodeId.value },
+              })
+              .then((resp) => {
+                const data1 = resp.data;
+                if (data1._result !== 0 || data1.data === '') return;
+                const dataList = JSON.parse(data1.data);
+                if (dataList && dataList.detail !== 'Not Found') {
+                  modelList.value = dataList;
+                }
+                if (modelList.value.length === 0 || !data.appSpec) return;
+                const findObject = modelList.value.find((item) => item.hash === data.appSpec);
+                console.log(findObject);
+                if (findObject) {
+                  item.info = findObject.model_name;
+                  modelName.value = findObject.model_name;
+                } else {
+                  item.info = '--';
+                }
+              });
+            //   setTimeout(() => {
+            //     if (modelList.value.length === 0 || !data.appSpec) return;
+            //     const findObject = modelList.value.find((item) => item.hash === data.appSpec);
+            //     if (findObject) {
+            //       item.info = findObject.model_name;
+            //       modelName.value = findObject.model_name;
+            //     } else {
+            //       item.info = '--';
+            //     }
+            //   }, 1000);
           }
         });
       };
@@ -207,29 +233,30 @@ export default defineComponent({
         nodeList.value[3].info = reward.reward;
       }
     };
-    // watch(
-    //   () => useReward.rewardData,
-    //   (val) => {
-    //     const rewardList = val || [];
-    //     if (rewardList.length === 0) return;
-    //     rewardList.forEach((item1: any) => {
-    //       const reward = item1.find((item: any) => item.nodeID === nodeId.value);
-    //       if (!reward) return;
-    //       if (reward.reward !== '0') {
-    //         nodeList.value[3].info = '≈ ' + reward.reward + ' EMC';
-    //       } else {
-    //         nodeList.value[3].info = reward.reward;
-    //       }
-    //     });
-    //   }
-    // );
+    watch(
+      () => modelList.value,
+      (val) => {
+        // console.log(val);
+        // const findObject = val.find((item) => item.hash === data.appSpec);
+        // if (!data.appSpec) return;
+        // const findObject = modelList.value.find((item) => item.hash === data.appSpec);
+        // if (findObject) {
+        //   item.info = findObject.model_name;
+        //   modelName.value = findObject.model_name;
+        // } else {
+        //   item.info = '--';
+        // }
+      }
+    );
 
     return {
       Utils,
       nodeId,
+
       nodeList,
       infoList,
       modelList,
+      modelName,
     };
   },
 });

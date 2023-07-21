@@ -18,24 +18,33 @@
         </div> -->
     </div>
     <!-- <div class="models-card-type"><span class="models-card-type-span">LORA</span></div> -->
-    <!-- <div class="models-card-run">
-      <img class="models-card-run-image" src="@/assets/icon_run.svg" />
-      <span class="models-card-type-span">RUN</span>
-    </div> -->
+    <template v-if="modelName === item.model_name">
+      <a :href="'https://6tq33-2iaaa-aaaap-qbhpa-cai.icp0.io/#/txt2img?nodeid=' + nodeID" target="_blank">
+        <div class="models-card-run">
+          <img class="models-card-run-image" src="@/assets/icon_run.svg" />
+          <span class="models-card-type-span">RUN</span>
+        </div>
+      </a>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from 'vue';
+import { ref, defineComponent, onMounted, watch } from 'vue';
 export default defineComponent({
   props: {
     item: { type: Object, default: {} },
+    modelName: { type: String, default: '' },
+    nodeID: { type: String, default: '' },
   },
   components: {},
+
   setup(props) {
     const item = ref(props.item);
+    const modelName = ref(props.modelName);
+    const nodeID = ref(props.nodeID);
 
-    return { item };
+    return { item, modelName, nodeID };
   },
 });
 </script>
