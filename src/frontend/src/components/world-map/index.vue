@@ -29,10 +29,12 @@ export default defineComponent({
         const data = {
           name: item.nodes,
           value: [item.longitude, item.latitude],
-          symbolSize: item.nodes > 30 ? 30 : item.nodes,
+          symbolSize: item.nodes * 2 > 60 ? 60 : item.nodes,
         };
         newIPMap.push(data);
       });
+      console.log(IPMap);
+      console.log(newIPMap);
 
       if (typeof myEcharts !== null) {
         let myEchart = echarts.init(myEcharts);
@@ -43,6 +45,10 @@ export default defineComponent({
             left: 0,
             data: [],
           },
+          tooltip: {
+            trigger: 'item',
+            formatter: 'nodes: {b0}',
+          },
           geo: {
             type: 'map',
             map: 'world',
@@ -51,7 +57,6 @@ export default defineComponent({
               min: 1.6,
               max: 100,
             },
-
             center: [0.46, 26.92],
             zoom: 2,
             // top: 0,
@@ -97,7 +102,7 @@ export default defineComponent({
 
               showEffectOn: 'render',
               rippleEffect: {
-                brushType: 'stroke',
+                brushType: 'fill', //stroke
                 color: '#BD6FD948',
                 number: 3,
                 period: 4,
