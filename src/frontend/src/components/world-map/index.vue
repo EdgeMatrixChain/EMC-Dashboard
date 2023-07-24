@@ -144,27 +144,8 @@ export default defineComponent({
           },
         };
 
-        // console.log(myEcharts);
-        // myEcharts.addEventListener('mouseover', function (event: any) {
-        //   console.log('Mouse is over the element!');
-        //   myEcharts.addEventListener('mousewheel', handleWheelEvent);
-        // });
-
-        // const handleWheelEvent = (event: any) => {
-        //   // event.preventDefault();
-        //   isWhell.value = true;
-        //   console.log('1');
-
-        //   if (event.ctrlKey) {
-        //     console.log(1);
-
-        //     isWhell.value = false;
-        //   }
-        // };
-
         myEchart.setOption(option);
       }
-      // window.addEventListener('resize', function () {});
     });
     return {
       isWhell,

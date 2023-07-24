@@ -12,8 +12,6 @@ import { router } from '@/routes/index';
 import { Utils } from '@/tools/utils';
 import axios from 'axios';
 
-import { useRewardStore } from '@/stores/reward';
-
 export default defineComponent({
   name: 'app',
   components: { NSpin },

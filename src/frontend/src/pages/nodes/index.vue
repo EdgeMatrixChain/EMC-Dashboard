@@ -84,6 +84,7 @@ export default defineComponent({
       to.meta.isBack = true;
     } else {
       to.meta.isBack = false;
+      // Utils.setLocalStorage('icp.reward.list', '');
     }
     next();
   },
@@ -93,7 +94,7 @@ export default defineComponent({
     const nodeInfoList = ref<NodeListItem[]>([]);
     const route = useRoute();
     const router = useRouter();
-    const useReward = useRewardStore() || [];
+    const useReward = useRewardStore();
     const rewardData = ref<any[]>([]);
     const searchValue = ref('');
     onActivated(() => {
@@ -109,9 +110,8 @@ export default defineComponent({
 
     const init = async (index: number) => {
       const { total, list } = await useReward.getNodeRewardList(index, 10);
-      console.log(list);
 
-      nodeInfoList.value = list;
+      nodeInfoList.value = list || [];
       pageCount.value = Math.floor(total / 10);
     };
 
@@ -119,7 +119,6 @@ export default defineComponent({
       init(currentPage);
     };
     const onPressSearch = () => {
-      console.log(1);
       router.push({ name: 'node-detail', params: { id: searchValue.value } });
     };
 

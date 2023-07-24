@@ -1,27 +1,27 @@
-import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { Http } from '@/tools/http';
 import { Utils } from '@/tools/utils';
 let rewardPromise: any = null;
 
 const _fetchRewardNodes = async () => {
-  const getLocal = Utils.getLocalStorage('icp.reward.list');
-  let localList: any = getLocal?.list;
-  if (localList && Date.now() - getLocal?.timestamp < 300 * 1000) {
-    return Promise.resolve(localList);
-  } else {
-    const http = Http.getInstance();
-    const resp = await http.get({
-      url: 'https://api.edgematrix.pro/api/v1/noderewardtoday',
-    });
-    const list = resp.data || [];
-    const timestamp = Date.now();
-    Utils.setLocalStorage('icp.reward.list', {
-      list: list,
-      timestamp: timestamp,
-    });
-    return list;
-  }
+  const getReward = Utils.getLocalStorage('icp.reward.list');
+  let localList: any = getReward?.list;
+  // if (Date.now() - getReward?.timestamp > 1) {
+  if (localList) return Promise.resolve(localList);
+  const http = Http.getInstance();
+  const resp = await http.get({
+    url: 'https://api.edgematrix.pro/api/v1/noderewardtoday',
+  });
+  const list = resp.data || [];
+  const timestamp = Date.now();
+  Utils.setLocalStorage('icp.reward.list', {
+    list: list,
+    timestamp: timestamp,
+  });
+  return list;
+  // } else {
+  //   return localList;
+  // }
 };
 
 const fetchRewardNodes = () => {
@@ -46,14 +46,11 @@ const fetchRewardNodes = () => {
 const caches: { [page: string]: any } = {};
 
 export const useRewardStore = defineStore('reward', () => {
-  const rewardData = ref<Array<any[]>>([]);
-
   const http = Http.getInstance();
-
   async function getNodeRewardList(page: number, size: number) {
     if (caches[page]) return caches[page];
     const { total, groupList } = await fetchRewardNodes();
-    const currList = groupList[page];
+    const currList = groupList[page] || [];
     const resp = await http.get({
       url: '/nodelistsnapshot',
       params: { nodeids: currList.map((item: any) => item.nodeID).join(','), page: 1, size: 10 },
@@ -72,33 +69,8 @@ export const useRewardStore = defineStore('reward', () => {
     caches[page] = { total, list };
     return caches[page];
   }
-  /**
-   * update data
-   */
-  async function update() {
-    const resp = await http.get({ url: 'https://api.edgematrix.pro/api/v1/noderewardtoday' });
-    const reward = resp.data || [];
-    const newReward: Array<any[]> = [];
-    let group: any = [];
-    reward.forEach((item: any) => {
-      item.reward = item.reward / Math.pow(10, 8);
-      group.push(item);
-      if (group.length === 10) {
-        newReward.push(group);
-        group = [];
-      }
-    });
-    if (group.length > 0) {
-      newReward.push(group);
-    }
-    rewardData.value = newReward;
-
-    return newReward;
-  }
 
   return {
-    rewardData,
     getNodeRewardList,
-    update,
   };
 });

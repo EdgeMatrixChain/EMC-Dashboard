@@ -11,7 +11,7 @@
                   <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info" style="flex: 0.75">
-                  <span class="main-table-item-info-span">{{ item.info }}</span>
+                  <NEllipsis class="main-table-item-info-span" style="max-width: 400px"> {{ item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
@@ -29,7 +29,7 @@
                   <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info" style="flex: 0.65">
-                  <span class="main-table-item-info-span">{{ item.info }}</span>
+                  <NEllipsis class="main-table-item-info-span" style="max-width: 400px"> {{ item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
@@ -60,7 +60,7 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
-import { NDatePicker } from 'naive-ui';
+import { NDatePicker, NEllipsis } from 'naive-ui';
 import { useRewardStore } from '@/stores/reward';
 
 import moment from 'moment';
@@ -82,6 +82,7 @@ export default defineComponent({
   components: {
     ModelsItem,
     NDatePicker,
+    NEllipsis,
   },
   setup() {
     const router = useRouter();
@@ -141,9 +142,6 @@ export default defineComponent({
             if (!data.startupTime) return;
             item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
           } else if (item.name === 'Run Time') {
-            console.log(data.startupTime);
-            console.log(data.runTime);
-
             if (data.startupTime === data.runTime) return;
             item.info = Utils.formatDate(data.runTime);
           } else if (item.name === 'Reward') {
@@ -188,7 +186,6 @@ export default defineComponent({
                 }
                 if (modelList.value.length !== 0 || !data.appSpec) return;
                 const findObject = modelList.value.find((item) => item.hash === data.appSpec);
-                console.log(findObject);
                 if (findObject) {
                   item.info = findObject.model_name;
                   modelName.value = findObject.model_name;
@@ -203,10 +200,12 @@ export default defineComponent({
 
     const reward = async () => {
       const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
-      const localList = Utils.getLocalStorage('icp.reward.list') || [];
+      const localList = Utils.getLocalStorage('icp.reward.list')?.list || [];
+
       if (localList.length === 0) return;
 
       const reward = localList.find((item: any) => item.nodeID === nodeId.value);
+
       if (!reward) return;
 
       if (reward.reward !== '0') {
@@ -215,26 +214,10 @@ export default defineComponent({
         nodeList.value[3].info = reward.reward;
       }
     };
-    watch(
-      () => modelList.value,
-      (val) => {
-        // console.log(val);
-        // const findObject = val.find((item) => item.hash === data.appSpec);
-        // if (!data.appSpec) return;
-        // const findObject = modelList.value.find((item) => item.hash === data.appSpec);
-        // if (findObject) {
-        //   item.info = findObject.model_name;
-        //   modelName.value = findObject.model_name;
-        // } else {
-        //   item.info = '--';
-        // }
-      }
-    );
 
     return {
       Utils,
       nodeId,
-
       nodeList,
       infoList,
       modelList,
