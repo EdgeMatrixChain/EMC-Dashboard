@@ -45,7 +45,7 @@ export const useRewardStore = defineStore('reward', () => {
   async function getNodeRewardList(page: number, size: number) {
     if (caches[page]) return caches[page];
     const { total, groupList } = await fetchRewardNodes();
-    const currList = groupList[page];
+    const currList = groupList[page] || [];
     const resp = await http.get({
       url: '/nodelistsnapshot',
       params: { nodeids: currList.map((item: any) => item.nodeID).join(','), page: 1, size: 10 },

@@ -2,6 +2,13 @@
   <div class="page">
     <div class="mask-bgcolor-left"></div>
     <div class="page-node">
+      <div class="page-search">
+        <div class="page-search-icon">
+          <img src="@/assets/icon_search.png" width="20" height="20" />
+        </div>
+        <input class="page-search-input" v-model="searchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
+      </div>
+
       <div class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
@@ -28,7 +35,7 @@
                     <div class="node-list-main-item">≈ {{ item.reward }}</div>
                     <div class="node-list-main-item">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
 
-                    <div class="node-list-main-item">{{ item.runTime === item.createTime ? '--' : Utils.formatDate(item.runTime) }}</div>
+                    <div class="node-list-main-item">{{ item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime) }}</div>
                   </div>
                 </RouterLink>
               </template>
@@ -52,7 +59,7 @@ import { defineComponent, ref, computed, onMounted, watch, onActivated, Computed
 import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
 
@@ -63,6 +70,7 @@ type NodeListItem = {
   updateTime: string;
   createTime: string;
   runTime: string;
+  startupTime: string;
 };
 
 export default defineComponent({
@@ -84,8 +92,10 @@ export default defineComponent({
     const pageCount = ref(1);
     const nodeInfoList = ref<NodeListItem[]>([]);
     const route = useRoute();
+    const router = useRouter();
     const useReward = useRewardStore() || [];
     const rewardData = ref<any[]>([]);
+    const searchValue = ref('');
     onActivated(() => {
       if (route.meta.isBack) {
         init(page.value);
@@ -97,50 +107,20 @@ export default defineComponent({
       }
     });
 
-    // watch(
-    //   () => useReward.rewardData,
-    //   (val) => {
-    //     rewardData.value = val || [];
-    //     init(1);
-    //   }
-    // );
-
     const init = async (index: number) => {
       const { total, list } = await useReward.getNodeRewardList(index, 10);
+      console.log(list);
+
       nodeInfoList.value = list;
       pageCount.value = Math.floor(total / 10);
-
-      // const rewardList = rewardData.value || [];
-
-      // if (rewardList.length > 0) {
-      //   const nodeIDs = rewardList[index || 1].map((item: any) => item.nodeID);
-      //   const strNodeIDs = nodeIDs.join(',');
-      //   axios
-      //     .get('https://api.edgematrix.pro/api/v1/nodelistsnapshot', {
-      //       params: {
-      //         nodeids: strNodeIDs,
-      //         page: 1,
-      //         size: 10,
-      //       },
-      //     })
-      //     .then((resp) => {
-      //       const data = resp.data;
-      //       if (data._result !== 0) return;
-      //       const nodeList = data.data;
-
-      //       const updatedNodeList = nodeList.map((item1: { _id: string }) => {
-      //         const matchingItem = rewardList[index || 1].find((item2: { nodeID: string }) => item2.nodeID === item1._id);
-
-      //         return matchingItem ? { ...item1, reward: matchingItem.reward } : item1;
-      //       });
-      //       nodeInfoList.value = updatedNodeList;
-      //       pageCount.value = rewardList.length - 1;
-      //     });
-      // }
     };
 
     const handlePageChange = (currentPage: number) => {
       init(currentPage);
+    };
+    const onPressSearch = () => {
+      console.log(1);
+      router.push({ name: 'node-detail', params: { id: searchValue.value } });
     };
 
     return {
@@ -152,6 +132,8 @@ export default defineComponent({
       init,
       nodeInfoList,
       handlePageChange,
+      searchValue,
+      onPressSearch,
     };
   },
 });
@@ -171,6 +153,29 @@ export default defineComponent({
 .page-node {
   margin: 40px 0 36px;
   min-height: 682px;
+}
+
+.page-search {
+  display: flex;
+  align-items: center;
+  display: flex;
+  width: 960px;
+  height: 48px;
+  margin: 32px auto;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid #705989;
+  background: linear-gradient(70deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(21px);
+}
+.page-search-input {
+  margin-left: 8px;
+  width: 100%;
+  height: 100%;
+  line-height: 100%;
+  border: none;
+  outline: none;
+  background-color: transparent;
 }
 .node-list {
   width: 100%;

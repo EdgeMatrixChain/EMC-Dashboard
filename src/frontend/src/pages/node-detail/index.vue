@@ -135,25 +135,17 @@ export default defineComponent({
       const dataInfoFunction = (data: any) => {
         nodeList.value.findIndex((item) => {
           if (item.name === 'Node ID') {
+            if (!data._id) return;
             item.info = Utils.formatAddress(data._id);
           } else if (item.name === 'Startup Time') {
+            if (!data.startupTime) return;
             item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
           } else if (item.name === 'Run Time') {
+            console.log(data.startupTime);
+            console.log(data.runTime);
+
             if (data.startupTime === data.runTime) return;
-            const time = data.runTime / 1000;
-            let beforeTime = '';
-            if (time / 86400 > 1) {
-              beforeTime = Math.trunc(time / 86400) + ' days';
-            } else if (time / 3600 > 1) {
-              beforeTime = Math.trunc(time / 3600) + ' hours';
-            } else if (time / 60 > 1) {
-              beforeTime = Math.trunc(time / 60) + ' min';
-            } else if (time > 1) {
-              beforeTime = Math.trunc(time) + ' sec';
-            } else {
-              return 'less than 1 second';
-            }
-            item.info = beforeTime;
+            item.info = Utils.formatDate(data.runTime);
           } else if (item.name === 'Reward') {
             reward();
           } else if (item.name === 'AvgPower') {
@@ -194,7 +186,7 @@ export default defineComponent({
                 if (dataList && dataList.detail !== 'Not Found') {
                   modelList.value = dataList;
                 }
-                if (modelList.value.length === 0 || !data.appSpec) return;
+                if (modelList.value.length !== 0 || !data.appSpec) return;
                 const findObject = modelList.value.find((item) => item.hash === data.appSpec);
                 console.log(findObject);
                 if (findObject) {
@@ -204,16 +196,6 @@ export default defineComponent({
                   item.info = '--';
                 }
               });
-            //   setTimeout(() => {
-            //     if (modelList.value.length === 0 || !data.appSpec) return;
-            //     const findObject = modelList.value.find((item) => item.hash === data.appSpec);
-            //     if (findObject) {
-            //       item.info = findObject.model_name;
-            //       modelName.value = findObject.model_name;
-            //     } else {
-            //       item.info = '--';
-            //     }
-            //   }, 1000);
           }
         });
       };
