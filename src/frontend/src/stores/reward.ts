@@ -6,7 +6,7 @@ let rewardPromise: any = null;
 
 const _fetchRewardNodes = async () => {
   const getLocal = Utils.getLocalStorage('icp.reward.list');
-  let localList: any = getLocal?.list;
+  let localList: any[] = getLocal?.list;
   if (localList && Date.now() - getLocal?.timestamp < 300 * 1000) {
     return Promise.resolve(localList);
   } else {
