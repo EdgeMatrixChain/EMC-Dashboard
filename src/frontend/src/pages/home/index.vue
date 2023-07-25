@@ -181,7 +181,7 @@ export default defineComponent({
 
     const dataInfo = ref<DataInfoItem[]>([
       { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '' },
-      { name: 'Transactions', icon: iconTransactions, unit: 'TX', data: '' },
+      { name: 'Transactions', icon: iconTransactions, unit: 'TXs', data: '' },
       { name: 'Total Nodes', icon: iconTotalNodes, unit: 'Nodes', data: '' },
       { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '' },
       { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '' },
