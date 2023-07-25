@@ -13,6 +13,8 @@ import * as echarts from 'echarts';
 import './map/js/world.js';
 import { Http } from '@/tools/http';
 
+
+
 // import 'echarts/map/js/china.js';
 const http = Http.getInstance();
 
@@ -26,13 +28,15 @@ export default defineComponent({
       const IPMap = resp.data || [];
       const newIPMap: any = [];
       IPMap.forEach((item: any) => {
+        if (!item.latitude || !item.longitude || item.nodes === 0) return;
         const data = {
           name: item.nodes,
           value: [item.longitude, item.latitude],
-          symbolSize: item.nodes * 2 > 60 ? 60 : item.nodes,
+          symbolSize: item.nodes * 10 > 60 ? 60 : item.nodes * 10,
         };
         newIPMap.push(data);
       });
+      console.log(newIPMap);
 
       if (typeof myEcharts !== null) {
         let myEchart = echarts.init(myEcharts);
@@ -57,90 +61,68 @@ export default defineComponent({
             },
             center: [0.46, 26.92],
             zoom: 2,
-            // top: 0,
-            // left: 0,
-            // right: 0,
-            // bottom: 0,
+
             // scaleLimit.max: 10,   // scorll max
             label: {
               show: false,
             },
-            // tooltip: {
-            //   trigger: 'item',
-            //   borderColor: '#666',
-            //   formatter: function (params: any) {},
-            // },
             itemStyle: {
-              opacity: 0.6,
+              opacity: 1,
               borderColor: '#444444',
               areaColor: '#383838',
               borderWidth: 1,
             },
             emphasis: {
-              disabled: false,
-              // focus: 'self',
+              disabled: true,
               areaColor: '#fff',
-              label: {
-                show: false,
-              },
               itemStyle: {
                 areaColor: '#eee',
               },
             },
           },
           series: [
-            {
-              name: '',
-              type: 'effectScatter',
-              coordinateSystem: 'geo',
-              data: newIPMap,
-              // symbolSize: function (val: any) {
-              //   return val[2] / 1;
-              // },
-
-              showEffectOn: 'render',
-              rippleEffect: {
-                brushType: 'fill', //stroke
-                color: '#BD6FD948',
-                number: 3,
-                period: 4,
-                scale: 2.5,
-              },
-              hoverAnimation: true,
-              label: {
-                formatter: '{b}',
-                position: 'right',
-                show: false,
-              },
-              itemStyle: {
-                color: '#7B00A672',
-                shadowBlur: 10,
-                shadowColor: '#7B00A6',
-              },
-              zlevel: 1,
-            },
             // {
             //   name: '',
-            //   type: 'scatter',
+            //   type: 'effectScatter',
             //   coordinateSystem: 'geo',
-            //   // legendHoverLink: true,
-            //   zlevel: 3,
+            //   data: newIPMap,
+            //   // symbolSize: function (val: any) {
+            //   //   return val;
+            //   // },
             //   rippleEffect: {
-            //     brushType: 'fill',
-            //   },
-            //   label: {
-            //     color: '#000',
-            //     show: true,
-            //     position: 'top',
-            //     formatter: '{b}',
+            //     brushType: 'fill', //stroke
+            //     color: '#BD6FD900',
+            //     number: 3,
+            //     period: 4,
+            //     scale: 2.5,
             //   },
             //   itemStyle: {
-            //     borderColor: '#7B00A6',
-            //     borderWidth: 2,
-            //     color: '#BD6FD948',
+            //     color: '#7B00A650',
+            //     shadowBlur: 50,
+            //     shadowColor: '#7B00A650',
             //   },
-            //   data: newIPMap,
+            //   zlevel: 1,
             // },
+            {
+              name: '',
+              // type: 'scatter',
+              type: 'effectScatter',
+
+              coordinateSystem: 'geo',
+              zlevel: 3,
+              rippleEffect: {
+                brushType: 'stroke',
+                number: 2,
+                period: 5,
+                scale: 2.5,
+              },
+              itemStyle: {
+                borderColor: '#7B00A6',
+                borderWidth: 2,
+                color: '#BD6FD948',
+              },
+              data: newIPMap,
+            },
           ],
           textStyle: {
             fontSize: 12,

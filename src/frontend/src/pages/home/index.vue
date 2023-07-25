@@ -1,49 +1,28 @@
 <template>
   <div class="page">
+    <!-- <div class="page-mask"></div> -->
     <div class="mask-bgcolor-left"></div>
     <div class="mask-bgcolor-center"></div>
     <div class="card-body">
       <template v-for="(item, index) in dataInfo">
         <div class="card-body-item">
-          <div class="card-item-info">
-            <template v-if="item.data !== ''">
+          <template v-if="item.data !== ''">
+            <NSpace class="card-item-info" :vertical="true" justify="space-evenly">
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
-                <!-- <template v-if="index === 2 || index === 3">
-                  <img src="@/assets/icon_arrow_top_right.png" width="16" height="16" style="margin: 0px 0px -2px 4px" />
-                </template> -->
               </div>
-              <div class="card-item-data">{{ item.data }}</div>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
-            </template>
-            <!-- <div class="card-item-footer">{{ item.name }}</div> -->
-          </div>
-          <div class="card-body-item-bg-small"></div>
-          <div class="card-body-item-bg-big"></div>
+              <div class="card-item-data">
+                <span style="color: #fff; font-size: 36px">{{ item.data }}</span>
+                <span style="color: #6f6376; font-size: 20px">&nbsp;{{ item.unit }}</span>
+              </div>
+            </NSpace>
+            <img :src="item.icon" width="160" height="156" style="position: absolute; bottom: 0; right: 0" />
+          </template>
+          <template v-else>
+            <NSpin size="small" />
+          </template>
         </div>
       </template>
-
-      <!-- <div class="card-body-item">
-        <div class="card-item-info">
-          <div class="card-item-title">Blocks</div>
-          <div class="card-item-data">{{ blockData }}</div>
-          <div class="card-item-footer">22.88</div>
-        </div>
-        <div class="card-body-item-bg-small"></div>
-        <div class="card-body-item-bg-big"></div>
-      </div>
-      <div class="card-body-item">
-        <div class="card-item-info">
-          <div class="card-item-title">Transactions</div>
-          <div class="card-item-data">
-            {{ transactionsData }}
-          </div>
-        </div>
-        <div class="card-body-item-bg-small"></div>
-        <div class="card-body-item-bg-big"></div>
-      </div> -->
     </div>
     <div class="map-body">
       <WorldMap></WorldMap>
@@ -157,13 +136,20 @@
 
 <script lang="ts">
 import { ref, onMounted, computed, onUnmounted, defineComponent, nextTick } from 'vue';
-import { NPopover, NSpin } from 'naive-ui';
+import { NPopover, NSpin, NSpace } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
 import { useRewardStore } from '@/stores/reward';
+import iconBlocks from '@/assets/icon_data_blocks.png';
+import iconTransactions from '@/assets/icon_data_transactions.png';
+import iconTotalNodes from '@/assets/icon_data_total_nodes.png';
+import iconPocNodes from '@/assets/icon_data_poc_nodes.png';
+import iconAvgpower from '@/assets/icon_data_total_avgpower.png';
+import iconStaked from '@/assets/icon_data_staked.png';
+
 type NodeListItem = {
   nodeID: string;
   reward: string;
@@ -172,6 +158,8 @@ type NodeListItem = {
 type DataInfoItem = {
   name: string;
   data: string;
+  icon: any;
+  unit: string;
 };
 
 const http = Http.getInstance();
@@ -181,6 +169,7 @@ export default defineComponent({
     WorldMap,
     ModelsItem,
     NPopover,
+    NSpace,
     NSpin,
   },
 
@@ -191,12 +180,12 @@ export default defineComponent({
     const nodeList1 = ref<NodeListItem[]>([]);
 
     const dataInfo = ref<DataInfoItem[]>([
-      { name: 'Blocks', data: '' },
-      { name: 'Transactions', data: '' },
-      { name: 'Total Nodes', data: '' },
-      { name: 'POC Nodes', data: '' },
-      { name: 'Total AvgPower', data: '' },
-      { name: 'Total Staked', data: '' },
+      { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '' },
+      { name: 'Transactions', icon: iconTransactions, unit: 'TX', data: '' },
+      { name: 'Total Nodes', icon: iconTotalNodes, unit: 'Nodes', data: '' },
+      { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '' },
+      { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '' },
+      { name: 'Total Staked', icon: iconStaked, unit: 'EMC', data: '' },
     ]);
 
     const formatData = (data: number) => {
@@ -263,8 +252,8 @@ export default defineComponent({
   width: 210px;
   height: 210px;
   left: calc(50% - 210px / 2);
-  top: 300px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.66) 13.45%, rgba(125, 81, 220, 0.66) 60.04%, rgba(37, 237, 255, 0.66) 88.4%);
+  top: 460px;
+  background: linear-gradient(130deg, rgba(253, 153, 42, 0.38) 0%, rgba(125, 81, 220, 0.38) 51.86%, rgba(37, 237, 255, 0.38) 83.43%);
   filter: blur(50px);
 }
 
@@ -281,7 +270,6 @@ export default defineComponent({
   position: relative;
   width: calc(((100% - 92px * 2) / 3));
   height: 180px;
-  padding: 24px;
   margin-right: 92px;
   margin-bottom: 48px;
   border-radius: 10px;
@@ -293,9 +281,15 @@ export default defineComponent({
 .card-body-item:nth-child(3n) {
   margin-right: 0;
 }
+.card-item-info {
+  position: absolute;
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
 
 .card-item-title {
-  margin-bottom: 28px;
   font-size: 16px;
   font-weight: 300;
   line-height: 16px;
@@ -305,10 +299,7 @@ export default defineComponent({
   color: transparent;
 }
 .card-item-data {
-  margin-bottom: 28px;
-  color: #fff;
-  font-size: 36px;
-  font-weight: 500;
+  height: 36px;
   line-height: 36px;
 }
 .card-item-footer {
