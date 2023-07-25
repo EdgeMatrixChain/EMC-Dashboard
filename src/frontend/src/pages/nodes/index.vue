@@ -175,6 +175,7 @@ export default defineComponent({
   border: none;
   outline: none;
   background-color: transparent;
+  color: #fff;
 }
 .node-list {
   width: 100%;

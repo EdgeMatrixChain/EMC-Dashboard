@@ -9,16 +9,16 @@
             <template v-if="item.data !== ''">
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
-                <template v-if="index === 2 || index === 3">
+                <!-- <template v-if="index === 2 || index === 3">
                   <img src="@/assets/icon_arrow_top_right.png" width="16" height="16" style="margin: 0px 0px -2px 4px" />
-                </template>
+                </template> -->
               </div>
               <div class="card-item-data">{{ item.data }}</div>
             </template>
             <template v-else>
               <NSpin size="small" />
             </template>
-            <!-- <div class="card-item-footer">{{ item.name }}.88</div> -->
+            <!-- <div class="card-item-footer">{{ item.name }}</div> -->
           </div>
           <div class="card-body-item-bg-small"></div>
           <div class="card-body-item-bg-big"></div>
@@ -162,6 +162,7 @@ import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
 import { Utils } from '@/tools/utils';
+import { Http } from '@/tools/http';
 import { useRewardStore } from '@/stores/reward';
 type NodeListItem = {
   nodeID: string;
@@ -172,6 +173,8 @@ type DataInfoItem = {
   name: string;
   data: string;
 };
+
+const http = Http.getInstance();
 
 export default defineComponent({
   components: {
@@ -192,6 +195,8 @@ export default defineComponent({
       { name: 'Transactions', data: '' },
       { name: 'Total Nodes', data: '' },
       { name: 'POC Nodes', data: '' },
+      { name: 'Total AvgPower', data: '' },
+      { name: 'Total Staked', data: '' },
     ]);
 
     const formatData = (data: number) => {
@@ -201,38 +206,25 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-      axios
-        .get('https://api.edgematrix.pro/api/v1/blocks')
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          // blockData.value = formatData(data.data);
-          dataInfo.value[0].data = formatData(data.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      axios
-        .get('https://api.edgematrix.pro/api/v1/dip20transactions')
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          dataInfo.value[1].data = formatData(data.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodes')
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          dataInfo.value[2].data = formatData(data.data.total);
-          dataInfo.value[3].data = formatData(data.data.poctotal);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
+        if (resp._result !== 0) return;
+        dataInfo.value[0].data = formatData(resp.data);
+      });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
+        if (resp._result !== 0) return;
+        dataInfo.value[1].data = formatData(resp.data);
+      });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
+        if (resp._result !== 0) return;
+        dataInfo.value[2].data = formatData(resp.data.total);
+        dataInfo.value[3].data = formatData(resp.data.poctotal);
+      });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
+        if (resp._result !== 0) return;
+        dataInfo.value[4].data = formatData(Utils.toFixed(resp.data.totalAvgPower, 2));
+        dataInfo.value[5].data = formatData(resp.data.totalStaked);
+      });
+
       const { total: total1, list: list1 } = await useReward.getNodeRewardList(0, 10);
       nodeList.value = list1;
       const { total: total2, list: list2 } = await useReward.getNodeRewardList(1, 10);
@@ -278,25 +270,53 @@ export default defineComponent({
 
 .card-body {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 80px;
-  padding-top: 98px;
+  padding: 56px 0;
+  border-radius: 20px;
 }
 
 .card-body-item {
   position: relative;
-  width: 304px;
-  height: 164px;
+  width: calc(((100% - 92px * 2) / 3));
+  height: 180px;
   padding: 24px;
+  margin-right: 92px;
+  margin-bottom: 48px;
   border-radius: 10px;
   border: 1px solid #676767;
   background: linear-gradient(180deg, #292929 0%, #121212 64.06%, #000 100%);
   overflow: hidden;
   box-sizing: border-box;
-  /* margin-right: 64px; */
+}
+.card-body-item:nth-child(3n) {
+  margin-right: 0;
 }
 
+.card-item-title {
+  margin-bottom: 28px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 16px;
+  background: linear-gradient(to bottom, rgba(252, 88, 179, 1), rgba(254, 174, 104, 1));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.card-item-data {
+  margin-bottom: 28px;
+  color: #fff;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 36px;
+}
+.card-item-footer {
+  color: #f2d6ff;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 14px;
+}
 .card-body-item-bg-small {
   position: absolute;
   right: -39px;
@@ -319,30 +339,6 @@ export default defineComponent({
   opacity: 0.2;
   z-index: 1;
 }
-.card-item-title {
-  margin-bottom: 24px;
-  font-size: 16px;
-  font-weight: 300;
-  line-height: 16px;
-  background: linear-gradient(to bottom, rgba(252, 88, 179, 1), rgba(254, 174, 104, 1));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-.card-item-data {
-  margin-bottom: 32px;
-  color: #fff;
-  font-size: 28px;
-  font-weight: 500;
-  line-height: 28px;
-}
-.card-item-footer {
-  color: #f2d6ff;
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 14px;
-}
-
 .map-body {
   margin-bottom: 64px;
 }

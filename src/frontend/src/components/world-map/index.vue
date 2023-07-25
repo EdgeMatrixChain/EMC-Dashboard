@@ -2,7 +2,7 @@
   <div class="chart-map">
     <div id="chart-container" :style="{ width: '1400px', height: '440px' }"></div>
     <template v-if="isWhell">
-      <div class="chart-mask">HHHHHHHHHHHHHHHHHHHHHHHHHHHH</div>
+      <div class="chart-mask"></div>
     </template>
   </div>
 </template>
@@ -33,8 +33,6 @@ export default defineComponent({
         };
         newIPMap.push(data);
       });
-      console.log(IPMap);
-      console.log(newIPMap);
 
       if (typeof myEcharts !== null) {
         let myEchart = echarts.init(myEcharts);

@@ -181,10 +181,11 @@ export default defineComponent({
                 const data1 = resp.data;
                 if (data1._result !== 0 || data1.data === '') return;
                 const dataList = JSON.parse(data1.data);
+                if (typeof dataList !== 'object') return;
                 if (dataList && dataList.detail !== 'Not Found') {
                   modelList.value = dataList;
                 }
-                if (modelList.value.length !== 0 || !data.appSpec) return;
+                if (modelList.value.length === 0 || !data.appSpec) return;
                 const findObject = modelList.value.find((item) => item.hash === data.appSpec);
                 if (findObject) {
                   item.info = findObject.model_name;
