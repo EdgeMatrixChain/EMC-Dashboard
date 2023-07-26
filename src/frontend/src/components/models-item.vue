@@ -1,10 +1,10 @@
 <template>
   <div class="models-card">
     <template v-if="!item.hash">
-      <img src="@/assets/icon_not_image.png" width="200" height="200" />
+      <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
     <template v-else>
-      <img src="@/assets/icon_not_image.png" width="200" height="200" />
+      <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
     <div class="models-card-info">
       <div class="models-card-title">{{ item.model_name }}</div>
