@@ -13,8 +13,6 @@ import * as echarts from 'echarts';
 import './map/js/world.js';
 import { Http } from '@/tools/http';
 
-
-
 // import 'echarts/map/js/china.js';
 const http = Http.getInstance();
 
@@ -36,7 +34,6 @@ export default defineComponent({
         };
         newIPMap.push(data);
       });
-      console.log(newIPMap);
 
       if (typeof myEcharts !== null) {
         let myEchart = echarts.init(myEcharts);

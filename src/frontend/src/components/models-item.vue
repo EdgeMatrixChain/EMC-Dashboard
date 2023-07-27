@@ -1,5 +1,5 @@
 <template>
-  <div class="models-card">
+  <div class="models-card" ref="card">
     <template v-if="!item.hash">
       <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
@@ -37,12 +37,23 @@ export default defineComponent({
     modelName: { type: String, default: '' },
     nodeID: { type: String, default: '' },
   },
-  components: {},
+
+  /* background: linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%); */
 
   setup(props) {
     const item = ref(props.item);
     const modelName = ref(props.modelName);
     const nodeID = ref(props.nodeID);
+    onMounted(() => {
+      const random = Math.floor(Math.random() * 3);
+      const card = document.getElementsByClassName('models-card');
+      const list = [
+        'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
+        'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
+        'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
+      ];
+      card[0].style.background = list[random];
+    });
 
     return { item, modelName, nodeID };
   },
