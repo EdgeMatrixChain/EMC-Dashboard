@@ -7,13 +7,16 @@
       <template v-for="(item, index) in dataInfo">
         <div class="card-body-item">
           <template v-if="item.data !== ''">
-            <NSpace class="card-item-info" :vertical="true" justify="space-evenly">
+            <NSpace class="card-item-info" :vertical="true">
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
               </div>
               <div class="card-item-data">
                 <span style="color: #fff; font-size: 36px">{{ item.data }}</span>
                 <span style="color: #6f6376; font-size: 20px">&nbsp;{{ item.unit }}</span>
+              </div>
+              <div class="card-item-footer">
+                <span>{{ item.tips }}</span>
               </div>
             </NSpace>
             <img :src="item.icon" width="160" height="156" style="position: absolute; bottom: 0; right: 0" />
@@ -140,6 +143,7 @@ import { NPopover, NSpin, NSpace } from 'naive-ui';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
+import moment from 'moment';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
 import { useRewardStore } from '@/stores/reward';
@@ -160,6 +164,7 @@ type DataInfoItem = {
   data: string;
   icon: any;
   unit: string;
+  tips: string;
 };
 
 const http = Http.getInstance();
@@ -180,12 +185,12 @@ export default defineComponent({
     const nodeList1 = ref<NodeListItem[]>([]);
 
     const dataInfo = ref<DataInfoItem[]>([
-      { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '' },
-      { name: 'Transactions', icon: iconTransactions, unit: 'TXs', data: '' },
-      { name: 'Total Nodes', icon: iconTotalNodes, unit: 'Nodes', data: '' },
-      { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '' },
-      { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '' },
-      { name: 'Total Staked', icon: iconStaked, unit: 'EMC', data: '' },
+      { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '', tips: '' },
+      { name: 'Transactions', icon: iconTransactions, unit: 'TXs', data: '', tips: '' },
+      { name: 'Total Nodes', icon: iconTotalNodes, unit: 'Nodes', data: '', tips: '' },
+      { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '', tips: '' },
+      { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '', tips: '' },
+      { name: 'Total Staked', icon: iconStaked, unit: 'EMC', data: '', tips: '' },
     ]);
 
     const formatData = (data: number) => {
@@ -195,30 +200,56 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
-        if (resp._result !== 0) return;
-        dataInfo.value[0].data = formatData(resp.data);
+      console.log();
+
+      const endpoints = ['https://api.edgematrix.pro/api/v1/blocks', 'https://api.edgematrix.pro/api/v1/dip20transactions', 'https://api.edgematrix.pro/api/v1/nodes', 'https://api.edgematrix.pro/api/v1/nodestatsnapshot'];
+      endpoints.forEach(async (item, index) => {
+        const data = await fetchAndFormatData(item);
+        if (data !== null) {
+          if (index === 2) {
+            dataInfo.value[2].data = formatData(data.total);
+            dataInfo.value[3].data = formatData(data.poctotal);
+            dataInfo.value[3].tips = 'Start form ' + moment(Date.now()).format('dddd MMMM DD 00.00 UTC YYYY');
+          } else if (index === 3) {
+            dataInfo.value[4].data = formatData(Utils.toFixed(data.totalAvgPower, 2));
+            dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
+            dataInfo.value[5].data = formatData(data.totalStaked);
+          } else {
+            dataInfo.value[index].data = formatData(data);
+          }
+        }
       });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
-        if (resp._result !== 0) return;
-        dataInfo.value[1].data = formatData(resp.data);
-      });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
-        if (resp._result !== 0) return;
-        dataInfo.value[2].data = formatData(resp.data.total);
-        dataInfo.value[3].data = formatData(resp.data.poctotal);
-      });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
-        if (resp._result !== 0) return;
-        dataInfo.value[4].data = formatData(Utils.toFixed(resp.data.totalAvgPower, 2));
-        dataInfo.value[5].data = formatData(resp.data.totalStaked);
-      });
+      // http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
+      //   if (resp._result !== 0) return;
+      //   dataInfo.value[0].data = formatData(resp.data);
+      // });
+      // http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
+      //   if (resp._result !== 0) return;
+      //   dataInfo.value[1].data = formatData(resp.data);
+      // });
+      // http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
+      //   if (resp._result !== 0) return;
+      //   dataInfo.value[2].data = formatData(resp.data.total);
+      //   dataInfo.value[3].data = formatData(resp.data.poctotal);
+      // });
+      // http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
+      //   if (resp._result !== 0) return;
+      //   dataInfo.value[4].data = formatData(Utils.toFixed(resp.data.totalAvgPower, 2));
+      //   dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
+      //   dataInfo.value[5].data = formatData(resp.data.totalStaked);
+      // });
 
       const { total: total1, list: list1 } = await useReward.getNodeRewardList(0, 10);
       nodeList.value = list1;
       const { total: total2, list: list2 } = await useReward.getNodeRewardList(1, 10);
       nodeList1.value = list2;
     });
+
+    const fetchAndFormatData = async (url: string) => {
+      const resp = await http.get({ url });
+      if (resp._result !== 0) return null;
+      return resp.data;
+    };
 
     return {
       Utils,
@@ -283,7 +314,7 @@ export default defineComponent({
 }
 .card-item-info {
   position: absolute;
-  padding: 24px;
+  padding: 32px 24px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -301,6 +332,7 @@ export default defineComponent({
 .card-item-data {
   height: 36px;
   line-height: 36px;
+  margin: 24px 0 16px;
 }
 .card-item-footer {
   color: #f2d6ff;

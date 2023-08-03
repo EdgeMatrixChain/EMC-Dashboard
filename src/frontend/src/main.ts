@@ -7,7 +7,7 @@ import moment from 'moment';
 import { pinia } from './stores/index';
 import './style.css';
 
-moment.locale('zh-cn');
+moment.locale('en-us');
 
 const app = createApp(AppSetup);
 

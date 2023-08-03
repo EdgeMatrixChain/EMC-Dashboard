@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, watch } from 'vue';
+import { ref, defineComponent, onMounted, watch, nextTick } from 'vue';
 export default defineComponent({
   props: {
     item: { type: Object, default: {} },
@@ -46,13 +46,16 @@ export default defineComponent({
     const nodeID = ref(props.nodeID);
     onMounted(() => {
       const random = Math.floor(Math.random() * 3);
-      const card = document.getElementsByClassName('models-card');
-      const list = [
-        'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
-        'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
-        'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
-      ];
-      card[0].style.background = list[random];
+      nextTick(() => {
+        // const card = ref(null);
+        // const list = [
+        //   'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
+        //   'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
+        //   'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
+        // ];
+        // console.log(card.value);
+        // card[0].style.background = list[random];
+      });
     });
 
     return { item, modelName, nodeID };
