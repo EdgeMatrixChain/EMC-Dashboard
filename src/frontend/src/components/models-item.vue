@@ -1,5 +1,5 @@
 <template>
-  <div class="models-card" ref="card">
+  <div class="models-card" id="card" ref="card">
     <template v-if="!item.hash">
       <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
@@ -47,14 +47,16 @@ export default defineComponent({
     onMounted(() => {
       const random = Math.floor(Math.random() * 3);
       nextTick(() => {
-        // const card = ref(null);
-        // const list = [
-        //   'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
-        //   'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
-        //   'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
-        // ];
-        // console.log(card.value);
-        // card[0].style.background = list[random];
+        // const card = ref<any>(null);
+        const card = document.getElementById('card') || '';
+
+        const list = [
+          'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
+          'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
+          'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
+        ];
+        if (!card) return;
+        card.style.background = list[random];
       });
     });
 
@@ -74,13 +76,6 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.models-card-cover {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-}
 .models-card-info {
   position: absolute;
   left: 0;
@@ -91,7 +86,6 @@ export default defineComponent({
   backdrop-filter: blur(2px);
 }
 .models-card-title {
-  /* margin-bottom: 4px; */
   color: #fff;
   font-size: 14px;
   font-weight: 500;
@@ -120,7 +114,7 @@ export default defineComponent({
   border-radius: 18px;
   margin-right: 6px;
 }
-.models-card-owner-name {
+.models-card-owner-name { 
   color: #d8d8d8;
   font-size: 12px;
   font-weight: 400;
