@@ -48,7 +48,7 @@ export default defineComponent({
       const random = Math.floor(Math.random() * 3);
       nextTick(() => {
         // const card = ref<any>(null);
-        const card = document.getElementById('card') || '';
+        const card: HTMLElement | null = document.getElementById('card');
 
         const list = [
           'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
@@ -114,7 +114,7 @@ export default defineComponent({
   border-radius: 18px;
   margin-right: 6px;
 }
-.models-card-owner-name { 
+.models-card-owner-name {
   color: #d8d8d8;
   font-size: 12px;
   font-weight: 400;
