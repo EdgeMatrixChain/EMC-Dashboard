@@ -108,18 +108,26 @@ export default defineComponent({
       }
     });
 
+    // const allData: any = [];
     const init = async (index: number) => {
       const { total, list } = await useReward.getNodeRewardList(index, 10);
-
       nodeInfoList.value = list || [];
       pageCount.value = Math.floor(total / 10);
+
+      // allData.push(...list);
+      // if (index === pageCount.value + 1) {
+      //   console.log(JSON.stringify(allData));
+      // }
     };
 
     const handlePageChange = (currentPage: number) => {
       init(currentPage);
     };
-    const onPressSearch = () => {
+    const onPressSearch = async () => {
       router.push({ name: 'node-detail', params: { id: searchValue.value } });
+      // for (let index = 1; index <= pageCount.value + 1; index++) {
+      //   init(index);
+      // }
     };
 
     return {

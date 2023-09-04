@@ -171,16 +171,15 @@ export default defineComponent({
         if (isLogin.value === false) {
           userInfo.value.principal = '';
           userInfo.value.account = '';
+          walletBalance.value.EMCBalance = '';
+          walletBalance.value.ICPBalance = '';
           message.success('Logout successful');
         }
       },
       getWalletBalance(val: { EMCBalance: string; ICPBalance: string }) {
         // walletBalance.value = val;
-
         walletBalance.value.EMCBalance = Number(val.EMCBalance).toFixed(2);
         walletBalance.value.ICPBalance = Number(val.ICPBalance).toFixed(2);
-
-        console.log(val);
       },
     };
   },

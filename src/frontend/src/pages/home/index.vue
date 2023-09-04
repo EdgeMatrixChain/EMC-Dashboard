@@ -200,7 +200,6 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-      console.log();
 
       const endpoints = ['https://api.edgematrix.pro/api/v1/blocks', 'https://api.edgematrix.pro/api/v1/dip20transactions', 'https://api.edgematrix.pro/api/v1/nodes', 'https://api.edgematrix.pro/api/v1/nodestatsnapshot'];
       endpoints.forEach(async (item, index) => {
