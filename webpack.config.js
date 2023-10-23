@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const tailwindcss = require('tailwindcss');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -73,8 +74,25 @@ module.exports = {
           transpileOnly: isDevelopment,
         },
       },
-      { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
-      { test: /\.vue$/, use: ['vue-loader'] },
+      {
+        test: /\.css$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  tailwindcss,
+                  // 其他插件
+                ]
+              }
+            }
+          }
+        ]
+      },
+      { test: /\.vue$/, use: ['vue-loader',] },
     ],
   },
   plugins: [
