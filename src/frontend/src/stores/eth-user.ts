@@ -1,6 +1,5 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { Utils } from '@/tools/utils';
 import { Metamask } from '@/web3/metamask';
 import { Web3Service } from '@/web3';
 
@@ -16,7 +15,7 @@ const defaultUser = (): User => ({
   avatar: '',
 });
 
-export const useUserStore = defineStore('user', () => {
+export const useETHUserStore = defineStore('ethuser', () => {
   const user = ref<User>(defaultUser());
   const accounts = ref<string[]>([]);
   const account0 = ref<string>('');
