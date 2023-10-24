@@ -6,7 +6,6 @@ export class EMCApi extends Api {
     return ABI_RWAEMC;
   }
 
-
   async getLockedAmount({ account }: any) {
     return super.call({ method: 'getLockedAmount', data: [account] });
   }
