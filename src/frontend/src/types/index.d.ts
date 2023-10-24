@@ -15,3 +15,9 @@ declare var __PUBLIC_PATH__: string;
 interface Window {
   ic: any;
 }
+
+type Resp = {
+  _result: number;
+  _desc?: string;
+  data?: any;
+};
