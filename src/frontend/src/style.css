@@ -55,7 +55,26 @@ a {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
 }
+
+.n-input {
+  background: transparent !important;
+  border-radius: 8px !important;
+  border: 2px solid rgba(255, 255, 255, 0.20) !important;
+  transition: .3s;
+}
+
+.n-input input{
+  caret-color: #fff !important;
+}
+
+.n-input:not(.n-input--disabled).n-input--focus {
+  background: transparent !important;
+  border: 2px solid #FFB017 !important;
+  transition: .3s;
+}
+
