@@ -1,14 +1,14 @@
 <template>
-    <div class="w-screen flex flex-col bg-[rgb(0,2,27)]">
+    <div class="w-screen flex flex-col bg-[rgb(0,2,27)] fixed left-0 h-screen top-0 overflow-y-scroll">
         <!-- 背景 -->
         <Star />
 
         <!-- 头部 -->
         <div
-            class="flex z-50 fixed max-w-[1340px] px-5 w-full top-0 left-0 justify-between h-[90px] flex-shrink-0 items-center">
-            <img class="w-[211px] h-[39px] flex-shrink-0" src="./images/logo.png" alt="">
+            class="flex z-50 fixed max-w-[1340px] w-full px-5 top-0 left-0 justify-between h-[90px] flex-shrink-0 items-center">
+            <img class="md:w-[211px] md:h-[39px] w-[148px] h-[31px] flex-shrink-0" src="./images/logo.png" alt="">
             <div
-                class="flex justify-center items-center text-[16px] text-[#fff] font-bold cursor-pointer rounded-[8px] btn-bg w-[160px] h-[44px] flex-shrink-0">
+                class="w-[128px] h-[35px] md:w-[160px] md:h-[44px] flex justify-center items-center text-[14px] md:text-[16px] text-[#fff] font-bold cursor-pointer rounded-[8px] btn-bg flex-shrink-0">
                 Wallet Connect
             </div>
         </div>
@@ -16,11 +16,14 @@
         <!-- 第一页 -->
         <div class="w-full relative z-10 flex flex-col pt-[90px] h-screen min-h-[670px] flex-shrink-0">
             <div class="relative max-w-[1340px] mx-auto justify-center flex w-full flex-1 px-5 flex-shrink-0">
-                <div class="flex flex-1 flex-col justify-center mr-[50px]">
-                    <h1 class="text-[58px] leading-[58px] xl:text-[68px] font-bold xl:leading-[84px] text-[#fff]">
+                <div class="flex flex-1 flex-col justify-center items-center">
+                    <h1
+                        class="text-[58px] leading-[58px] w-full text-center md:w-[50%] xl:text-[68px] font-bold xl:leading-[84px] text-[#fff]">
                         Earn rewards while securing EMC
                     </h1>
-                    <p class="mt-[50px] text-[20px] mr-[80px] leading-[30px] text-white/70">Unlock the power of your
+                    <p class="mt-[50px] text-[20px] w-full md:w-[50%] text-center leading-[30px] text-white/70">
+                        Unlock the
+                        power of your
                         EMC
                         tokens and
                         contribute to
@@ -29,9 +32,6 @@
                         security and
                         growth through
                         staking.</p>
-                </div>
-                <div class="flex w-[50%] h-[calc(100%-30px)] border">
-                    123
                 </div>
                 <div class="page-one-bg absolute top-0"></div>
             </div>
@@ -61,14 +61,15 @@
                     </div>
                 </div>
             </div>
+            <Bg />
         </div>
 
         <!-- 第二页 -->
-        <div class="w-full flex flex-col pt-[90px] flex-shrink-0">
+        <div class="w-full relative z-10 flex flex-col pt-[90px] flex-shrink-0">
             <h2 class="text-[48px] font-bold leading-[84px] text-[#fff] flex justify-center">Staking with EMC</h2>
             <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 mt-[50px] flex-shrink-0">
                 <div
-                    class="bg-[#1A1C34] pt-[76px] pb-[68px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
+                    class="bg-[#1A1C34] pt-[76px] flex-col md:flex-row pb-[68px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
                     <div class="flex flex-[1.1] flex-col pl-[80px]">
                         <div class="flex items-center">
                             <p class="mr-[10px] text-[28px] leading-[28px] text-[#fff]">Duration (Days)</p>
@@ -345,6 +346,7 @@
 import { ref } from 'vue';
 import { NPopover, NInputNumber, NModal, NCard } from 'naive-ui';
 import Star from './components/star.vue'
+import Bg from './components/bg.vue'
 
 const daysList: { id: number, label: string }[] = [
     {
