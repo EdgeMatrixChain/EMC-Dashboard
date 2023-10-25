@@ -4,65 +4,10 @@
         <Star />
 
         <!-- 头部 -->
-        <div
-            class="flex z-50 fixed max-w-[1340px] w-full px-5 top-0 left-0 justify-between h-[90px] flex-shrink-0 items-center">
-            <img class="md:w-[211px] md:h-[39px] w-[148px] h-[31px] flex-shrink-0" src="./images/logo.png" alt="">
-            <div
-                class="w-[128px] h-[35px] md:w-[160px] md:h-[44px] flex justify-center items-center text-[14px] md:text-[16px] text-[#fff] font-bold cursor-pointer rounded-[8px] btn-bg flex-shrink-0">
-                Wallet Connect
-            </div>
-        </div>
+        <Header />
 
         <!-- 第一页 -->
-        <div class="w-full relative z-10 flex flex-col pt-[90px] h-screen min-h-[670px] flex-shrink-0">
-            <div class="relative max-w-[1340px] mx-auto justify-center flex w-full flex-1 px-5 flex-shrink-0">
-                <div class="flex flex-1 flex-col justify-center items-center">
-                    <h1
-                        class="text-[58px] leading-[58px] w-full text-center md:w-[50%] xl:text-[68px] font-bold xl:leading-[84px] text-[#fff]">
-                        Earn rewards while securing EMC
-                    </h1>
-                    <p class="mt-[50px] text-[20px] w-full md:w-[50%] text-center leading-[30px] text-white/70">
-                        Unlock the
-                        power of your
-                        EMC
-                        tokens and
-                        contribute to
-                        EMC
-                        network's
-                        security and
-                        growth through
-                        staking.</p>
-                </div>
-                <div class="page-one-bg absolute top-0"></div>
-            </div>
-            <div class="h-[138px] w-full flex backdrop-filter bg-[rgb(26,27,51)]">
-                <div class="max-w-[1340px] mx-auto flex w-full justify-center flex-1 px-5 flex-shrink-0">
-                    <div
-                        class="flex flex-col items-center justify-center relative pr-[100px] after:bg-white/20 after:absolute after:right-[50px] after:content-[''] after:flex after:w-[1px] after:h-[40px]">
-                        <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">25,349.239</p>
-                        <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL EMC
-                            STAKED</em>
-                    </div>
-                    <div
-                        class="flex flex-col items-center justify-center relative pr-[100px] after:bg-white/20 after:absolute after:right-[50px] after:content-[''] after:flex after:w-[1px] after:h-[40px]">
-                        <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">864,769</p>
-                        <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL
-                            VALIDATORS</em>
-                    </div>
-                    <div
-                        class="flex flex-col items-center justify-center relative pr-[100px] after:bg-white/20 after:absolute after:right-[50px] after:content-[''] after:flex after:w-[1px] after:h-[40px]">
-                        <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">874,490</p>
-                        <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">Volume in
-                            circulation</em>
-                    </div>
-                    <div class="flex flex-col items-center justify-center">
-                        <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">3%~6%</p>
-                        <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">APR</em>
-                    </div>
-                </div>
-            </div>
-            <Bg />
-        </div>
+        <Banner />
 
         <!-- 第二页 -->
         <div class="w-full relative z-10 flex flex-col pt-[90px] flex-shrink-0">
@@ -90,10 +35,10 @@
                             </n-popover>
                         </div>
                         <div class="flex mt-[34px] w-full flex-wrap">
-                            <div v-for="item in daysList" :key="item.id"
+                            <div v-for="item in daysList" :key="item.day"
                                 class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] mr-[36px] mb-[30px] border-[#fff]/20 w-[144px] h-[54px] flex items-center justify-center text-[24px] font-medium text-[#fff]"
-                                :class="item.id === currentDay && '!border-[#FFB017]'" @click="currentDay = item.id">
-                                <div v-show="item.id === currentDay"
+                                :class="item.day === currentDay.day && '!border-[#FFB017]'" @click="currentDay = item">
+                                <div v-show="item.day === currentDay.day"
                                     class="w-8 overflow-hidden inline-block absolute right-0 top-0">
                                     <div class="h-16 bg-[#FFB017] -rotate-45 transform origin-top-left"></div>
                                     <i class="absolute top-0 right-[2px]">
@@ -105,7 +50,7 @@
                                         </svg>
                                     </i>
                                 </div>
-                                {{ item.label }}
+                                {{ item.day }} Day
                             </div>
                         </div>
 
@@ -149,7 +94,9 @@
                                 </div>
                             </span>
                         </div>
-                        <p class="text-[#FFB017] text-[16px] font-medium mt-[22px]">30Days * Phase 10 (APY 2.6%)</p>
+                        <p class="text-[#FFB017] text-[16px] font-medium mt-[22px]">
+                            {{ currentDay.day }}Days * Phase {{ phase }} (APY {{ APY }}%)
+                        </p>
                         <div class="flex flex-col w-full mt-[56px] relative">
                             <div class="absolute left-0 top-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="123" viewBox="0 0 9 123"
@@ -176,7 +123,7 @@
                                     <p>2023-10-19 14:23</p>
                                 </div>
                                 <div class="flex ml-[20px] justify-between mr-[10%] mt-[24px]">
-                                    <p class="text-[18px] font-medium text-[#fff]/70 leading-[18px]">Last release time:
+                                    <p class="text-[18px] font-medium text-[#fff]/70 leading-[18px]">Next release time:
                                     </p>
                                     <p>2023-10-19 14:23</p>
                                 </div>
@@ -193,26 +140,36 @@
                             class="flex flex-col w-[417px] py-[33px] px-[40px] ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
                             <div class="flex mb-[35px]">
                                 <p class="text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px]">3~6%</p>
+                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">{{ APY }}</p>
                             </div>
                             <div class="flex mb-[35px]">
                                 <p class="text-[18px] text-white/70 font-medium leading-[18px]">Daily Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px]">20.23 EMC</p>
+                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                    {{ incomeDay }} EMC
+                                </p>
                             </div>
                             <div class="flex mb-[35px]">
                                 <p class="text-[18px] text-white/70 font-medium leading-[18px]">Monthly Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px]">500 EMC</p>
+                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                    {{ incomeMonth }} EMC
+                                </p>
                             </div>
                             <div class="flex">
                                 <p class="text-[18px] text-white/70 font-medium leading-[18px]">Yearly Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px]">10009 EMC</p>
+                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                    {{ incomeYear }} EMC
+                                </p>
                             </div>
                         </div>
                         <div class="w-[417px] ml-auto mt-[83px]">
                             <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
                             <div
                                 class="mt-[15px] flex justify-between items-center w-[417px] h-[54px] rounded-[8px] bg-[#2A2C47]">
-                                <p class="ml-[20px] text-[24px] leading-[24px] text-white/70 font-medium">0.00</p>
+                                <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
+                                    <n-input-number class="phase-input" size="large" :bordered="false" v-model:value="EMC"
+                                        :update-value-on-input="false" placeholder="" :min="0" :max="EMCMax"
+                                        :show-button="false" />
+                                </p>
                                 <span class="flex mr-[20px] items-center">
                                     <p class="flex mr-[20px] text-[24px] leading-[24px] text-white">EMC</p>
                                     <em class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
@@ -227,19 +184,26 @@
                                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">3000.34 EMC</p>
                             </div>
                             <div class="flex mt-[20px] w-full justify-between">
-                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">Redeemable:</p>
+                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
                                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">200.34 EMC</p>
                             </div>
                         </div>
-                        <div class="w-[417px] ml-auto mt-[30px] justify-between flex">
-                            <div class="btn-bg2 cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]"
-                                @click="onStaking">
+                        <div v-if="useETHUser.account0" class="w-[417px] ml-auto mt-[30px] justify-between flex">
+                            <div
+                                class="btn-bg2 cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]">
                                 Staking Now
                             </div>
-                            <div
-                                class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]">
-                                Unstake
+                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]"
+                                @click="onStaking">
+                                Withdraw
                             </div>
+                        </div>
+                        <div v-else @click="onConnect"
+                            class="w-[417px] h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-auto mt-[30px] justify-between flex">
+                            <p :class="initLoading ? 'opacity-60 duration-300' : ''"
+                                class="w-full h-full flex justify-center items-center text-[16px] font-medium text-[#fff]">
+                                Wallet Connect
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -247,63 +211,7 @@
         </div>
 
         <!-- 第三页 -->
-        <div class="w-full flex flex-col pt-[90px] flex-shrink-0 pb-[300px] relative z-10">
-            <h2 class="text-[48px] font-bold leading-[84px] text-[#fff] flex justify-center">Why Stake with EMC?</h2>
-            <div class="max-w-[742px] flex-col mx-auto flex w-full flex-1 px-5 mt-[50px] flex-shrink-0">
-
-                <div class="flex flex-col duration-300 mb-[40px] border-linear w-full overflow-hidden rounded-[10px]">
-                    <div
-                        class="w-[calc(100%-4px)] py-[20px] h-[calc(100%-4px)] cursor-pointer pl-[40px] group duration-300 overflow-hidden rounded-[10px] flex-shrink-0 bg-[rgb(0,2,27)] m-[2px]">
-                        <p class="text-[20px] font-semibold text-[#fff]">1.Earn EMC Ecosystem Rewards.</p>
-                        <p
-                            class="text-[#fff]/70 text-[16px] leading-[24px] h-[0] opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 duration-300">
-                            Staking your EMC tokens
-                            provides an opportunity
-                            to earn
-                            additional EMC
-                            tokens. It's a
-                            simple way
-                            to increase your holdings and actively participate in the growth of our ecosystem.</p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col duration-300 mb-[40px] border-linear w-full overflow-hidden rounded-[10px]">
-                    <div
-                        class="w-[calc(100%-4px)] py-[20px] h-[calc(100%-4px)] cursor-pointer pl-[40px] group duration-300 overflow-hidden rounded-[10px] flex-shrink-0 bg-[rgb(0,2,27)] m-[2px]">
-                        <p class="text-[20px] font-semibold text-[#fff]">2. Multiplier e-Power for Mining Rewards.</p>
-                        <p
-                            class="text-[#fff]/70 text-[16px] leading-[24px] h-[0] opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 duration-300">
-                            Stakers can benefit from a multiplier e-Power for mining rewards. It's an incentive for actively
-                            supporting our network and enjoying additional gains.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col duration-300 mb-[40px] border-linear w-full overflow-hidden rounded-[10px]">
-                    <div
-                        class="w-[calc(100%-4px)] py-[20px] h-[calc(100%-4px)] cursor-pointer pl-[40px] group duration-300 overflow-hidden rounded-[10px] flex-shrink-0 bg-[rgb(0,2,27)] m-[2px]">
-                        <p class="text-[20px] font-semibold text-[#fff]">3. Enhanced Community Governance.</p>
-                        <p
-                            class="text-[#fff]/70 text-[16px] leading-[24px] h-[0] opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 duration-300">
-                            By staking, you gain a voice in EMC's governance. Your participation can help shape the future
-                            of our project, ensuring it aligns with your interests.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col duration-300 border-linear w-full overflow-hidden rounded-[10px]">
-                    <div
-                        class="w-[calc(100%-4px)] py-[20px] h-[calc(100%-4px)] cursor-pointer pl-[40px] group duration-300 overflow-hidden rounded-[10px] flex-shrink-0 bg-[rgb(0,2,27)] m-[2px]">
-                        <p class="text-[20px] font-semibold text-[#fff]">4. Secure the Computing Network.</p>
-                        <p
-                            class="text-[#fff]/70 text-[16px] leading-[24px] h-[0] opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 duration-300">
-                            Stakers play a pivotal role in maintaining the stability and security of our computing network.
-                            Your contribution enhances the overall integrity of our platform.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <Ask />
 
         <n-modal v-model:show="showModal">
             <n-card class="withdraw-modal" style="width: 550px" title="" :bordered="false" size="huge" role="dialog"
@@ -313,7 +221,7 @@
                     <div class="px-[66px] mt-[40px] w-full">
                         <p class="text-[18px] text-[#fff] font-medium">Funds</p>
                         <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
-                            <p class="ml-[20px] text-[24px] leading-[24px] text-white/70 font-medium">0.00</p>
+                            <p class="ml-[20px] text-[24px] leading-[24px] text-white/70 font-medium">{{ EMC }}</p>
                             <span class="flex mr-[20px] items-center">
                                 <p class="flex mr-[20px] text-[24px] leading-[24px] text-white">EMC</p>
                                 <em class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
@@ -343,37 +251,56 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { NPopover, NInputNumber, NModal, NCard } from 'naive-ui';
 import Star from './components/star.vue'
-import Bg from './components/bg.vue'
+import Ask from './components/ask.vue'
+import Header from './components/header.vue'
+import Banner from './components/banner.vue'
+import { useETHUserStore } from '@/stores/eth-user';
+import { ApiManager } from '@/web3/api'
+import { ERC20Api } from '@/web3/api/erc20';
+import { EMCApi } from '@/web3/api/emc';
 
-const daysList: { id: number, label: string }[] = [
+type dayItem = { day: number, magnification: number, apy: number }
+const daysList: dayItem[] = [
     {
-        id: 1,
-        label: '1 Day'
+        day: 1,
+        magnification: 1,
+        apy: 0.67,
     },
     {
-        id: 2,
-        label: '30 Days'
+        day: 30,
+        magnification: 1.03,
+        apy: 1,
     },
     {
-        id: 3,
-        label: '90 Days'
+        day: 90,
+        magnification: 1.055,
+        apy: 1.3,
     },
     {
-        id: 4,
-        label: '180 Days'
+        day: 180,
+        magnification: 1.08,
+        apy: 1.8,
     },
     {
-        id: 5,
-        label: '360 Days'
-    }
+        day: 360,
+        magnification: 1.1,
+        apy: 2.2,
+    },
 ]
-const currentDay = ref(1)
-const phase = ref(1)
-const phaseMin = ref(1)
-const phaseMax = ref(99)
+const currentDay = ref<dayItem>({
+    day: 1,
+    apy: 0.67,
+    magnification: 1,
+})
+
+const useETHUser = useETHUserStore();
+const apiManager = ApiManager.getInstance();
+const phase = ref<number>(1)
+const phaseMin = ref<number>(1)
+const phaseMax = ref<number>(9999)
 const phaseAdd = () => {
     if (phase.value >= phaseMax.value) {
         return
@@ -392,6 +319,64 @@ const onStaking = () => {
     showModal.value = true
 }
 
+const APY = ref<string>('0.67')
+const EMC = ref(0)
+const EMCMax = ref(99999999999999)
+const incomeDay = ref<string>('0')
+const incomeMonth = ref<string>('0')
+const incomeYear = ref<string>('0')
+
+const account0 = ref<string>('')
+let emcApi: null | EMCApi = null;
+let erc20Api: null | ERC20Api = null;
+
+// 链接钱包
+const onConnect = async () => {
+    if (initLoading.value) {
+        return
+    }
+    if (!erc20Api) {
+        return
+    }
+    await useETHUser.signIn({ type: 'metamask' })
+    account0.value = useETHUser.account0
+    // let api = Api.init('1')
+    // let erc20Api = apiManager.create(ERC20Api, { address: account0.value });
+    // console.log(erc20Api)
+    // await emcApi.getLockedAmount({ account: account0 });
+    await erc20Api.balanceOf({ account: account0.value });
+}
+
+watch(
+    () => [EMC.value, APY.value],
+    () => {
+        incomeYear.value = (EMC.value * (Number(APY.value) / 100)).toFixed(4)
+        incomeMonth.value = (Number(incomeYear.value) / 12).toFixed(4)
+        incomeDay.value = (Number(incomeYear.value) / 365).toFixed(4)
+    },
+    { immediate: true }
+);
+
+watch(
+    () => [currentDay.value, phase.value],
+    () => {
+        if (!phase.value) {
+            phase.value = 1
+        }
+        let { magnification, day, apy } = currentDay.value
+        APY.value = (apy * Math.pow(magnification, phase.value - 1)).toFixed(2)
+    },
+    { immediate: true }
+);
+
+const initLoading = ref(true)
+onMounted(async () => {
+    const emcContract = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
+    emcApi = apiManager.create(EMCApi, { address: emcContract });
+    const { data: erc20ContractAddress } = await emcApi.token();
+    erc20Api = apiManager.create(ERC20Api, { address: erc20ContractAddress });
+    initLoading.value = false
+});
 </script>
 
 <style scoped>
