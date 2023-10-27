@@ -236,13 +236,13 @@
                         <div v-if="useETHUser.account0"
                             class="w-[calc(100%-30px)] ml-[15px] lg:w-[417px] lg:ml-auto mt-[30px] justify-between flex">
                             <div :class="stakingLoading ? 'opacity-60 cursor-pointer' : 'opacity-100'"
-                                class="btn-bg2 cursor-pointer duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] lg:w-[160px] h-[44px]"
+                                class="btn-bg2 cursor-pointer duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[160px] h-[44px]"
                                 @click="staking">
                                 <img v-if="stakingLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg"
                                     alt="">
                                 Staking Now
                             </div>
-                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] lg:w-[160px] h-[44px]"
+                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[160px] h-[44px]"
                                 @click="onWithdraw">
                                 Withdraw
                             </div>
@@ -263,22 +263,23 @@
         <Ask />
 
         <n-modal v-model:show="showModal">
-            <n-card class="withdraw-modal" style="width: 550px" title="" :bordered="false" size="huge" role="dialog"
-                aria-modal="true">
+            <n-card class="withdraw-modal w-[calc(100%-30px)] md:w-[550px]" title="" :bordered="false" size="huge"
+                role="dialog" aria-modal="true">
                 <div class="flex flex-col items-center bg-[#1A1C34] rounded-[24px]">
                     <p class="text-[24px] pt-[30px] text-[#fff] font-medium">Withdraw</p>
-                    <div class="px-[66px] mt-[40px] w-full">
+                    <div class="px-[15px] md:px-[66px] mt-[20px] md:mt-[40px] w-full">
                         <p class="text-[18px] text-[#fff] font-medium">Funds</p>
                         <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
                             <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
-                                <n-input-number class="number-input" size="large" :bordered="false"
+                                {{ releasable }}
+                                <!-- <n-input-number class="number-input" size="large" :bordered="false"
                                     v-model:value="redemption" :update-value-on-input="false" placeholder="" :min="0"
-                                    :max="releasable ? releasable : 0" :show-button="false" />
+                                    :max="releasable ? releasable : 0" :show-button="false" /> -->
                             </p>
                             <span class="flex mr-[20px] items-center">
-                                <p class="flex mr-[20px] text-[24px] leading-[24px] text-white">EMC</p>
-                                <em @click="redemption = (releasable ? releasable : 0)"
-                                    class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
+                                <p class="flex text-[24px] leading-[24px] text-white">EMC</p>
+                                <!-- <em @click="redemption = (releasable ? releasable : 0)"
+                                    class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em> -->
                             </span>
                         </div>
                         <div class="flex mt-[20px] w-full justify-between">
@@ -299,8 +300,10 @@
                                 {{ typeof releasable === 'undefined' ? '---' : releasable }} EMC
                             </p>
                         </div>
-                        <div
-                            class="w-full mt-[60px] cursor-pointer rounded-[8px] h-[44px] bg-[#323557]/60 flex-shrink-0 mb-[30px] flex items-center justify-center text-[16px] text-[#fff] font-medium">
+                        <div @click="onDecompression"
+                            class="w-full md:mt-[60px] mt-[30px] cursor-pointer rounded-[8px] h-[44px] bg-[#323557]/60 flex-shrink-0 mb-[30px] flex items-center justify-center text-[16px] text-[#fff] font-medium">
+                            <img v-if="decompressionLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg"
+                                alt="">
                             Withdraw
                         </div>
                     </div>
@@ -324,6 +327,7 @@ import { EMCApi } from '@/web3/api/emc';
 import { ceil } from 'lodash';
 import moment from 'moment';
 import { ethers } from 'ethers';
+import emc from '@/web3/abi/emc';
 
 const message = useMessage();
 
@@ -444,6 +448,7 @@ const balanceInit = () => {
 
     // 查询当前可以释放多少token，以及释放时可以获得多少奖励
     emcApi!.getReleasableAmount({ account: account0.value }).then(res => {
+        console.log(res)
         releasable.value = getAmount(Number(res.data[0]), decimals.value!)
         rewards.value = getAmount(Number(res.data[1]), decimals.value!)
         console.log('可释放', releasable.value)
@@ -470,6 +475,9 @@ type FormData = {
 };
 const stakingLoading = ref(false)
 const staking = async () => {
+    if (stakingLoading.value) {
+        return
+    }
     if (!balance.value) {
         return
     }
@@ -479,11 +487,12 @@ const staking = async () => {
     }
     stakingLoading.value = true
     const formData: FormData = {
-        start: Math.floor(moment().add(1, 'days').valueOf() / 1000),
+        start: Math.floor(moment().valueOf() / 1000) + 1800,
         cycles: phase.value,
         cycleUnit: currentDay.value.id,
         amount: ethers.parseUnits(EMC.value.toString(), decimals.value),
     };
+    console.log(formData);
 
     try {
         // 授权支付
@@ -496,7 +505,9 @@ const staking = async () => {
         }
         try {
             // 确认交易
-            const pay = await emcApi!.createVestingSchedule({ account: account0.value, start: formData.start, cycles: formData.cycles, cycleUnit: formData.cycleUnit, amount: formData.amount });
+            const pay = await emcApi!.createVestingSchedule({
+                account: account0.value, start: formData.start, cycles: formData.cycles, cycleUnit: formData.cycleUnit as any, amount: formData.amount
+            });
             console.log(pay)
             if (pay._result !== 0) {
                 message.error(`CreateVestingSchedule Error`);
@@ -519,13 +530,39 @@ const staking = async () => {
     }
 }
 
-// 解压
+// 解压模态框
 const showModal = ref(false)
 const onWithdraw = () => {
     if (!useETHUser.account0) {
         return
     }
     showModal.value = true
+}
+
+// 解压
+const decompressionLoading = ref(false)
+const onDecompression = () => {
+    if (decompressionLoading.value) {
+        return
+    }
+    if (!releasable.value) {
+        message.error(`There is no EMC to decompress`);
+        return
+    }
+    decompressionLoading.value = true
+
+    emcApi!.release({ address: account0.value }).then(res => {
+        console.log(res)
+        if (res._result !== 0) {
+            message.error(`Decompression Error`);
+            return false;
+        }
+        message.success(`Decompression Success`);
+    }).catch(err => {
+        message.error(`Decompression Error`);
+    }).finally(() => {
+        decompressionLoading.value = false
+    })
 }
 
 watch(
