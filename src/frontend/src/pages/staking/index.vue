@@ -10,14 +10,19 @@
         <Banner />
 
         <!-- 第二页 -->
-        <div class="w-full relative z-10 flex flex-col pt-[90px] flex-shrink-0">
-            <h2 class="text-[48px] font-bold leading-[84px] text-[#fff] flex justify-center">Staking with EMC</h2>
-            <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 mt-[50px] flex-shrink-0">
+        <div class="w-full relative z-10 flex flex-col pt-[70px] md:pt-[90px] flex-shrink-0">
+            <h2
+                class="text-[32px] leading-[32px] md:text-[48px] font-bold md:leading-[84px] text-[#fff] flex justify-center">
+                Staking with EMC
+            </h2>
+            <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 md:mt-[50px] mt-[40px] flex-shrink-0">
                 <div
-                    class="bg-[#1A1C34] pt-[76px] flex-col md:flex-row pb-[68px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
-                    <div class="flex flex-[1.1] flex-col pl-[80px]">
+                    class="bg-[#1A1C34] md:pt-[76px] pt-[33px] flex-col md:flex-row md:pb-[68px] pb-[50px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
+                    <div class="flex flex-[1.1] flex-col md:pl-[80px] pl-[15px]">
                         <div class="flex items-center">
-                            <p class="mr-[10px] text-[28px] leading-[28px] text-[#fff]">Duration (Days)</p>
+                            <p class="mr-[10px] text-[24px] md:text-[28px] leading-[24px] md:leading-[28px] text-[#fff]">
+                                Duration (Days)
+                            </p>
                             <n-popover trigger="hover">
                                 <template #trigger>
                                     <i class="flex cursor-pointer">
@@ -36,13 +41,21 @@
                         </div>
                         <div class="flex mt-[34px] w-full flex-wrap">
                             <div v-for="item in daysList" :key="item.day"
-                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] mr-[36px] mb-[30px] border-[#fff]/20 w-[144px] h-[54px] flex items-center justify-center text-[24px] font-medium text-[#fff]"
+                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] md:mr-[36px] mr-[18px] mb-[30px] border-[#fff]/20 md:w-[144px] w-[87px] md:h-[54px] h-[42px] flex items-center justify-center md:text-[24px] text-[16px] font-medium text-[#fff]"
                                 :class="item.day === currentDay.day && '!border-[#FFB017]'" @click="currentDay = item">
                                 <div v-show="item.day === currentDay.day"
-                                    class="w-8 overflow-hidden inline-block absolute right-0 top-0">
+                                    class="md:w-8 w-6 overflow-hidden inline-block absolute right-0 top-0">
                                     <div class="h-16 bg-[#FFB017] -rotate-45 transform origin-top-left"></div>
-                                    <i class="absolute top-0 right-[2px]">
+                                    <i class="absolute top-0 right-[2px] hidden md:flex">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                            fill="none">
+                                            <path
+                                                d="M0.940918 9.90486C0.940918 9.90486 4.85025 11.5386 6.79348 15.0709C9.12751 10.6996 13.6077 6.62227 14.9349 6.32071C14.9349 4.5117 14.9349 3.76767 14.9349 0.985672C9.58742 4.51803 7.01963 11.0223 7.01963 11.0223L4.20635 8.02831L0.940918 9.90486Z"
+                                                fill="white" />
+                                        </svg>
+                                    </i>
+                                    <i class="absolute top-0 right-[2px] flex md:hidden">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 16 16"
                                             fill="none">
                                             <path
                                                 d="M0.940918 9.90486C0.940918 9.90486 4.85025 11.5386 6.79348 15.0709C9.12751 10.6996 13.6077 6.62227 14.9349 6.32071C14.9349 4.5117 14.9349 3.76767 14.9349 0.985672C9.58742 4.51803 7.01963 11.0223 7.01963 11.0223L4.20635 8.02831L0.940918 9.90486Z"
@@ -54,8 +67,9 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center mt-[20px]">
-                            <p class="mr-[10px] text-[28px] leading-[28px] text-[#fff]">Staking Phases</p>
+                        <div class="flex items-center md:mt-[20px]">
+                            <p class="mr-[10px] text-[24px] md:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
+                                Staking Phases</p>
                             <n-popover trigger="hover">
                                 <template #trigger>
                                     <i class="flex cursor-pointer">
@@ -73,11 +87,11 @@
                             </n-popover>
                         </div>
 
-                        <div class="flex mt-[34px] items-center">
-                            <n-input-number size="large" :bordered="false" v-model:value="phase"
+                        <div class="flex md:mt-[34px] mt-[20px] items-center">
+                            <n-input-number class="number-input" size="large" :bordered="false" v-model:value="phase"
                                 :update-value-on-input="false" placeholder="" :min="phaseMin" :max="phaseMax"
                                 :show-button="false" />
-                            <p class="ml-3 text-[20px] text-[#fff] font-medium">Phase</p>
+                            <p class="ml-3 md:text-[20px] text-[16px] text-[#fff] font-medium">Phase</p>
                             <span class="flex flex-col ml-[12px]">
                                 <div @click="phaseAdd" class="w-6 overflow-hidden inline-block cursor-pointer">
                                     <svg width="14" height="9" viewBox="0 0 14 9" fill="none"
@@ -94,10 +108,11 @@
                                 </div>
                             </span>
                         </div>
-                        <p class="text-[#FFB017] text-[16px] font-medium mt-[22px]">
-                            {{ currentDay.day }}Days * Phase {{ phase }} (APY {{ APY }}%)
+                        <p class="text-[#FFB017] md:text-[16px] text-[14px] font-medium md:mt-[22px] mt-[15px]">
+                            <!-- {{ currentDay.day }}Days * Phase {{ phase }} (APY {{ APY }}%) -->
+                            Total {{ currentDay.day * phase }} Days (APY {{ APY }}%)
                         </p>
-                        <div class="flex flex-col w-full mt-[56px] relative">
+                        <div class="flex flex-col w-full md:mt-[56px] mt-[20px] relative">
                             <div class="absolute left-0 top-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="123" viewBox="0 0 9 123"
                                     fill="none">
@@ -117,89 +132,123 @@
                                 </svg>
                             </div>
                             <div class="flex flex-col">
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[3px]">
-                                    <p class="text-[18px] font-medium text-[#fff]/70 leading-[18px]">Initiate of pledge:
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[5px] md:mt-[3px]">
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        Initiate of pledge:
                                     </p>
-                                    <p>2023-10-19 14:23</p>
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[24px]">
-                                    <p class="text-[18px] font-medium text-[#fff]/70 leading-[18px]">Next release time:
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] md:mt-[24px]">
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        Next release time:
                                     </p>
-                                    <p>2023-10-19 14:23</p>
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[24px]">
-                                    <p class="text-[18px] font-medium text-[#fff]/70 leading-[18px]">End of pledge:</p>
-                                    <p>2023-10-19 14:23</p>
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] md:mt-[24px]">
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        End of pledge:</p>
+                                    <p
+                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        2023-10-19 14:23</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div
-                        class="flex flex-1 flex-col justify-center pr-[80px] relative before:content-[''] before:left-0 before:w-[2px] before:absolute before:h-[360px] before:bg-[#fff]/20">
+                        class="flex md:flex-1 mt-[40px] md:mt-0 flex-col justify-center md:pr-[80px] relative before:content-[''] before:hidden md:before:flex before:left-0 before:w-[2px] before:absolute before:h-[360px] before:bg-[#fff]/20">
                         <div
-                            class="flex flex-col w-[417px] py-[33px] px-[40px] ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
-                            <div class="flex mb-[35px]">
-                                <p class="text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">{{ APY }}</p>
+                            class="flex flex-col md:w-[417px] w-[calc(100%-30px)] flex-1 md:py-[33px] py-[25px] md:px-[40px] px-[18px] ml-[15px] md:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
+                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
+                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
+                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                    {{ APY }}%
+                                </p>
                             </div>
-                            <div class="flex mb-[35px]">
-                                <p class="text-[18px] text-white/70 font-medium leading-[18px]">Daily Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
+                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                                    Daily Earnings:
+                                </p>
+                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeDay }} EMC
                                 </p>
                             </div>
-                            <div class="flex mb-[35px]">
-                                <p class="text-[18px] text-white/70 font-medium leading-[18px]">Monthly Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
+                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                                    Monthly Earnings:
+                                </p>
+                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeMonth }} EMC
                                 </p>
                             </div>
-                            <div class="flex">
-                                <p class="text-[18px] text-white/70 font-medium leading-[18px]">Yearly Earnings:</p>
-                                <p class="text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                            <div class="flex justify-between md:justify-start">
+                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                                    Yearly Earnings:
+                                </p>
+                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeYear }} EMC
                                 </p>
                             </div>
                         </div>
-                        <div class="w-[417px] ml-auto mt-[83px]">
+                        <div class="w-[calc(100%-30px)] md:w-[417px] ml-[15px] md:ml-auto md:mt-[83px] mt-[40px]">
                             <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
                             <div
-                                class="mt-[15px] flex justify-between items-center w-[417px] h-[54px] rounded-[8px] bg-[#2A2C47]">
+                                class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
                                 <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
-                                    <n-input-number class="phase-input" size="large" :bordered="false" v-model:value="EMC"
-                                        :update-value-on-input="false" placeholder="" :min="0" :max="EMCMax"
-                                        :show-button="false" />
+                                    <n-input-number :disabled="useETHUser.account0 ? false : true" class="number-input"
+                                        size="large" :bordered="false" v-model:value="EMC" :update-value-on-input="false"
+                                        placeholder="" :min="0" :max="balance ? balance : 0" :show-button="false" />
                                 </p>
                                 <span class="flex mr-[20px] items-center">
-                                    <p class="flex mr-[20px] text-[24px] leading-[24px] text-white">EMC</p>
-                                    <em class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
+                                    <p
+                                        class="flex md:mr-[20px] mr-[11px] md:text-[24px] md:leading-[24px] text-[20px] leading-[20px] text-white">
+                                        EMC</p>
+                                    <em @click="EMC = (balance ? balance : 0)"
+                                        class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
                                 </span>
                             </div>
                             <div class="flex mt-[20px] w-full justify-between">
                                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">Balance:</p>
-                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">200 EMC</p>
+                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                    {{ typeof balance === 'undefined' ? '---' : balance }}
+                                    EMC
+                                </p>
                             </div>
                             <div class="flex mt-[20px] w-full justify-between">
                                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">Staked:</p>
-                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">3000.34 EMC</p>
+                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                    {{ typeof locked === 'undefined' ? '---' : locked }} EMC
+                                </p>
                             </div>
                             <div class="flex mt-[20px] w-full justify-between">
                                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
-                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">200.34 EMC</p>
+                                <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                    {{ typeof releasable === 'undefined' ? '---' : releasable }} EMC
+                                </p>
                             </div>
                         </div>
-                        <div v-if="useETHUser.account0" class="w-[417px] ml-auto mt-[30px] justify-between flex">
-                            <div
-                                class="btn-bg2 cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]">
+                        <div v-if="useETHUser.account0"
+                            class="w-[calc(100%-30px)] ml-[15px] md:w-[417px] md:ml-auto mt-[30px] justify-between flex">
+                            <div :class="stakingLoading ? 'opacity-60 cursor-pointer' : 'opacity-100'"
+                                class="btn-bg2 cursor-pointer duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] md:w-[160px] h-[44px]"
+                                @click="staking">
+                                <img v-if="stakingLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg"
+                                    alt="">
                                 Staking Now
                             </div>
-                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[160px] h-[44px]"
-                                @click="onStaking">
+                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] md:w-[160px] h-[44px]"
+                                @click="onWithdraw">
                                 Withdraw
                             </div>
                         </div>
                         <div v-else @click="onConnect"
-                            class="w-[417px] h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-auto mt-[30px] justify-between flex">
+                            class="w-[calc(100%-30px)] md:w-[417px] h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] md:ml-auto mt-[30px] justify-between flex">
                             <p :class="initLoading ? 'opacity-60 duration-300' : ''"
                                 class="w-full h-full flex justify-center items-center text-[16px] font-medium text-[#fff]">
                                 Wallet Connect
@@ -221,23 +270,34 @@
                     <div class="px-[66px] mt-[40px] w-full">
                         <p class="text-[18px] text-[#fff] font-medium">Funds</p>
                         <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
-                            <p class="ml-[20px] text-[24px] leading-[24px] text-white/70 font-medium">{{ EMC }}</p>
+                            <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
+                                <n-input-number class="number-input" size="large" :bordered="false"
+                                    v-model:value="redemption" :update-value-on-input="false" placeholder="" :min="0"
+                                    :max="releasable ? releasable : 0" :show-button="false" />
+                            </p>
                             <span class="flex mr-[20px] items-center">
                                 <p class="flex mr-[20px] text-[24px] leading-[24px] text-white">EMC</p>
-                                <em class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
+                                <em @click="redemption = (releasable ? releasable : 0)"
+                                    class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
                             </span>
                         </div>
                         <div class="flex mt-[20px] w-full justify-between">
                             <p class="text-white/70 text-[16px] leading-[16px] font-medium">Balance:</p>
-                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">200 EMC</p>
+                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                {{ typeof balance === 'undefined' ? '---' : balance }} EMC
+                            </p>
                         </div>
                         <div class="flex mt-[20px] w-full justify-between">
                             <p class="text-white/70 text-[16px] leading-[16px] font-medium">Staked:</p>
-                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">3000.34 EMC</p>
+                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                {{ typeof locked === 'undefined' ? '---' : locked }} EMC
+                            </p>
                         </div>
                         <div class="flex mt-[20px] w-full justify-between">
-                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">Redeemable:</p>
-                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">200.34 EMC</p>
+                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
+                            <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                                {{ typeof releasable === 'undefined' ? '---' : releasable }} EMC
+                            </p>
                         </div>
                         <div
                             class="w-full mt-[60px] cursor-pointer rounded-[8px] h-[44px] bg-[#323557]/60 flex-shrink-0 mb-[30px] flex items-center justify-center text-[16px] text-[#fff] font-medium">
@@ -252,7 +312,7 @@
 
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue';
-import { NPopover, NInputNumber, NModal, NCard } from 'naive-ui';
+import { NPopover, NInputNumber, NModal, NCard, useMessage } from 'naive-ui';
 import Star from './components/star.vue'
 import Ask from './components/ask.vue'
 import Header from './components/header.vue'
@@ -261,43 +321,56 @@ import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api'
 import { ERC20Api } from '@/web3/api/erc20';
 import { EMCApi } from '@/web3/api/emc';
+import { ceil } from 'lodash';
+import moment from 'moment';
+import { ethers } from 'ethers';
 
-type dayItem = { day: number, magnification: number, apy: number }
+const message = useMessage();
+
+type dayItem = { day: number, magnification: number, apy: number, id: number }
 const daysList: dayItem[] = [
     {
         day: 1,
         magnification: 1,
         apy: 0.67,
+        id: 0
     },
     {
         day: 30,
         magnification: 1.03,
         apy: 1,
+        id: 1
     },
     {
         day: 90,
         magnification: 1.055,
         apy: 1.3,
+        id: 2
     },
     {
         day: 180,
         magnification: 1.08,
         apy: 1.8,
+        id: 3
     },
     {
         day: 360,
         magnification: 1.1,
         apy: 2.2,
+        id: 4
     },
 ]
 const currentDay = ref<dayItem>({
     day: 1,
     apy: 0.67,
     magnification: 1,
+    id: 0
 })
 
+const emcContract = '0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
+// 周期
 const phase = ref<number>(1)
 const phaseMin = ref<number>(1)
 const phaseMax = ref<number>(9999)
@@ -314,37 +387,145 @@ const phaseDecrease = () => {
     phase.value = --phase.value
 }
 
-const showModal = ref(false)
-const onStaking = () => {
-    showModal.value = true
-}
-
 const APY = ref<string>('0.67')
 const EMC = ref(0)
-const EMCMax = ref(99999999999999)
 const incomeDay = ref<string>('0')
 const incomeMonth = ref<string>('0')
 const incomeYear = ref<string>('0')
 
+// 钱包地址
 const account0 = ref<string>('')
+// 钱包余额
+const balance = ref<number | undefined>(undefined)
+// 可释放的emc
+const releasable = ref<number | undefined>(undefined)
+// 已获得的奖励
+const rewards = ref<number | undefined>(undefined)
+// 当前质押量
+const locked = ref<number | undefined>(undefined)
+// 赎回量
+const redemption = ref<number>(0)
+
+
+// 精度
+const decimals = ref<number>()
 let emcApi: null | EMCApi = null;
 let erc20Api: null | ERC20Api = null;
+
+// 获取实际金额
+const getAmount = (balance: number, decimals: number, interception: number = 4) => {
+    return ceil(Number(balance / 10 ** decimals), interception);
+};
 
 // 链接钱包
 const onConnect = async () => {
     if (initLoading.value) {
         return
     }
-    if (!erc20Api) {
+    if (!erc20Api || !emcApi || !decimals.value) {
         return
     }
     await useETHUser.signIn({ type: 'metamask' })
     account0.value = useETHUser.account0
-    // let api = Api.init('1')
-    // let erc20Api = apiManager.create(ERC20Api, { address: account0.value });
-    // console.log(erc20Api)
-    // await emcApi.getLockedAmount({ account: account0 });
-    await erc20Api.balanceOf({ account: account0.value });
+    console.log('account0', account0.value)
+
+    balanceInit()
+}
+
+// 钱包初始化
+const balanceInit = () => {
+    // 获取钱包余额
+    erc20Api!.balanceOf({ account: account0.value }).then(res => {
+        balance.value = getAmount(Number(res.data), decimals.value!)
+        console.log('钱包余额', balance.value)
+    }).catch(err => {
+        console.error(err)
+    })
+
+    // 查询当前可以释放多少token，以及释放时可以获得多少奖励
+    emcApi!.getReleasableAmount({ account: account0.value }).then(res => {
+        releasable.value = getAmount(Number(res.data[0]), decimals.value!)
+        rewards.value = getAmount(Number(res.data[1]), decimals.value!)
+        console.log('可释放', releasable.value)
+        console.log('奖励', rewards.value)
+    }).catch(err => {
+        console.error(err)
+    })
+
+    // 查询当前质押锁定了多少token
+    emcApi!.getLockedAmount({ account: account0.value }).then(res => {
+        locked.value = getAmount(Number(res.data), decimals.value!)
+        console.log('质押量', locked.value)
+    }).catch(err => {
+        console.error(err)
+    })
+}
+
+// 质押
+type FormData = {
+    start: number;
+    cycles: number;
+    cycleUnit: number;
+    amount: bigint;
+};
+const stakingLoading = ref(false)
+const staking = async () => {
+    if (!balance.value) {
+        return
+    }
+    if (!EMC.value) {
+        message.warning('Please enter the EMC quantity')
+        return
+    }
+    stakingLoading.value = true
+    const formData: FormData = {
+        start: Math.floor(moment().add(1, 'days').valueOf() / 1000),
+        cycles: phase.value,
+        cycleUnit: currentDay.value.id,
+        amount: ethers.parseUnits(EMC.value.toString(), decimals.value),
+    };
+
+    try {
+        // 授权支付
+        let approve = await erc20Api!.approve({ amount: formData.amount, spender: emcContract });
+        if (approve._result !== 0) {
+            message.error(`Approve Error`);
+            console.log(approve)
+            stakingLoading.value = false
+            return false;
+        }
+        try {
+            // 确认交易
+            const pay = await emcApi!.createVestingSchedule({ account: account0.value, start: formData.start, cycles: formData.cycles, cycleUnit: formData.cycleUnit, amount: formData.amount });
+            console.log(pay)
+            if (pay._result !== 0) {
+                message.error(`CreateVestingSchedule Error`);
+                console.log(pay)
+                stakingLoading.value = false
+                return false;
+            }
+            balanceInit()
+            stakingLoading.value = false
+            message.success(`CreateVestingSchedule Success, Please check later!`);
+        } catch (err: any) {
+            message.error(`CreateVestingSchedule Error`);
+            console.log(err)
+            stakingLoading.value = false
+        }
+    } catch (err: any) {
+        message.error(`Approve Error`);
+        console.log(err)
+        stakingLoading.value = false
+    }
+}
+
+// 解压
+const showModal = ref(false)
+const onWithdraw = () => {
+    if (!useETHUser.account0) {
+        return
+    }
+    showModal.value = true
 }
 
 watch(
@@ -371,10 +552,11 @@ watch(
 
 const initLoading = ref(true)
 onMounted(async () => {
-    const emcContract = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
     emcApi = apiManager.create(EMCApi, { address: emcContract });
-    const { data: erc20ContractAddress } = await emcApi.token();
-    erc20Api = apiManager.create(ERC20Api, { address: erc20ContractAddress });
+    const { data } = await emcApi.token();
+    erc20Api = apiManager.create(ERC20Api, { address: data });
+    const { data: _decimals } = await erc20Api.decimals()
+    decimals.value = Number(_decimals)
     initLoading.value = false
 });
 </script>
@@ -386,5 +568,11 @@ onMounted(async () => {
 
 .withdraw-modal /deep/ .n-card__content {
     padding: 0;
+}
+
+@media screen and (max-width: 767px) {
+    .number-input /deep/ .n-input input {
+        width: 87px !important;
+    }
 }
 </style>

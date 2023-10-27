@@ -24,8 +24,6 @@
                 rgba(138, 24, 228, 0.21) 0%,
                 rgba(255, 116, 38, 0.21) 100%);
         filter: blur(75px);
-        width: 647px;
-        height: 254px;
         flex-shrink: 0;
     }
 
