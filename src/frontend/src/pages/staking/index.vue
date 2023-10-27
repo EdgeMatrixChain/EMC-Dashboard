@@ -10,17 +10,17 @@
         <Banner />
 
         <!-- 第二页 -->
-        <div class="w-full relative z-10 flex flex-col pt-[70px] md:pt-[90px] flex-shrink-0">
+        <div class="w-full relative z-10 flex flex-col pt-[70px] lg:pt-[90px] flex-shrink-0">
             <h2
-                class="text-[32px] leading-[32px] md:text-[48px] font-bold md:leading-[84px] text-[#fff] flex justify-center">
+                class="text-[32px] leading-[32px] lg:text-[48px] font-bold lg:leading-[84px] text-[#fff] flex justify-center">
                 Staking with EMC
             </h2>
-            <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 md:mt-[50px] mt-[40px] flex-shrink-0">
+            <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 lg:mt-[50px] mt-[40px] flex-shrink-0">
                 <div
-                    class="bg-[#1A1C34] md:pt-[76px] pt-[33px] flex-col md:flex-row md:pb-[68px] pb-[50px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
-                    <div class="flex flex-[1.1] flex-col md:pl-[80px] pl-[15px]">
+                    class="bg-[#1A1C34] lg:pt-[76px] pt-[33px] flex-col lg:flex-row lg:pb-[68px] pb-[50px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
+                    <div class="flex flex-[1.1] flex-col lg:pl-[80px] pl-[15px]">
                         <div class="flex items-center">
-                            <p class="mr-[10px] text-[24px] md:text-[28px] leading-[24px] md:leading-[28px] text-[#fff]">
+                            <p class="mr-[10px] text-[24px] lg:text-[28px] leading-[24px] lg:leading-[28px] text-[#fff]">
                                 Duration (Days)
                             </p>
                             <n-popover trigger="hover">
@@ -41,12 +41,12 @@
                         </div>
                         <div class="flex mt-[34px] w-full flex-wrap">
                             <div v-for="item in daysList" :key="item.day"
-                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] md:mr-[36px] mr-[18px] mb-[30px] border-[#fff]/20 md:w-[144px] w-[87px] md:h-[54px] h-[42px] flex items-center justify-center md:text-[24px] text-[16px] font-medium text-[#fff]"
+                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[36px] mr-[18px] mb-[30px] border-[#fff]/20 lg:w-[144px] w-[87px] lg:h-[54px] h-[42px] flex items-center justify-center lg:text-[24px] text-[16px] font-medium text-[#fff]"
                                 :class="item.day === currentDay.day && '!border-[#FFB017]'" @click="currentDay = item">
                                 <div v-show="item.day === currentDay.day"
-                                    class="md:w-8 w-6 overflow-hidden inline-block absolute right-0 top-0">
+                                    class="lg:w-8 w-6 overflow-hidden inline-block absolute right-0 top-0">
                                     <div class="h-16 bg-[#FFB017] -rotate-45 transform origin-top-left"></div>
-                                    <i class="absolute top-0 right-[2px] hidden md:flex">
+                                    <i class="absolute top-0 right-[2px] hidden lg:flex">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
                                             fill="none">
                                             <path
@@ -54,7 +54,7 @@
                                                 fill="white" />
                                         </svg>
                                     </i>
-                                    <i class="absolute top-0 right-[2px] flex md:hidden">
+                                    <i class="absolute top-0 right-[2px] flex lg:hidden">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 16 16"
                                             fill="none">
                                             <path
@@ -67,8 +67,8 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center md:mt-[20px]">
-                            <p class="mr-[10px] text-[24px] md:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
+                        <div class="flex items-center lg:mt-[20px]">
+                            <p class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
                                 Staking Phases</p>
                             <n-popover trigger="hover">
                                 <template #trigger>
@@ -87,11 +87,11 @@
                             </n-popover>
                         </div>
 
-                        <div class="flex md:mt-[34px] mt-[20px] items-center">
+                        <div class="flex lg:mt-[34px] mt-[20px] items-center">
                             <n-input-number class="number-input" size="large" :bordered="false" v-model:value="phase"
                                 :update-value-on-input="false" placeholder="" :min="phaseMin" :max="phaseMax"
                                 :show-button="false" />
-                            <p class="ml-3 md:text-[20px] text-[16px] text-[#fff] font-medium">Phase</p>
+                            <p class="ml-3 lg:text-[20px] text-[16px] text-[#fff] font-medium">Phase</p>
                             <span class="flex flex-col ml-[12px]">
                                 <div @click="phaseAdd" class="w-6 overflow-hidden inline-block cursor-pointer">
                                     <svg width="14" height="9" viewBox="0 0 14 9" fill="none"
@@ -108,11 +108,11 @@
                                 </div>
                             </span>
                         </div>
-                        <p class="text-[#FFB017] md:text-[16px] text-[14px] font-medium md:mt-[22px] mt-[15px]">
+                        <p class="text-[#FFB017] lg:text-[16px] text-[14px] font-medium lg:mt-[22px] mt-[15px]">
                             <!-- {{ currentDay.day }}Days * Phase {{ phase }} (APY {{ APY }}%) -->
                             Total {{ currentDay.day * phase }} Days (APY {{ APY }}%)
                         </p>
-                        <div class="flex flex-col w-full md:mt-[56px] mt-[20px] relative">
+                        <div class="flex flex-col w-full lg:mt-[56px] mt-[20px] relative">
                             <div class="absolute left-0 top-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="123" viewBox="0 0 9 123"
                                     fill="none">
@@ -132,71 +132,71 @@
                                 </svg>
                             </div>
                             <div class="flex flex-col">
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[5px] md:mt-[3px]">
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[5px] lg:mt-[3px]">
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
                                         Initiate of pledge:
                                     </p>
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
                                         2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] md:mt-[24px]">
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[24px]">
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
                                         Next release time:
                                     </p>
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
                                         2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] md:mt-[24px]">
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[24px]">
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff]/70 md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
                                         End of pledge:</p>
                                     <p
-                                        class="text-[15px] md:text-[18px] font-medium text-[#fff] md:leading-[18px] leading-[16px]">
+                                        class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
                                         2023-10-19 14:23</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div
-                        class="flex md:flex-1 mt-[40px] md:mt-0 flex-col justify-center md:pr-[80px] relative before:content-[''] before:hidden md:before:flex before:left-0 before:w-[2px] before:absolute before:h-[360px] before:bg-[#fff]/20">
+                        class="flex lg:flex-1 mt-[40px] lg:mt-0 flex-col justify-center lg:pr-[80px] relative before:content-[''] before:hidden lg:before:flex before:left-0 before:w-[2px] before:absolute before:h-[360px] before:bg-[#fff]/20">
                         <div
-                            class="flex flex-col md:w-[417px] w-[calc(100%-30px)] flex-1 md:py-[33px] py-[25px] md:px-[40px] px-[18px] ml-[15px] md:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
-                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
-                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
-                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                            class="flex flex-col lg:w-[417px] w-[calc(100%-30px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
+                            <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ APY }}%
                                 </p>
                             </div>
-                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
-                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                            <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Daily Earnings:
                                 </p>
-                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeDay }} EMC
                                 </p>
                             </div>
-                            <div class="flex md:mb-[35px] mb-[20px] justify-between md:justify-start">
-                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                            <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Monthly Earnings:
                                 </p>
-                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeMonth }} EMC
                                 </p>
                             </div>
-                            <div class="flex justify-between md:justify-start">
-                                <p class="text-[15px] md:text-[18px] text-white/70 font-medium leading-[18px]">
+                            <div class="flex justify-between lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Yearly Earnings:
                                 </p>
-                                <p class="text-[15px] md:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeYear }} EMC
                                 </p>
                             </div>
                         </div>
-                        <div class="w-[calc(100%-30px)] md:w-[417px] ml-[15px] md:ml-auto md:mt-[83px] mt-[40px]">
+                        <div class="w-[calc(100%-30px)] lg:w-[417px] ml-[15px] lg:ml-auto lg:mt-[83px] mt-[40px]">
                             <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
                             <div
                                 class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
@@ -207,7 +207,7 @@
                                 </p>
                                 <span class="flex mr-[20px] items-center">
                                     <p
-                                        class="flex md:mr-[20px] mr-[11px] md:text-[24px] md:leading-[24px] text-[20px] leading-[20px] text-white">
+                                        class="flex lg:mr-[20px] mr-[11px] lg:text-[24px] lg:leading-[24px] text-[20px] leading-[20px] text-white">
                                         EMC</p>
                                     <em @click="EMC = (balance ? balance : 0)"
                                         class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
@@ -234,21 +234,21 @@
                             </div>
                         </div>
                         <div v-if="useETHUser.account0"
-                            class="w-[calc(100%-30px)] ml-[15px] md:w-[417px] md:ml-auto mt-[30px] justify-between flex">
+                            class="w-[calc(100%-30px)] ml-[15px] lg:w-[417px] lg:ml-auto mt-[30px] justify-between flex">
                             <div :class="stakingLoading ? 'opacity-60 cursor-pointer' : 'opacity-100'"
-                                class="btn-bg2 cursor-pointer duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] md:w-[160px] h-[44px]"
+                                class="btn-bg2 cursor-pointer duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] lg:w-[160px] h-[44px]"
                                 @click="staking">
                                 <img v-if="stakingLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg"
                                     alt="">
                                 Staking Now
                             </div>
-                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] md:w-[160px] h-[44px]"
+                            <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[116px] lg:w-[160px] h-[44px]"
                                 @click="onWithdraw">
                                 Withdraw
                             </div>
                         </div>
                         <div v-else @click="onConnect"
-                            class="w-[calc(100%-30px)] md:w-[417px] h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] md:ml-auto mt-[30px] justify-between flex">
+                            class="w-[calc(100%-30px)] lg:w-[417px] h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] lg:ml-auto mt-[30px] justify-between flex">
                             <p :class="initLoading ? 'opacity-60 duration-300' : ''"
                                 class="w-full h-full flex justify-center items-center text-[16px] font-medium text-[#fff]">
                                 Wallet Connect
