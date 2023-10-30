@@ -455,7 +455,7 @@ const locked = ref<number | undefined>(undefined)
 // 赎回量
 const redemption = ref<number>(0)
 // 质押成功
-const stakingSuccess = ref(true)
+const stakingSuccess = ref(false)
 
 // 精度
 const decimals = ref<number>()
