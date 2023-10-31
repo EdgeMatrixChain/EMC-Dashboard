@@ -628,7 +628,7 @@ watch(
         incomeMonth.value = (Number(incomeYear.value) / 12).toFixed(4)
         incomeDay.value = (Number(incomeYear.value) / 365).toFixed(4)
 
-        rewardEarnings.value = (EMC.value + ((EMC.value * currentDay.value.nAPR / 100 / 360 * currentDay.value.day))).toFixed(4)
+        rewardEarnings.value = (EMC.value * currentDay.value.nAPR / 100 / 360 * currentDay.value.day).toFixed(4)
     },
     { immediate: true }
 );
@@ -642,6 +642,8 @@ watch(
         }
         let { magnification, day, apy } = currentDay.value
         APR.value = (apy * Math.pow(magnification, phase.value - 1)).toFixed(2)
+
+        rewardEarnings.value = (EMC.value * currentDay.value.nAPR / 100 / 360 * currentDay.value.day).toFixed(4)
     },
     { immediate: true }
 );
