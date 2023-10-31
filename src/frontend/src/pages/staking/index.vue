@@ -41,7 +41,7 @@
                         </div>
                         <div class="flex mt-[34px] w-full flex-wrap">
                             <div v-for="item in daysList" :key="item.day"
-                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[36px] mr-[18px] mb-[30px] border-[#fff]/20 lg:w-[144px] w-[87px] lg:h-[54px] h-[42px] flex items-center justify-center lg:text-[24px] text-[16px] font-medium text-[#fff]"
+                                class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[36px] mr-[18px] mb-[30px] border-[#fff]/20 lg:w-[144px] w-[87px] lg:h-[54px] h-[42px] flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
                                 :class="item.day === currentDay.day && '!border-[#FFB017]'" @click="currentDay = item">
                                 <div v-show="item.day === currentDay.day"
                                     class="lg:w-8 w-6 overflow-hidden inline-block absolute right-0 top-0">
@@ -63,11 +63,11 @@
                                         </svg>
                                     </i>
                                 </div>
-                                {{ item.day }} Day
+                                {{ item.day }} Days
                             </div>
                         </div>
 
-                        <div class="flex items-center lg:mt-[20px]">
+                        <!-- <div class="flex items-center lg:mt-[20px]">
                             <p class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
                                 Staking Phases</p>
                             <n-popover trigger="hover">
@@ -85,9 +85,9 @@
                                 </template>
                                 <span>The times of chosen staking periods.</span>
                             </n-popover>
-                        </div>
+                        </div> -->
 
-                        <div class="flex lg:mt-[34px] mt-[20px] items-center">
+                        <!-- <div class="flex lg:mt-[34px] mt-[20px] items-center">
                             <n-input-number class="number-input" size="large" :bordered="false" v-model:value="phase"
                                 :update-value-on-input="false" placeholder="" :min="phaseMin" :max="phaseMax"
                                 :show-button="false" />
@@ -110,7 +110,7 @@
                         </div>
                         <p class="text-[#FFB017] lg:text-[16px] text-[14px] font-medium lg:mt-[22px] mt-[15px]">
                             Total {{ currentDay.day * phase }} Days (APR {{ APR }}%)
-                        </p>
+                        </p> -->
                         <div class="flex flex-col w-full lg:mt-[56px] mt-[20px] relative">
                             <div class="absolute left-0 top-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="123" viewBox="0 0 9 123"
@@ -140,7 +140,7 @@
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
                                         2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[24px]">
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[28px]">
                                     <p
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
                                         Next release time:
@@ -149,7 +149,7 @@
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
                                         2023-10-19 14:23</p>
                                 </div>
-                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[24px]">
+                                <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[28px]">
                                     <p
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
                                         End of pledge:</p>
@@ -167,18 +167,19 @@
                             <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
                                 <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
-                                    {{ APR }}%
+                                    <!-- {{ APR }}% -->
+                                    {{ currentDay.nAPR }}%
                                 </p>
                             </div>
                             <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
-                                    Daily Earnings:
+                                    Reward Earnings:
                                 </p>
                                 <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
-                                    {{ incomeDay }} EMC
+                                    {{ rewardEarnings }} EMC
                                 </p>
                             </div>
-                            <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
+                            <!-- <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Monthly Earnings:
                                 </p>
@@ -193,7 +194,7 @@
                                 <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
                                     {{ incomeYear }} EMC
                                 </p>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="w-[calc(100%-30px)] lg:w-[417px] ml-[15px] lg:ml-auto lg:mt-[83px] mt-[40px]">
                             <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
@@ -347,45 +348,64 @@ import ReleasableSuccess from './components/releasableSuccess.vue'
 
 const message = useMessage();
 
-type dayItem = { day: number, magnification: number, apy: number, id: number }
+type dayItem = { day: number, magnification: number, apy: number, id: number, nAPR: number }
 const daysList: dayItem[] = [
-    {
-        day: 1,
-        magnification: 1,
-        apy: 0.67,
-        id: 0
-    },
+    // {
+    //     day: 1,
+    //     magnification: 1,
+    //     apy: 0.67,
+    //     id: 0
+    // },
     {
         day: 30,
         magnification: 1.03,
         apy: 1,
-        id: 1
+        id: 1,
+        nAPR: 2.7
     },
     {
         day: 90,
         magnification: 1.055,
         apy: 1.3,
-        id: 2
+        id: 2,
+        nAPR: 3.15
     },
     {
         day: 180,
         magnification: 1.08,
         apy: 1.8,
-        id: 3
+        id: 3,
+        nAPR: 3.60
     },
     {
         day: 360,
         magnification: 1.1,
         apy: 2.2,
-        id: 4
+        id: 4,
+        nAPR: 4.8
+    },
+    {
+        day: 720,
+        magnification: 1.1,
+        apy: 2.2,
+        id: 5,
+        nAPR: 5.7
+    },
+    {
+        day: 360 * 3,
+        magnification: 1.1,
+        apy: 2.2,
+        id: 6,
+        nAPR: 7.1
     },
 ]
 const currentDay = ref<dayItem>({
-    day: 1,
-    apy: 0.67,
-    magnification: 1,
-    id: 0
-})
+    day: 30,
+    magnification: 1.03,
+    apy: 1,
+    id: 1,
+    nAPR: 2.7
+},)
 
 const emcContract = '0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
 const useETHUser = useETHUserStore();
@@ -599,16 +619,21 @@ const onDecompression = () => {
     })
 }
 
+// 实际收益
+const rewardEarnings = ref<string>('0')
 watch(
     () => [EMC.value, APR.value],
     () => {
         incomeYear.value = (EMC.value * (Number(APR.value) / 100)).toFixed(4)
         incomeMonth.value = (Number(incomeYear.value) / 12).toFixed(4)
         incomeDay.value = (Number(incomeYear.value) / 365).toFixed(4)
+
+        rewardEarnings.value = (EMC.value + ((EMC.value * currentDay.value.nAPR / 100 / 360 * currentDay.value.day))).toFixed(4)
     },
     { immediate: true }
 );
 
+// 计算apr
 watch(
     () => [currentDay.value, phase.value],
     () => {

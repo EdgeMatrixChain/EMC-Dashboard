@@ -23,7 +23,7 @@
             <div class="page-one-bg absolute top-0 w-[229px] md:w-[647px] h-[121px] md:h-[254px]"></div>
         </div>
         <div
-            class="md:h-[138px] md:w-full mx-[15px] mt-[66px] md:mt-0 flex backdrop-filter bg-white/10 backdrop-blur-[15px] rounded-[16px] md:rounded-[0px]">
+            class="md:h-[138px] md:w-full mx-[15px] md:mx-[0px] mt-[66px] md:mt-0 flex backdrop-filter bg-white/10 backdrop-blur-[15px] rounded-[16px] md:rounded-[0px]">
             <div
                 class="max-w-[1340px] mx-auto py-[40px] md:py-0 flex-col md:flex-row flex w-full justify-center flex-1 px-5 flex-shrink-0">
                 <div
