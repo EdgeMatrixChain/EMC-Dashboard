@@ -166,7 +166,7 @@
                             class="flex flex-col lg:w-[417px] w-[calc(100%-30px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
                             <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
-                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
                                     <!-- {{ APR }}% -->
                                     {{ currentDay.nAPR }}%
                                 </p>
@@ -175,7 +175,7 @@
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Reward Earnings:
                                 </p>
-                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-[5px]">
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
                                     {{ rewardEarnings }} EMC
                                 </p>
                             </div>
