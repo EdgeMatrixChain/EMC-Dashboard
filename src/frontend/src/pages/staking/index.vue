@@ -171,7 +171,7 @@
                                     {{ currentDay.nAPR }}%
                                 </p>
                             </div>
-                            <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
+                            <div class="flex justify-between lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Reward Earnings:
                                 </p>
