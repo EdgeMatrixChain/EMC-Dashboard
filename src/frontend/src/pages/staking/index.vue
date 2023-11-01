@@ -67,6 +67,16 @@
                             </div>
                         </div>
 
+                        <template v-if="isDev">
+                            <div class="flex items-center lg:mt-[20px]">
+                            <p class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
+                                Start Time</p>
+                             </div> 
+                            <div class="flex lg:mt-[34px] mt-[20px] items-center">
+                                <n-date-picker class="number-input" v-model:value="timestamp" type="datetime" clearable />
+                            </div>
+                        </template>
+
                         <!-- <div class="flex items-center lg:mt-[20px]">
                             <p class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
                                 Staking Phases</p>
@@ -331,7 +341,8 @@
 
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue';
-import { NPopover, NInputNumber, NModal, NCard, useMessage } from 'naive-ui';
+import { useRoute } from 'vue-router';
+import { NPopover, NInputNumber, NDatePicker, NModal, NCard, useMessage } from 'naive-ui';
 import Star from './components/star.vue'
 import Ask from './components/ask.vue'
 import Header from './components/header.vue'
@@ -347,7 +358,7 @@ import StakingSuccess from './components/stakingSuccess.vue'
 import ReleasableSuccess from './components/releasableSuccess.vue'
 
 const message = useMessage();
-
+const route = useRoute();
 type dayItem = { day: number, magnification: number, apy: number, id: number, nAPR: number }
 const daysList: dayItem[] = [
     // {
@@ -407,7 +418,7 @@ const currentDay = ref<dayItem>({
     nAPR: 2.7
 },)
 
-const emcContract = '0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
+const emcContract = '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea';//'0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
 // 周期
@@ -426,6 +437,10 @@ const phaseDecrease = () => {
     }
     phase.value = --phase.value
 }
+//开始时间
+const timestamp = ref<number>(new Date().getTime()+1800000)
+//开发者模式（暂时用来控制是否可以选择时间）
+const isDev = ref<boolean>(false);
 
 const APR = ref<string>('0.67')
 const EMC = ref(0)
@@ -528,7 +543,7 @@ const staking = async () => {
     }
     stakingLoading.value = true
     const formData: FormData = {
-        start: Math.floor(moment().valueOf() / 1000) + 1800,
+        start: timestamp.value,
         cycles: phase.value,
         cycleUnit: currentDay.value.id,
         amount: ethers.parseUnits(EMC.value.toString(), decimals.value),
@@ -653,9 +668,10 @@ onMounted(async () => {
     emcApi = apiManager.create(EMCApi, { address: emcContract });
     const { data } = await emcApi.token();
     erc20Api = apiManager.create(ERC20Api, { address: data });
-    const { data: _decimals } = await erc20Api.decimals()
-    decimals.value = Number(_decimals)
-    initLoading.value = false
+    const { data: _decimals } = await erc20Api.decimals();
+    decimals.value = Number(_decimals);
+    initLoading.value = false;
+    isDev.value = Boolean(route.query?.dev);
 });
 </script>
 
