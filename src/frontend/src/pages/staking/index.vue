@@ -371,42 +371,42 @@ const daysList: dayItem[] = [
         day: 30,
         magnification: 1.03,
         apy: 1,
-        id: 1,
+        id: 0,
         nAPR: 2.7
     },
     {
         day: 90,
         magnification: 1.055,
         apy: 1.3,
-        id: 2,
+        id: 1,
         nAPR: 3.15
     },
     {
         day: 180,
         magnification: 1.08,
         apy: 1.8,
-        id: 3,
+        id: 2,
         nAPR: 3.60
     },
     {
         day: 360,
         magnification: 1.1,
         apy: 2.2,
-        id: 4,
+        id: 3,
         nAPR: 4.8
     },
     {
         day: 720,
         magnification: 1.1,
         apy: 2.2,
-        id: 5,
+        id: 4,
         nAPR: 5.7
     },
     {
         day: 360 * 3,
         magnification: 1.1,
         apy: 2.2,
-        id: 6,
+        id: 5,
         nAPR: 7.1
     },
 ]
