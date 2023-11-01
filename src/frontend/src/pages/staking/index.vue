@@ -69,9 +69,10 @@
 
                         <template v-if="isDev">
                             <div class="flex items-center lg:mt-[20px]">
-                            <p class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
-                                Start Time</p>
-                             </div> 
+                                <p
+                                    class="mr-[10px] text-[24px] lg:text-[28px] lg:leading-[28px] leading-[28px] text-[#fff]">
+                                    Start Time</p>
+                            </div>
                             <div class="flex lg:mt-[34px] mt-[20px] items-center">
                                 <n-date-picker class="number-input" v-model:value="timestamp" type="datetime" clearable />
                             </div>
@@ -121,7 +122,7 @@
                         <p class="text-[#FFB017] lg:text-[16px] text-[14px] font-medium lg:mt-[22px] mt-[15px]">
                             Total {{ currentDay.day * phase }} Days (APR {{ APR }}%)
                         </p> -->
-                        <div class="flex flex-col w-full lg:mt-[56px] mt-[20px] relative">
+                        <!-- <div class="flex flex-col w-full lg:mt-[56px] mt-[20px] relative">
                             <div class="absolute left-0 top-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="123" viewBox="0 0 9 123"
                                     fill="none">
@@ -157,19 +158,23 @@
                                     </p>
                                     <p
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
-                                        2023-10-19 14:23</p>
+                                        2023-10-19 14:23
+                                    </p>
                                 </div>
                                 <div class="flex ml-[20px] justify-between mr-[10%] mt-[26px] lg:mt-[28px]">
                                     <p
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff]/70 lg:leading-[18px] leading-[16px]">
-                                        End of pledge:</p>
+                                        End of pledge:
+                                    </p>
                                     <p
                                         class="text-[15px] lg:text-[18px] font-medium text-[#fff] lg:leading-[18px] leading-[16px]">
-                                        2023-10-19 14:23</p>
+                                        2023-10-19 14:23
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
+
                     <div
                         class="flex lg:flex-1 mt-[40px] lg:mt-0 flex-col justify-center lg:pr-[80px] relative before:content-[''] before:hidden lg:before:flex before:left-0 before:w-[2px] before:absolute before:h-[360px] before:bg-[#fff]/20">
                         <div
@@ -181,12 +186,30 @@
                                     {{ currentDay.nAPR }}%
                                 </p>
                             </div>
-                            <div class="flex justify-between lg:justify-start">
+                            <div class="flex justify-between lg:mb-[35px] mb-[20px] lg:justify-start">
                                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
                                     Reward Earnings:
                                 </p>
                                 <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
                                     {{ rewardEarnings }} EMC
+                                </p>
+                            </div>
+                            <div class="flex justify-between lg:mb-[35px] mb-[20px] lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
+                                    Start Time:
+                                </p>
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
+                                    {{ moment(new Date()).format('YYYY-MM-DD') }}
+                                </p>
+                            </div>
+                            <div class="flex justify-between lg:justify-start">
+                                <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">
+                                    End Time:
+                                </p>
+                                <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
+                                    {{
+                                        moment(Number(new Date()) + (currentDay.day * 86400 * 1000)).format('YYYY-MM-DD')
+                                    }}
                                 </p>
                             </div>
                             <!-- <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
@@ -265,6 +288,7 @@
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -438,7 +462,7 @@ const phaseDecrease = () => {
     phase.value = --phase.value
 }
 //开始时间
-const timestamp = ref<number>(new Date().getTime()+1800000)
+const timestamp = ref<number>(new Date().getTime() + 1800000)
 //开发者模式（暂时用来控制是否可以选择时间）
 const isDev = ref<boolean>(false);
 
