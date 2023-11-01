@@ -173,6 +173,31 @@
                                 </div>
                             </div>
                         </div> -->
+
+                        <div v-if="(typeof tradingList !== 'undefined')"
+                            class="relative flex-col rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[88px] mr-[15px] mb-[30px] border-[#fff]/20  flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]">
+                            <div
+                                class="flex mx-[10px] lg:mx-[30px] border-b border-[#fff]/10 lg:w-[calc(100%-60px)] w-[calc(100%-20px)] h-[50px] items-center">
+                                <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">Start Time</p>
+                                <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">End Time</p>
+                                <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">Staked</p>
+                                <p class="flex text-[12px] lg:text-[14px] flex-[0.7] text-[#fff]/70 font-medium">Earning</p>
+                            </div>
+                            <div
+                                class="flex flex-col pb-[4px] mx-[10px] lg:mx-[30px] lg:w-[calc(100%-60px)] w-[calc(100%-20px)] pt-[19px] h-[245px] overflow-y-scroll">
+                                <div class="flex mb-[26px]">
+                                    <p class="text-[12px] lg:text-[16px] font-medium leading-[16px] flex flex-1">2021-03-21
+                                    </p>
+                                    <p class="text-[12px] lg:text-[16px] font-medium leading-[16px] flex flex-1">2021-09-21
+                                    </p>
+                                    <p class="text-[12px] lg:text-[16px] font-medium leading-[16px] flex flex-1">$8.892</p>
+                                    <p class="text-[12px] lg:text-[16px] font-medium leading-[16px] flex flex-[0.7]">$579
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
 
                     <div
@@ -380,6 +405,7 @@ import moment from 'moment';
 import { ethers } from 'ethers';
 import StakingSuccess from './components/stakingSuccess.vue'
 import ReleasableSuccess from './components/releasableSuccess.vue'
+import axios from 'axios'
 
 const message = useMessage();
 const route = useRoute();
@@ -436,7 +462,9 @@ const daysList: dayItem[] = [
 ]
 const currentDay = ref<dayItem>(daysList[0])
 
-const emcContract = '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea';//'0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
+// 0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51 测试用
+// 0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea 正式网
+const emcContract = '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
 // 周期
@@ -507,6 +535,7 @@ const onConnect = async () => {
     account0.value = useETHUser.account0
     console.log('account0', account0.value)
 
+    getTradingList()
     balanceInit()
 }
 
@@ -650,6 +679,27 @@ const onDecompression = () => {
         message.error(`Decompression Error`);
         decompressionLoading.value = false
     })
+}
+
+// 交易记录
+const tradingList = ref<any[] | undefined>(undefined)
+const tradingUrl = 'https://api.edgematrix.pro/api/v1/event/query'
+const getTradingList = () => {
+    let req = {
+        contract: emcContract,
+        topic: 'VestingScheduleCreated',
+        extra: encodeURIComponent(JSON.stringify({ beneficiary: account0.value }))
+    }
+    console.log(req)
+    axios.get(tradingUrl, { params: req })
+        .then(response => {
+            console.log(123123, response.data.data.data);
+            tradingList.value = []
+        })
+        .catch(error => {
+            tradingList.value = undefined
+            console.error(error);
+        });
 }
 
 // 实际收益
