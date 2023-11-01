@@ -547,7 +547,7 @@ const staking = async () => {
         try {
             // 确认交易
             const pay = await emcApi!.createVestingSchedule({
-                account: account0.value, start: formData.start, cycles: formData.cycles, cycleUnit: formData.cycleUnit as any, amount: formData.amount
+                account: account0.value, start: formData.start, cycleUnit: formData.cycleUnit as any, amount: formData.amount
             });
             if (pay._result !== 0) {
                 message.error(`CreateVestingSchedule Error`);
