@@ -537,7 +537,7 @@ const staking = async () => {
     }
     stakingLoading.value = true
     const formData: FormData = {
-        start: timestamp.value,
+        start: timestamp.value / 1000,
         cycles: phase.value,
         cycleUnit: currentDay.value.id,
         amount: ethers.parseUnits(EMC.value.toString(), decimals.value),
