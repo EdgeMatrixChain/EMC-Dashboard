@@ -410,13 +410,7 @@ const daysList: dayItem[] = [
         nAPR: 7.1
     },
 ]
-const currentDay = ref<dayItem>({
-    day: 30,
-    magnification: 1.03,
-    apy: 1,
-    id: 1,
-    nAPR: 2.7
-},)
+const currentDay = ref<dayItem>(daysList[0])
 
 const emcContract = '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea';//'0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51';
 const useETHUser = useETHUserStore();
