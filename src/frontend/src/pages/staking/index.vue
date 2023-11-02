@@ -174,7 +174,7 @@
                             </div>
                         </div> -->
 
-                        <div v-if="(typeof tradingList !== 'undefined')"
+                        <div v-if="tradingList.length>0"
                             class="relative flex-col rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[88px] mr-[15px] mb-[30px] border-[#fff]/20  flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]">
                             <div
                                 class="flex mx-[10px] lg:mx-[30px] border-b border-[#fff]/10 lg:w-[calc(100%-60px)] w-[calc(100%-20px)] h-[50px] items-center">
@@ -405,8 +405,7 @@ import moment from 'moment';
 import { ethers } from 'ethers';
 import StakingSuccess from './components/stakingSuccess.vue'
 import ReleasableSuccess from './components/releasableSuccess.vue'
-import axios from 'axios'
-
+import { Http } from '@/tools/http';
 const message = useMessage();
 const route = useRoute();
 type dayItem = { day: number, magnification: number, apy: number, id: number, nAPR: number }
@@ -535,7 +534,7 @@ const onConnect = async () => {
     account0.value = useETHUser.account0
     console.log('account0', account0.value)
 
-    getTradingList()
+    tradingListInit()
     balanceInit()
 }
 
@@ -590,7 +589,7 @@ const staking = async () => {
     }
     stakingLoading.value = true
     const formData: FormData = {
-        start: timestamp.value / 1000,
+        start: parseInt(String(timestamp.value / 1000)),
         cycles: phase.value,
         cycleUnit: currentDay.value.id,
         amount: ethers.parseUnits(EMC.value.toString(), decimals.value),
@@ -618,6 +617,7 @@ const staking = async () => {
                 return false;
             }
             setTimeout(() => {
+                tradingListInit()
                 balanceInit()
                 stakingLoading.value = false
                 stakingSuccess.value = true
@@ -712,65 +712,18 @@ type tradingItem = {
     yieldRate: string
     yieldRate_0: number
 }
-const tradingList = ref<tradingItem[] | undefined>(undefined)
-const tradingUrl = 'https://api.edgematrix.pro/api/v1/event/query'
-const getTradingList = () => {
-    let req = {
-        contract: emcContract.toLowerCase(),
-        topic: 'VestingScheduleCreated',
-        extra: encodeURIComponent(JSON.stringify({ beneficiary: account0.value.toLowerCase() }))
-    }
-    console.log(req)
-    axios.get(tradingUrl, { params: req })
-        .then(response => {
-            // tradingList.value = response.data.data
-
-            tradingList.value = [
-                {
-                    "_id": "65422b248c15ae8c8bfde1fd",
-                    "key": "0x001467a8a27ca7038ab21576469ec62bd6dadc8c9cb9ba8b466a20a38102329c",
-                    "__v": 0,
-                    "amountTotal": "1000000000000000000000",
-                    "amountTotal_0": 1000000000,
-                    "beneficiary": "0xa5e7cf335d92c537aeb856170b2f804b3e4c0423",
-                    "blockHash": "0x5da70b63d01c52a1e4f128259c394381d6e19d124ac60e1023a21bab7bb11fd8",
-                    "blockNumber": 52319280,
-                    "contract": "0xdc1e36492317d1a79c6e7dfa772e0d91930d99ea",
-                    "createdAt": "2023-11-01T10:40:36.359Z",
-                    "duration": "1",
-                    "durationUnits": 1,
-                    "duration_0": 0,
-                    "gasPrice": "1600000000",
-                    "gasPrice_0": 0,
-                    "gasUsed": "208965",
-                    "gasUsed_0": 0,
-                    "logIndex": 2,
-                    "start": "1696236044000",
-                    "start_0": 1,
-                    "timeStamp": 1698830236,
-                    "topic": "VestingScheduleCreated",
-                    "topicHash": "0xce0cdae96f18737abe4b02436163a3d9d15b0cf326715c28b72cd74502c9c424",
-                    "transactionHash": "0x462313217b076e6a750cbe940a45fc043fca35b7d87db99845368b5906eb2602",
-                    "transactionIndex": 1,
-                    "updatedAt": "2023-11-01T11:11:55.037Z",
-                    "yieldRate": "7875000000000000",
-                    "yieldRate_0": 7875
-                },
-                {
-                    "_id": "65422b248c15ae8c8bfde1ff", "key": "0x3aa693c375ce3c1652119f78eec3c9d9052c88936ded54b5c169ad59ae2e8e83", "__v": 0, "amountTotal": "1000000000000000000000", "amountTotal_0": 1000000000, "beneficiary": "0xa5e7cf335d92c537aeb856170b2f804b3e4c0423", "blockHash": "0x3474e5be9a4e1a04a791fa0520743a3eb94dd3fcff8d4f90e2b378e4d0bcb90f", "blockNumber": 52327554, "contract": "0xdc1e36492317d1a79c6e7dfa772e0d91930d99ea", "createdAt": "2023-11-01T10:40:36.360Z", "duration": "1", "durationUnits": 1, "duration_0": 0, "gasPrice": "1600000000", "gasPrice_0": 0, "gasUsed": "191865", "gasUsed_0": 0, "logIndex": 2, "start": "1696157578000", "start_0": 1, "timeStamp": 1698834262, "topic": "VestingScheduleCreated", "topicHash": "0xce0cdae96f18737abe4b02436163a3d9d15b0cf326715c28b72cd74502c9c424", "transactionHash": "0xa1c01edb68ecf05f135b059b7e387e37e4537048cd27052d43e087b41f43062c", "transactionIndex": 1, "updatedAt": "2023-11-01T11:11:55.037Z", "yieldRate": "7875000000000000", "yieldRate_0": 7875
-                },
-                {
-                    "_id": "65422b248c15ae8c8bfde201", "key": "0xc7853b1529db04688a404d361ba30d42fad1d2394a075ba13a4918b78c131780", "__v": 0, "amountTotal": "100000000000000000000", "amountTotal_0": 100000000, "beneficiary": "0xa5e7cf335d92c537aeb856170b2f804b3e4c0423", "blockHash": "0x43cde6075619eac3b6d4552406fd3a8c8d9e9a013e2d3519f509ecea271d3c35", "blockNumber": 52319633, "contract": "0xdc1e36492317d1a79c6e7dfa772e0d91930d99ea", "createdAt": "2023-11-01T10:40:36.359Z", "duration": "1", "durationUnits": 1, "duration_0": 0, "gasPrice": "1600000000", "gasPrice_0": 0, "gasUsed": "191865", "gasUsed_0": 0, "logIndex": 2, "start": "1696153665000", "start_0": 1, "timeStamp": 1698830390, "topic": "VestingScheduleCreated", "topicHash": "0xce0cdae96f18737abe4b02436163a3d9d15b0cf326715c28b72cd74502c9c424", "transactionHash": "0x432d304322c8329d9f251e1e90ceb4415d9af3b953a42443e9013af5c807348e", "transactionIndex": 1, "updatedAt": "2023-11-01T11:11:55.037Z", "yieldRate": "7875000000000000", "yieldRate_0": 7875
-                },
-                {
-                    "_id": "65422b248c15ae8c8bfde204", "key": "0x37ccab6a1c4a3c2448b073a780b45a795a7e0ecd08732226e5aafd3e2c364ca9", "__v": 0, "amountTotal": "100000000000000000000", "amountTotal_0": 100000000, "beneficiary": "0xa5e7cf335d92c537aeb856170b2f804b3e4c0423", "blockHash": "0xe55895861d37753b66216695e312610ee0c1ae44a65e0486fb9fb0b04da0461d", "blockNumber": 52329200, "contract": "0xdc1e36492317d1a79c6e7dfa772e0d91930d99ea", "createdAt": "2023-11-01T10:40:36.360Z", "duration": "1", "durationUnits": 0, "duration_0": 0, "gasPrice": "1600000000", "gasPrice_0": 0, "gasUsed": "171953", "gasUsed_0": 0, "logIndex": 2, "start": "1693656081000", "start_0": 1, "timeStamp": 1698834995, "topic": "VestingScheduleCreated", "topicHash": "0xce0cdae96f18737abe4b02436163a3d9d15b0cf326715c28b72cd74502c9c424", "transactionHash": "0xf990352eb59c0748d430e5f88deb97eca2d62b437efceaf9961fcc7ac129d5c9", "transactionIndex": 1, "updatedAt": "2023-11-01T12:19:09.532Z", "yieldRate": "2250000000000000", "yieldRate_0": 2250
-                }
-            ]
-        })
-        .catch(error => {
-            tradingList.value = undefined
-            console.error(error);
+const tradingList = ref<tradingItem[]>([]);
+const http = Http.getInstance();
+const tradingListInit = async () => {
+    const resp = await http.get({ 
+        url:'https://api.edgematrix.pro/api/v1/event/query',
+        data: {
+            contract: emcContract.toLocaleLowerCase(),
+            topic: 'VestingScheduleCreated',
+            extra: encodeURIComponent(JSON.stringify({ beneficiary: account0.value.toLocaleLowerCase() }))
+         }
         });
+        tradingList.value = resp.data || [];
 }
 
 // 实际收益
