@@ -86,13 +86,13 @@ module.exports = {
                 plugins: [
                   tailwindcss,
                   // 其他插件
-                ]
-              }
-            }
-          }
-        ]
+                ],
+              },
+            },
+          },
+        ],
       },
-      { test: /\.vue$/, use: ['vue-loader',] },
+      { test: /\.vue$/, use: ['vue-loader'] },
     ],
   },
   plugins: [
@@ -145,6 +145,7 @@ module.exports = {
     hot: true,
     watchFiles: [path.resolve(__dirname, 'src', frontendDirectory)],
     liveReload: true,
+    port: 8081,
   },
 };
 

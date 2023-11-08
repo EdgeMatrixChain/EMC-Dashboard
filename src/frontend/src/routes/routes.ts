@@ -40,6 +40,11 @@ export const routes = [
         path: 'transfer',
         component: () => import('@/pages/transfer/index.vue'),
       },
+      {
+        name: 'test',
+        path: 'test',
+        component: () => import('@/pages/test/index.vue'),
+      },
     ],
   },
   {

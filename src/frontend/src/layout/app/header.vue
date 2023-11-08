@@ -15,24 +15,24 @@
           </RouterLink>
         </template>
       </NSpace>
-      <template v-if="isLogin">
+      <template v-if="principal">
         <div class="header-user" @click="onPressUser">
-          <template v-if="walletBalance.EMCBalance !== '' && walletBalance.ICPBalance !== ''">
+          <template v-if="walletBalance.emcBalance !== '' && walletBalance.icpBalance !== ''">
             <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
               <div class="carousel-item">
-                {{ walletBalance.EMCBalance }} EMC
+                {{ walletBalance.emcBalance }} EMC
                 <div class="carousel-item-icon">
                   <img src="@/assets/icon_wallet.svg" width="16" height="16" />
                 </div>
               </div>
               <div class="carousel-item">
-                {{ walletBalance.ICPBalance }} ICP
+                {{ walletBalance.icpBalance }} ICP
                 <div class="carousel-item-icon">
                   <img src="@/assets/icon_swap.svg" width="16" height="16" />
                 </div>
               </div>
               <div class="carousel-item">
-                <span class="header-user-text">{{ Utils.formatAddress(userInfo.principal, 5) }}</span>
+                <span class="header-user-text">{{ principalFormatted }}</span>
               </div>
             </NCarousel>
           </template>
@@ -43,25 +43,26 @@
           <!-- <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span> -->
           <!-- <img src="@/assets/icon_drop_down.svg" width="24" height="24" /> -->
         </div>
-        <Wallet :showWallet="showWallet" :userInfo="userInfo" @close-wallet="closeWallet" @isLogin="loginStatus" @walletBalance="getWalletBalance" />
+        <Wallet v-model:visible="showWallet" @disconnect="onDisconnect" @update:balance="onUpdateBalance" />
       </template>
       <template v-else>
         <div class="header-user" @click="onPressLogin">
           <span class="header-user-text">Connect Wallet</span>
         </div>
+        <ICPConnectDialog v-model:visible="showConnect" />
       </template>
     </NSpace>
   </NSpace>
 </template>
 <script lang="ts">
-import { ref, defineComponent, watch, nextTick } from 'vue';
-import { NButton, NSpin, NSpace, NMenu, NCard, NTag, NModal, NCarousel, NCollapse, NCollapseItem, useMessage } from 'naive-ui';
+import { ref, defineComponent, watch, computed } from 'vue';
+import { NSpin, NSpace, NCarousel, useMessage } from 'naive-ui';
 import { RouterLink } from 'vue-router';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { Utils } from '@/tools/utils';
-import { useLogin } from '@/composables/use-login';
+import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import Wallet from './wallet.vue';
-import { instance as emcAuthClient, AuthClient } from '@emcecosystem/auth-client';
+import { useUserStore } from '@/stores/user';
 
 type tabkey = number;
 
@@ -77,45 +78,22 @@ const tabConfigs: TabItem[] = [
   // { id: 3, name: 'Marketplace', path: '/market' },
 ];
 
-// const walletData: { principal_id: string } = {
-//   principal_id: '',
-// };
-
 const initTabKey = -1;
 
 export default defineComponent({
-  components: {
-    RouterLink,
-    NButton,
-    NSpin,
-    NSpace,
-    NMenu,
-    NCarousel,
-    NCard,
-    NTag,
-    NModal,
-    NCollapse,
-    NCollapseItem,
-    Wallet,
-  },
+  components: { RouterLink, NSpin, NSpace, NCarousel, Wallet, ICPConnectDialog },
   emits: ['isLoading'],
   setup(props, context) {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
-
+    const userStore = useUserStore();
     const currentTabKey = ref<tabkey>(initTabKey);
-    const isLogin = ref(false);
-    const router = useRouter();
     const route = useRoute();
     const showWallet = ref(false);
-    const showModal = ref(false);
-    const userInfo = ref({
-      principal: '',
-      account: '',
-    });
+    const showConnect = ref(false);
     const walletBalance = ref({
-      EMCBalance: '',
-      ICPBalance: '',
+      emcBalance: '',
+      icpBalance: '',
     });
     watch(
       () => route.path,
@@ -129,57 +107,25 @@ export default defineComponent({
     return {
       tabs,
       currentTabKey,
-      isLogin,
+      principal: computed(() => userStore.icpPrincipal),
+      principalFormatted: computed(() => Utils.formatAddress(userStore.icpPrincipal, 5)),
       showWallet,
-      userInfo,
-      showModal,
+      showConnect,
       walletBalance,
-      Utils,
       onPressUser() {
-        //profile
         showWallet.value = true;
       },
       onPressLogin() {
-        context.emit('isLoading', true);
-        emcAuthClient.login({
-          // provider: 'http://localhost:8080',
-          onSuccess: (message) => {
-            console.info('success', message);
-            //{"type": "authorize-success","data": "tdvch-tx3ik-r2bzp-pncic-ahjes-57rvk-oa6qu-blzh2-brbs5-x67zv-jae"}
-            if (message.type === 'authorize-success') {
-              userInfo.value = message.data;
-              isLogin.value = true;
-              context.emit('isLoading', false);
-            }
-          },
-          onError(message) {
-            console.info(message);
-            context.emit('isLoading', false);
-          },
-        });
+        showConnect.value = true;
       },
-      closeWallet() {
-        showWallet.value = false;
+      onDisconnect() {
+        userStore.disconnect();
+        walletBalance.value.emcBalance = '';
+        walletBalance.value.icpBalance = '';
       },
-
-      closeModal() {
-        showModal.value = false;
-      },
-
-      loginStatus(val: boolean) {
-        isLogin.value = val;
-        if (isLogin.value === false) {
-          userInfo.value.principal = '';
-          userInfo.value.account = '';
-          walletBalance.value.EMCBalance = '';
-          walletBalance.value.ICPBalance = '';
-          message.success('Logout successful');
-        }
-      },
-      getWalletBalance(val: { EMCBalance: string; ICPBalance: string }) {
-        // walletBalance.value = val;
-        walletBalance.value.EMCBalance = Number(val.EMCBalance).toFixed(2);
-        walletBalance.value.ICPBalance = Number(val.ICPBalance).toFixed(2);
+      onUpdateBalance(val: { emcBalance: string; icpBalance: string }) {
+        walletBalance.value.emcBalance = Number(val.emcBalance).toFixed(2);
+        walletBalance.value.icpBalance = Number(val.icpBalance).toFixed(2);
       },
     };
   },
@@ -282,4 +228,3 @@ export default defineComponent({
   }
 }
 </style>
-@/composables/use-login

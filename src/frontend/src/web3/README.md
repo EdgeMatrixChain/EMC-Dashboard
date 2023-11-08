@@ -35,7 +35,6 @@ onMounted(async () => {
   emcApi = apiManager.create(EMCApi, { address: emcContract });
   const { data: erc20ContractAddress } = await emcApi.token();
   erc20Api = apiManager.create(ERC20Api, { address: erc20ContractAddress });
-  // 锁定
   await emcApi.getLockedAmount({ account: account0 });
   await erc20Api.balanceOf({ account: account0 });
 });

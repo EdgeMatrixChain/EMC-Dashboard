@@ -1,5 +1,5 @@
 <template>
-  <NModal v-model:show="isVisible" :block-scroll="false" :on-mask-click="onPressMask">
+  <NModal :show="visible" :block-scroll="false" :on-mask-click="onPressMask">
     <div class="wallet-bgcolor">
       <div class="wallet-mask">
         <div class="wallet-mask-header"></div>
@@ -47,16 +47,16 @@
           <NSpace class="coin-info-left" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-icon">
               <img src="@/assets/icon_coin_emc.png" width="28" height="28" />
-              <!-- <img :src="metaData.logo" width="24" height="24" /> -->
+              <!-- <img :src="emcMetaData.logo" width="24" height="24" /> -->
             </div>
-            <!-- {{ metaData.symbol }} -->
+            <!-- {{ emcMetaData.symbol }} -->
             <div class="coin-info-name">EMC</div>
             <!-- <img src="@/assets/icon_arrow_down.svg" width="12" height="6" /> -->
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">{{ EMCBalance }}</div>
+              <div class="coin-info-number">{{ emcBalance }}</div>
             </div>
           </NSpace>
         </NSpace>
@@ -65,14 +65,14 @@
             <div class="coin-info-icon">
               <img src="@/assets/icon_coin_icp.png" width="28" height="28" />
             </div>
-            <!-- {{ ICPMetaData.symbol }} -->
+            <!-- {{ icpMetaData.symbol }} -->
             <div class="coin-info-name">ICP</div>
             <!-- <img src="@/assets/icon_arrow_down.svg" width="12" height="6" /> -->
           </NSpace>
           <NSpace class="coin-info-right" justify="space-between" align="center" :wrap-item="false" :size="0">
             <div class="coin-info-balance">Balance :</div>
             <div class="coin-info-balance-box">
-              <div class="coin-info-number">{{ ICPBalance }}</div>
+              <div class="coin-info-number">{{ icpBalance }}</div>
               <!-- <div class="coin-info-number-probably">
                 <span>≈ </span>
                 <span>0.00081243</span>
@@ -81,7 +81,10 @@
           </NSpace>
         </NSpace>
         <NSpace justify="space-between" align="center" :wrap-item="false" :size="0" style="margin: 12px 8px 0">
-          <a href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks" target="_blank">
+          <a
+            href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks"
+            target="_blank"
+          >
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
                 <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center">
@@ -90,11 +93,17 @@
                   </div>
                   <span class="wallet-footer-span">Buy ICP</span>
                 </NSpace>
-                <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
+                <img
+                  src="@/assets/icon_wallet_mask.png"
+                  style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px"
+                />
               </div>
             </div>
           </a>
-          <a href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai" target="_blank">
+          <a
+            href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai"
+            target="_blank"
+          >
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
                 <NSpace class="wallet-footer-button-bgcolor-content" justify="space-between" align="center">
@@ -108,7 +117,10 @@
                     <img src="@/assets/icon_coin_icp.png" width="20" height="20" />
                   </div>
                 </NSpace>
-                <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
+                <img
+                  src="@/assets/icon_wallet_mask.png"
+                  style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px"
+                />
               </div>
             </div>
           </a>
@@ -124,134 +136,94 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, onMounted, computed, defineComponent } from 'vue';
+import { ref, onMounted, computed, defineComponent } from 'vue';
 import { NSpace, NModal, NButton, useMessage } from 'naive-ui';
-import { Utils } from '@/tools/utils';
-import axios from 'axios';
 import copy from 'copy-to-clipboard';
+import { Utils } from '@/tools/utils';
+import { useUserStore } from '@/stores/user';
+import { ethers } from 'ethers';
+import { Http } from '@/tools/http';
 
 export default defineComponent({
   name: 'wallet',
   components: { NSpace, NModal, NButton },
   props: {
-    showWallet: { type: Boolean, default: false },
-    userInfo: { type: Object, default: {} },
+    visible: { type: Boolean, default: false },
   },
-  emits: ['close-wallet', 'isLogin', 'walletBalance'],
+  emits: ['update:visible', 'disconnect', 'update:balance'],
   setup(props, context) {
-    const isVisible = ref(props.showWallet);
     const message = useMessage();
-    const principal = ref(props.userInfo.principal);
-    const account = ref(props.userInfo.account);
-    const metaData = ref({
-      symbol: '',
-      logo: '',
-      decimals: 0,
-    });
+    const userStore = useUserStore();
+    const http = Http.getInstance();
 
-    const ICPMetaData = ref({
-      symbol: '',
-      logo: '',
-      decimals: 0,
-    });
-    const EMCBalance = ref('--');
-    const ICPBalance = ref('--');
+    const emcMetaData = ref({ symbol: '', logo: '', decimals: 0 });
+    const icpMetaData = ref({ symbol: '', logo: '', decimals: 0 });
+    const emcBalance = ref('--');
+    const icpBalance = ref('--');
 
-    // dip20 method name 'getMetadata' | 'getTokenFee' | 'getTokenInfo' | 'historySize' | 'logo' | 'name' | 'symbol' | 'totalSupply'
-    const getMetadata = ref('getMetadata');
     onMounted(async () => {
-      const [EMCBalance, ICPBalance] = await Promise.all([getEMCBalance(), getICPBalance()]);
-      context.emit('walletBalance', {
-        EMCBalance: EMCBalance,
-        ICPBalance: ICPBalance,
-      });
+      const [emcBalance, icpBalance] = await Promise.all([initEMCBalance(), initICPBalance()]);
+      context.emit('update:balance', { emcBalance, icpBalance });
     });
 
-    async function getEMCBalance() {
-      const metaData: any = await Utils.metaData();
-      const respBalance = await axios.get('https://api.edgematrix.pro/api/v1/dip20balance', {
-        params: {
-          principal: principal.value,
-        },
-      });
-      const dataBalance = respBalance.data;
-      if (dataBalance._result !== 0) return;
-      const balance = dataBalance.data;
-      if (balance > 0) {
-        let result = Utils.toFixed(balance / Math.pow(10, metaData.decimals), 4);
-        EMCBalance.value = result.toString();
-        return result.toString();
-      } else {
-        EMCBalance.value = balance;
-        return balance;
-      }
-      // if (balance.toString().length > 15) {
-      //   let balanceString = balance.toString();
-      //   let dividedBalance = BigInt(Math.floor(Number(balanceString) / Math.pow(10, metaData.value.decimals)));
-      //   let decimalPart = balanceString.substring(balanceString.length - metaData.value.decimals);
-      //   let result = dividedBalance.toString() + '.' + decimalPart;
-      //   EMCBalance.value = result;
-      // } else {
-
-      // }
+    async function initEMCBalance() {
+      const [{ data: metaDataStr }, { data: balance }] = await Promise.all([
+        http.get({
+          url: 'https://api.edgematrix.pro/api/v1/dip20simple',
+          data: { method: 'getMetadata' },
+        }),
+        http.get({
+          url: 'https://api.edgematrix.pro/api/v1/dip20balance',
+          data: { principal: userStore.icpPrincipal },
+        }),
+      ]);
+      const metaData = JSON.parse(metaDataStr);
+      emcMetaData.value = metaData;
+      const balanceStr = ethers.formatUnits(balance, Number(metaData.decimals));
+      emcBalance.value = balanceStr.replace(/(\.\d{4})\d+/, '$1');
+      return emcBalance.value;
     }
 
-    async function getICPBalance() {
-      const resp = await axios.get('https://api.edgematrix.pro/api/v1/icrc1metadata');
-      const data = resp.data;
-      if (data._result !== 0) return;
-
-      ICPMetaData.value = data.data;
-
-      const respBalance = await axios.get('https://api.edgematrix.pro/api/v1/icrc1balance', {
-        params: {
-          principal: principal.value,
-        },
-      });
-      const dataBalance = respBalance.data;
-      if (dataBalance._result !== 0) return;
-
-      const balance = dataBalance.data;
-      if (balance > 0) {
-        const result = Utils.toFixed(balance / Math.pow(10, ICPMetaData.value.decimals), 4);
-        ICPBalance.value = result.toString();
-        return result.toString();
-      } else {
-        ICPBalance.value = balance;
-        return balance;
-      }
+    async function initICPBalance() {
+      const [{ data: metaData }, { data: balance }] = await Promise.all([
+        http.get({
+          url: 'https://api.edgematrix.pro/api/v1/icrc1metadata',
+        }),
+        http.get({
+          url: 'https://api.edgematrix.pro/api/v1/icrc1balance',
+          data: { principal: userStore.icpPrincipal },
+        }),
+      ]);
+      icpMetaData.value = metaData;
+      const balanceStr = ethers.formatUnits(balance, Number(metaData.decimals));
+      icpBalance.value = balanceStr.replace(/(\.\d{4})\d+/, '$1');
+      return icpBalance.value;
     }
-
-    watch(
-      () => props.showWallet,
-      (newVal: boolean) => {
-        isVisible.value = newVal;
-      }
-    );
 
     const onPressMask = () => {
-      context.emit('close-wallet');
+      context.emit('update:visible');
     };
+
     const onPressLogout = () => {
-      context.emit('isLogin', false);
-      context.emit('close-wallet');
+      context.emit('disconnect');
+      context.emit('update:visible');
     };
 
     const onPressCopy = (item: string) => {
       copy(item);
-      message.success('copied');
+      message.success('Copied');
     };
+
     return {
       Utils,
-      isVisible,
+      account: computed(() => userStore.icpAccount),
+      principal: computed(() => userStore.icpPrincipal),
+      emcMetaData,
+      icpMetaData,
+      emcBalance,
+      icpBalance,
       onPressMask,
       onPressLogout,
-      account,
-      principal,
-      metaData,
-      ICPMetaData,
-      EMCBalance,
-      ICPBalance,
       onPressCopy,
     };
   },
@@ -267,8 +239,9 @@ export default defineComponent({
   height: 390px;
   border-radius: 0px 0px 4px 4px;
   background-color: #181927;
-  box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1), 0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05), 0px 100px 86px 0px rgba(131, 125, 176, 0.01),
-    0px 338px 95px 0px rgba(131, 125, 176, 0);
+  box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1),
+    0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05),
+    0px 100px 86px 0px rgba(131, 125, 176, 0.01), 0px 338px 95px 0px rgba(131, 125, 176, 0);
   /* transition: 1s all linear; */
   overflow: hidden;
   z-index: 1;
@@ -337,7 +310,14 @@ export default defineComponent({
   height: 28px;
   border-radius: 50%;
   transform: rotate(-45deg);
-  background: conic-gradient(from 180deg at 50% 50%, #561ed0 0deg, rgba(58, 27, 141, 0.8) 91.87500357627869deg, #65238a 178.1249964237213deg, rgba(79, 23, 185, 0.8) 266.2499928474426deg, #3678e7 360deg);
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #561ed0 0deg,
+    rgba(58, 27, 141, 0.8) 91.87500357627869deg,
+    #65238a 178.1249964237213deg,
+    rgba(79, 23, 185, 0.8) 266.2499928474426deg,
+    #3678e7 360deg
+  );
   filter: blur(2px);
   z-index: 6;
 }
@@ -435,8 +415,9 @@ export default defineComponent({
   margin-right: 12px;
   border-radius: 50%;
   background-color: #fff;
-  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05)) drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01))
-    drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))
+    drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05))
+    drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01)) drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
 }
 .coin-info-name {
   min-width: 32px;
@@ -499,7 +480,8 @@ export default defineComponent({
   font-weight: 400;
   border-radius: 50%;
   border: 1px solid #202020;
-  background: radial-gradient(37.5% 37.5% at 50% 50%, rgba(20, 0, 54, 0.2204) 0%, rgba(0, 0, 0, 0.38) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  background: radial-gradient(37.5% 37.5% at 50% 50%, rgba(20, 0, 54, 0.2204) 0%, rgba(0, 0, 0, 0.38) 100%)
+    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   box-sizing: border-box;
 }
 .wallet-footer-button {
