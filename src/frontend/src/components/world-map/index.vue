@@ -23,8 +23,10 @@ export default defineComponent({
     onMounted(async () => {
       const myEcharts: any = document.getElementById('chart-container');
       const resp = await http.get({ url: 'https://api.edgematrix.pro/api/v1/ipmap' });
+
       const IPMap = resp.data || [];
       const newIPMap: any = [];
+
       IPMap.forEach((item: any) => {
         if (!item.latitude || !item.longitude || item.nodes === 0) return;
         const data = {
