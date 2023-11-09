@@ -145,7 +145,7 @@ module.exports = {
     hot: true,
     watchFiles: [path.resolve(__dirname, 'src', frontendDirectory)],
     liveReload: true,
-    port: 8081,
+    // port: 8081,
   },
 };
 

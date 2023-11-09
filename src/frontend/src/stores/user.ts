@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { Client, Provider, createClient } from '@connect2ic/core';
-import { defaultProviders } from '@connect2ic/core/providers';
+import { defaultProviders, InternetIdentity, PlugWallet, AstroX, IConnector } from '@connect2ic/core/providers';
 import { HttpAgent } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
 import type { Agent, Identity } from '@dfinity/agent';
@@ -21,7 +21,6 @@ import {
 } from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
 
 import { ethers } from 'ethers';
-//host: "https://icp0.io"
 // export const DFINITY_HOST = 'https://boundary.ic0.app/';
 export const DFINITY_HOST = 'https://icp0.io';
 
@@ -40,44 +39,14 @@ export const useUserStore = defineStore('user', () => {
   const icpPrincipal = ref('');
   const icpAccount = ref('');
 
+  let client: Client | null = null;
+  let providerInternetIdentity = new InternetIdentity(globalProviderConfig);
+  let providerPlug = new PlugWallet(globalProviderConfig);
+  let providerAstroX = new AstroX(globalProviderConfig);
+  let supportProviders: IConnector[] = [providerInternetIdentity, providerPlug, providerAstroX];
   let httpAgent: HttpAgent;
   let idlDip20: IDLDip20;
   let idlRecycle: IDLRecycle;
-  const client: Client = createClient({
-    providers: defaultProviders as (config: any) => Array<Provider>,
-    globalProviderConfig,
-  });
-
-  client.on('init', async (e: any, fn: any) => {
-    client.disconnect();
-  });
-  client.on('connect', async (e: any, fn: any) => {
-    const { activeProvider, principal: _principal } = e;
-    console.info(activeProvider);
-    if (activeProvider.meta.id === 'plug') {
-      httpAgent = activeProvider.ic?.agent;
-      if (!httpAgent) {
-        client.disconnect();
-        return;
-      }
-      const principal = await httpAgent.getPrincipal();
-      icpPrincipal.value = principal.toString();
-      icpAccount.value = principalToAccountIdentifier(principal);
-    } else if (activeProvider.meta.id === 'ii') {
-      const identity = activeProvider.client.getIdentity();
-      httpAgent = new HttpAgent({ identity, host: DFINITY_HOST });
-      const principal = identity.getPrincipal();
-      icpPrincipal.value = principal.toString();
-      icpAccount.value = principalToAccountIdentifier(principal);
-    }
-    idlDip20 = createActor<IDLDip20>(CANISTER_ID_DIP20, idlFactoryDip20, { agent: httpAgent });
-    idlRecycle = createActor<IDLRecycle>(CANISTER_ID_RECYCLE, idlFactoryRecycle, { agent: httpAgent });
-  });
-
-  client.on('disconnect', (e: any) => {
-    console.info('disconnect');
-    icpPrincipal.value = '';
-  });
 
   const dip20Metadata = (() => {
     let _metadata: Metadata;
@@ -90,14 +59,70 @@ export const useUserStore = defineStore('user', () => {
   })();
 
   return {
-    providers: client.providers,
+    providers: supportProviders,
     icpPrincipal,
     icpAccount,
-    connect(provider: Provider) {
-      client.connect(provider.meta.id);
+    async connect(provider: Provider) {
+      console.info(`connect---> ${provider.meta.id}`);
+      if (client) {
+        client.disconnect();
+        client = null;
+      }
+      const providers = supportProviders.filter((item) => item.meta.id === provider.meta.id);
+      client = createClient({ providers: providers, globalProviderConfig });
+      // client status: initializing idle connecting connected disconnecting
+      client.on('init', () => {
+        console.info(`client inited`);
+        // if (provider.meta.id === 'ii') { }
+        client!.connect(provider.meta.id);
+      });
+      client.on('connect', async (e: any, fn: any) => {
+        const { activeProvider, principal: _principal } = e;
+        console.info(`connect`, activeProvider);
+        if (activeProvider.meta.id === 'plug') {
+          httpAgent = activeProvider.ic?.agent;
+          if (!httpAgent) {
+            console.error(`The meta.id 'plug' 'http-agent' is none.`);
+            client!.disconnect();
+            return;
+          }
+          const principal = await httpAgent.getPrincipal();
+          icpPrincipal.value = principal.toString();
+          icpAccount.value = principalToAccountIdentifier(principal);
+        } else if (activeProvider.meta.id === 'ii') {
+          const identity = activeProvider.client.getIdentity();
+          httpAgent = new HttpAgent({ identity, host: DFINITY_HOST });
+          const principal = identity.getPrincipal();
+          icpPrincipal.value = principal.toString();
+          icpAccount.value = principalToAccountIdentifier(principal);
+        } else if (activeProvider.meta.id === 'astrox') {
+          const identity = window.ic.astrox.identity;
+          httpAgent = new HttpAgent({ identity, host: DFINITY_HOST });
+          const principal = identity.getPrincipal();
+          icpPrincipal.value = principal.toString();
+          icpAccount.value = principalToAccountIdentifier(principal);
+        }
+        idlDip20 = createActor<IDLDip20>(CANISTER_ID_DIP20, idlFactoryDip20, { agent: httpAgent });
+        idlRecycle = createActor<IDLRecycle>(CANISTER_ID_RECYCLE, idlFactoryRecycle, { agent: httpAgent });
+        console.info(client!.status);
+      });
+
+      client.on('disconnect', (e: any) => {
+        console.info('disconnect');
+        client = null;
+        icpPrincipal.value = '';
+        icpAccount.value = '';
+      });
+
+      // console.info(`status ---> `, client.status);
+      // client.connect(provider.meta.id);
     },
-    disconnect() {
-      client.disconnect();
+    async disconnect() {
+      // TODO: should be awaited but never finishes, tell Plug to fix
+      client!.disconnect();
+      client = null;
+      icpPrincipal.value = '';
+      icpAccount.value = '';
     },
     dip20Metadata,
     async dip20Approve({ principal: _principal, amount: _amount }: { principal?: string; amount: string }) {

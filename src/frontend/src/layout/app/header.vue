@@ -119,6 +119,7 @@ export default defineComponent({
         showConnect.value = true;
       },
       onDisconnect() {
+        showWallet.value = false;
         userStore.disconnect();
         walletBalance.value.emcBalance = '';
         walletBalance.value.icpBalance = '';

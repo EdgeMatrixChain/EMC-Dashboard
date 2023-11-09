@@ -38,7 +38,7 @@ import { useUserStore } from '@/stores/user';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
-import { ethers } from 'ethers';
+
 type DepositOrder = {
   _id: string;
   id: number;

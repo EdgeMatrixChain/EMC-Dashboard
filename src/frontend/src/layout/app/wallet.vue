@@ -206,7 +206,6 @@ export default defineComponent({
 
     const onPressLogout = () => {
       context.emit('disconnect');
-      context.emit('update:visible');
     };
 
     const onPressCopy = (item: string) => {
