@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', () => {
     appName: 'EMC-Dashboard',
     dev: false,
     autoConnect: false,
-    host: location.origin,
+    host: DFINITY_HOST, //location.origin
     whitelist: [CANISTER_ID_DIP20, CANISTER_ID_RECYCLE],
   };
 
