@@ -11,6 +11,7 @@ import {
   _SERVICE as IDLRecycle,
   Result as RecycleResult,
   idlFactory as idlFactoryRecycle,
+  WhitelistInfoResult as RecycleWhitelistInfoResult,
 } from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
 
 import {
@@ -124,6 +125,7 @@ export const useUserStore = defineStore('user', () => {
       icpPrincipal.value = '';
       icpAccount.value = '';
     },
+
     dip20Metadata,
     async dip20Approve({ principal: _principal, amount: _amount }: { principal?: string; amount: string }) {
       const { decimals } = await dip20Metadata();
@@ -135,6 +137,20 @@ export const useUserStore = defineStore('user', () => {
         return { _result: 1, _desc: error };
       }
       return { _result: 0 };
+    },
+    async getWhiteListInfo({ principal: _principal }: { principal?: string }) {
+      const principal = Principal.from(_principal);
+      const resp: [] | [RecycleWhitelistInfoResult] = await idlRecycle.get_user_whitelist(principal);
+      // if (!resp[0]) {
+      //   return { _result: 1, _desc: `Not found \'${_principal}\' in whitelist` };
+      // }
+      /* {owner: Principal;used: bigint; quota: bigint;} */
+      // const data = {
+      //   owner: resp[0].owner.toString(),
+      //   used: ethers.formatUnits(resp[0].used, 8),
+      //   quota: ethers.formatUnits(resp[0].quota, 8),
+      // };
+      return { _result: 0, data: resp[0] }; // undefined | RecycleWhitelistInfoResult
     },
     /**
      *
