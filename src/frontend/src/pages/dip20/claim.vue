@@ -157,10 +157,13 @@ export default defineComponent({
           amount: BigInt(item.toAmount),
           merkleProof: item.proof,
         });
+
         console.info(resp);
         if (resp._result === 0) {
           initDepositOrders();
           message.success('Claimed');
+        } else {
+          message.error('Claim error');
         }
       },
     };
