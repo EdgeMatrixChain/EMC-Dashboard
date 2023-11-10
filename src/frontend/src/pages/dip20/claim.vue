@@ -29,7 +29,7 @@
                 <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
                   <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
                   <NText class="flex-[0.45] text-white">{{ item.status ? 'withdrawn' : 'not withdrawn' }}</NText>
-                  <NText class="flex-[0.1] text-[#397EFF] cursor-pointer" @click="onPressClaim(item, index)">Claim</NText>
+                  <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status ? '#bbb' : '#397EFF' }" @click="onPressClaim(item, index)">Claim</NText>
                 </NSpace>
               </template>
             </NSpace>
@@ -161,7 +161,8 @@ export default defineComponent({
 
         console.info(resp);
         if (resp._result === 0) {
-          initDepositOrders();
+          // initDepositOrders();
+          item.status = true;
           message.success('Claimed');
         } else {
           message.error('Claim error');
