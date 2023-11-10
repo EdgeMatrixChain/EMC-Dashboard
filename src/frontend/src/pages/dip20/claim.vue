@@ -109,7 +109,7 @@ export default defineComponent({
 
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0xbc11851363a64b10fb15864cd3ea719425cd46ee', topic: 'Claimed' },
+        data: { contract: '0xbc11851363a64b10FB15864Cd3eA719425cd46Ee', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
@@ -150,6 +150,7 @@ export default defineComponent({
       async onPressClaim(item: DepositOrder, index: number) {
         if (item.status) {
           message.error('Cannot be Claimed repeatedly');
+          return;
         }
         const resp = await merkleClaimApi.claim({
           index: item.proofIndex,
