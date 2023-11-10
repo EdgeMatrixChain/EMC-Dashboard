@@ -1,15 +1,22 @@
 <template>
   <NSpace vertical align="center" :wrap-item="false" :size="[0, 16]">
     <NCard title="ICP Transfer" style="width: 600px">
-      <NForm :model="formData" :show-feedback="false">
-        <NFormItem path="account" label="Ethernet Account">
-          <NInput v-model:value="formData.account" />
-        </NFormItem>
-        <NFormItem>
-          <NButton :loading="loading" @click="onPressDeposit">Deposit 1 EMC</NButton>
-        </NFormItem>
-      </NForm>
+      <template v-if="!icpSign">
+        <span>Please connect icp wallet first.</span>
+        <Content />
+      </template>
+      <template v-else>
+        <NForm :model="formData" :show-feedback="false">
+          <NFormItem path="account" label="Ethernet Account">
+            <NInput v-model:value="formData.account" />
+          </NFormItem>
+          <NFormItem>
+            <NButton :loading="loading" @click="onPressDeposit">Deposit 1 EMC</NButton>
+          </NFormItem>
+        </NForm>
+      </template>
     </NCard>
+
     <NCard title="ICP Transfer" style="width: 600px">
       <template v-if="!ethSign">
         <NButton @click="onPressConnectETH">Connect Ethernet</NButton>
@@ -39,6 +46,7 @@ import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 
+import Content from '@/components/icp-connect/content.vue';
 type DepositOrder = {
   _id: string;
   id: number;
@@ -55,7 +63,7 @@ type DepositOrder = {
 
 export default defineComponent({
   name: 'test',
-  components: { NSpace, NCard, NForm, NFormItem, NInput, NButton },
+  components: { NSpace, NCard, NForm, NFormItem, NInput, NButton, Content },
   setup() {
     const message = useMessage();
     const http = Http.getInstance();
@@ -91,6 +99,7 @@ export default defineComponent({
       formData,
       loading,
       depositOrders,
+      icpSign: computed(() => userStore.icpPrincipal),
       ethSign: computed(() => ethUserStore.account0),
       async onPressDeposit() {
         loading.value = true;
