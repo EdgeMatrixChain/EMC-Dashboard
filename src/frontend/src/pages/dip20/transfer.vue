@@ -246,9 +246,11 @@ export default defineComponent({
         }
         if (Number(balance.value) > 0) {
           loading.value = true;
-          const resp = await userStore.dip20Approve({ principal: userStore.icpPrincipal, amount: balance.value });
+
+          // return; principal: userStore.icpPrincipal,
+          const resp = await userStore.dip20Approve({ amount: balance.value });
           console.info(resp);
-          const resp2 = await userStore.deposit({ account: userStore.icpAccount, isWhiteList: Boolean(whiteListInfo.value.owner !== '') });
+          const resp2 = await userStore.deposit({ account: ethUserStore.account0, isWhiteList: Boolean(whiteListInfo.value.owner !== '') });
           console.info(resp2);
           if (resp2._result !== 0) {
             message.error('');
