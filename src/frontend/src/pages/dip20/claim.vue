@@ -109,7 +109,7 @@ export default defineComponent({
 
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0xbc11851363a64b10FB15864Cd3eA719425cd46Ee', topic: 'Claimed' },
+        data: { contract: '0xbc11851363a64b10fb15864cd3ea719425cd46ee', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
