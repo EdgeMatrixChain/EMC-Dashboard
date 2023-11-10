@@ -93,7 +93,7 @@ export default defineComponent({
     const ethUserStore = useETHUserStore();
 
     const apiManager = ApiManager.getInstance();
-    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0xbc11851363a64b10FB15864Cd3eA719425cd46Ee' });
+    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x77cD77D841F7547AECb93c1Aa39d976495fBCAA1' });
 
     const historyList = ref([]);
     const isViewHistory = ref(false);
@@ -109,7 +109,7 @@ export default defineComponent({
 
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0xbc11851363a64b10fb15864cd3ea719425cd46ee', topic: 'Claimed' },
+        data: { contract: '0x77cd77d841f7547aecb93c1aa39d976495fbcaa1', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
