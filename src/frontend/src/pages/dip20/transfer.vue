@@ -197,7 +197,7 @@ export default defineComponent({
       if (whiteListInfo.value.quota) {
         const result = Math.min(balanceAmount, Number(whiteListInfo.value.quota));
         if (result !== 0) {
-          return Number(result) / RADIO;
+          return Number(result);
         }
       } else {
         return balanceAmount / RADIO;
