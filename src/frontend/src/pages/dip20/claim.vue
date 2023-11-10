@@ -25,7 +25,7 @@
               <div class="flex-[0.1] text-white">Action</div>
             </NSpace>
             <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
-              <template v-for="(item, index) in depositOrders" :key="item.id">
+              <template v-for="(item, index) in newDepositOrders" :key="item.id">
                 <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
                   <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
                   <NText class="flex-[0.45] text-white">{{ item.status ? 'withdrawn' : 'not withdrawn' }}</NText>
@@ -93,12 +93,13 @@ export default defineComponent({
     const ethUserStore = useETHUserStore();
 
     const apiManager = ApiManager.getInstance();
-    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x77cD77D841F7547AECb93c1Aa39d976495fBCAA1' });
+    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0xbc11851363a64b10FB15864Cd3eA719425cd46Ee' });
 
     const historyList = ref([]);
     const isViewHistory = ref(false);
 
     const depositOrders = ref<Array<DepositOrder>>([]);
+    const newDepositOrders = ref<Array<DepositOrder>>([]);
 
     const initDepositOrders = async () => {
       const resp = await http.get({
@@ -109,15 +110,19 @@ export default defineComponent({
 
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0x77cD77D841F7547AECb93c1Aa39d976495fBCAA1', topic: 'Claimed' },
+        data: { contract: '0xbc11851363a64b10fb15864cd3ea719425cd46ee', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
       depositOrders.value.forEach((item: DepositOrder) => {
         item.status = claimeds.some((claimItem: any) => {
-          return item.proofIndex === Number(claimItem.index);
+          console.log(item.proofIndex, Number(claimItem.index), item.proofIndex === Number(claimItem.index));
+          if (item.proofIndex === Number(claimItem.index)) {
+            newDepositOrders.value.push(item);
+          }
         });
       });
+      console.log(newDepositOrders.value);
     };
 
     watch(
@@ -134,6 +139,7 @@ export default defineComponent({
 
     return {
       ethSign: computed(() => ethUserStore.account0),
+      newDepositOrders,
       depositOrders,
       isViewHistory,
       historyList,
