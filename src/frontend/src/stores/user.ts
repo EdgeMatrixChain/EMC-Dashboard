@@ -7,19 +7,9 @@ import { Principal } from '@dfinity/principal';
 import type { Agent, Identity } from '@dfinity/agent';
 import { createActor } from '@/web3icp/declarations';
 import { principalToAccountIdentifier } from '@/web3icp/account-id';
-import {
-  _SERVICE as IDLRecycle,
-  Result as RecycleResult,
-  idlFactory as idlFactoryRecycle,
-  WhitelistInfoResult as RecycleWhitelistInfoResult,
-} from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
+import { _SERVICE as IDLRecycle, Result as RecycleResult, idlFactory as idlFactoryRecycle, WhitelistInfoResult as RecycleWhitelistInfoResult } from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
 
-import {
-  _SERVICE as IDLDip20,
-  Metadata,
-  TxReceipt,
-  idlFactory as idlFactoryDip20,
-} from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
+import { _SERVICE as IDLDip20, Metadata, TxReceipt, idlFactory as idlFactoryDip20 } from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
 
 import { ethers } from 'ethers';
 // export const DFINITY_HOST = 'https://boundary.ic0.app/';
@@ -146,9 +136,9 @@ export const useUserStore = defineStore('user', () => {
       // }
       /* {owner: Principal;used: bigint; quota: bigint;} */
       // const data = {
-      //   owner: resp[0].owner.toString(),
-      //   used: ethers.formatUnits(resp[0].used, 8),
-      //   quota: ethers.formatUnits(resp[0].quota, 8),
+      //   owner: resp[0]?.owner.toString(),
+      //   used: ethers.formatUnits(resp[0].used , 8),
+      //   quota: ethers.formatUnits(resp[0].quota , 8),
       // };
       return { _result: 0, data: resp[0] }; // undefined | RecycleWhitelistInfoResult
     },

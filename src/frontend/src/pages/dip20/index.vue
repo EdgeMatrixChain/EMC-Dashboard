@@ -18,7 +18,7 @@
             </div>
             <div class="text-base text-center">
               Arbitrum Contract Address: <br />
-              0x6d2fdb5b293761616f52310db34e5a2209a4b348
+              0xDFB8BE6F8c87f74295A87de951974362CedCFA30
             </div>
           </NSpace>
 
@@ -46,7 +46,7 @@ import Transfer from './transfer.vue';
 import Claim from './claim.vue';
 
 export default defineComponent({
-  name: '',
+  name: 'dip20',
   components: { NSpace, Transfer, Claim },
 
   setup() {

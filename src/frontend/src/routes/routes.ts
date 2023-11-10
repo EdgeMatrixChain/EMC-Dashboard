@@ -36,9 +36,9 @@ export const routes = [
         component: () => import('@/pages/node-detail/index.vue'),
       },
       {
-        name: 'transfer',
-        path: 'transfer',
-        component: () => import('@/pages/transfer/index.vue'),
+        name: 'dip20',
+        path: 'dip20',
+        component: () => import('@/pages/dip20/index.vue'),
       },
       {
         name: 'test',

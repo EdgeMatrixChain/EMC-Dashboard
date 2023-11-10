@@ -1,16 +1,10 @@
 <template>
-  <NSpace vertical :wrap-item="false" :size="[0, 16]">
+  <NSpace vertical :wrap-item="false" :size="[0, 20]">
     <template v-for="item in providers">
-      <NSpace
-        align="center"
-        :wrap-item="false"
-        :size="[16, 0]"
-        style="border: solid 1px var(--n-border-color); padding: 16px"
-        @click="onPressConnect(item)"
-      >
+      <NSpace class="cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ padding: ' 12px', borderRadius: '8px', backgroundColor: bgColor }" @click="onPressConnect(item)">
         <img style="width: 48px; height: 48px; object-fit: contain" :src="item.meta.icon.dark" />
         <NSpace vertical :wrap-item="false" :size="[0, 8]">
-          <NText style="font-size: 16px">{{ item.meta.name }}</NText>
+          <NText class="text-[18px] leading-[18px] text-white">{{ item.meta.name }}</NText>
         </NSpace>
       </NSpace>
     </template>
@@ -24,7 +18,11 @@ import { NSpace, NText } from 'naive-ui';
 export default defineComponent({
   name: 'icp-connect',
   components: { NSpace, NText },
+  props: {
+    bgColor: { type: String, default: '' },
+  },
   emits: ['success'],
+
   setup(props, context) {
     const { providers, connect } = useUserStore();
 
