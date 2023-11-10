@@ -25,7 +25,7 @@
               <div class="flex-[0.1] text-white">Action</div>
             </NSpace>
             <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
-              <template v-for="(item, index) in newDepositOrders" :key="item.id">
+              <template v-for="(item, index) in depositOrders" :key="item.id">
                 <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
                   <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
                   <NText class="flex-[0.45] text-white">{{ item.status ? 'withdrawn' : 'not withdrawn' }}</NText>
@@ -99,7 +99,6 @@ export default defineComponent({
     const isViewHistory = ref(false);
 
     const depositOrders = ref<Array<DepositOrder>>([]);
-    const newDepositOrders = ref<Array<DepositOrder>>([]);
 
     const initDepositOrders = async () => {
       const resp = await http.get({
@@ -116,13 +115,9 @@ export default defineComponent({
 
       depositOrders.value.forEach((item: DepositOrder) => {
         item.status = claimeds.some((claimItem: any) => {
-          console.log(item.proofIndex, Number(claimItem.index), item.proofIndex === Number(claimItem.index));
-          if (item.proofIndex === Number(claimItem.index)) {
-            newDepositOrders.value.push(item);
-          }
+          return item.proofIndex === Number(claimItem.index);
         });
       });
-      console.log(newDepositOrders.value);
     };
 
     watch(
@@ -139,7 +134,6 @@ export default defineComponent({
 
     return {
       ethSign: computed(() => ethUserStore.account0),
-      newDepositOrders,
       depositOrders,
       isViewHistory,
       historyList,
