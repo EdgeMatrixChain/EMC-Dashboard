@@ -157,9 +157,9 @@ export const useUserStore = defineStore('user', () => {
      * @param param0 {account:ethernet account}
      * @returns
      */
-    async deposit({ account }: { account: string }) {
+    async deposit({ account, isWhiteList }: { account: string; isWhiteList: boolean }) {
       console.info('before', idlRecycle);
-      const resp: RecycleResult = await idlRecycle.deposit(account);
+      const resp: RecycleResult = await idlRecycle[isWhiteList ? 'whitelist_deposit' : 'deposit'](account);
       if ('Err' in resp) {
         const error = Object.keys(resp.Err).map((err) => err);
         return { _result: 1, _desc: error };
