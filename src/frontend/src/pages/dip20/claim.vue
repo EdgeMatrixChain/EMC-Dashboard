@@ -27,7 +27,7 @@
             <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
               <template v-for="(item, index) in depositOrders" :key="item.id">
                 <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
-                  <NText class="flex-[0.45] text-white">{{ item.toAmount }}</NText>
+                  <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
                   <NText class="flex-[0.45] text-white">{{ item.status ? 'withdrawn' : 'not withdrawn' }}</NText>
                   <NText class="flex-[0.1] text-[#397EFF] cursor-pointer" @click="onPressClaim(item, index)">Claim</NText>
                 </NSpace>
@@ -67,6 +67,7 @@ import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
+import { ethers } from 'ethers';
 
 type DepositOrder = {
   _id: string;
@@ -136,7 +137,7 @@ export default defineComponent({
       depositOrders,
       isViewHistory,
       historyList,
-      Utils,
+      ethers,
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
       },
@@ -158,6 +159,7 @@ export default defineComponent({
         });
         console.info(resp);
         if (resp._result === 0) {
+          initDepositOrders();
           message.success('Claimed');
         }
       },
