@@ -7,9 +7,20 @@ import { Principal } from '@dfinity/principal';
 import type { Agent, Identity } from '@dfinity/agent';
 import { createActor } from '@/web3icp/declarations';
 import { principalToAccountIdentifier } from '@/web3icp/account-id';
-import { _SERVICE as IDLRecycle, Result as RecycleResult, idlFactory as idlFactoryRecycle, WhitelistInfoResult as RecycleWhitelistInfoResult, Order as RecycleOrder } from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
+import {
+  _SERVICE as IDLRecycle,
+  Result as RecycleResult,
+  idlFactory as idlFactoryRecycle,
+  WhitelistInfoResult as RecycleWhitelistInfoResult,
+  Order as RecycleOrder,
+} from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
 
-import { _SERVICE as IDLDip20, Metadata, TxReceipt, idlFactory as idlFactoryDip20 } from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
+import {
+  _SERVICE as IDLDip20,
+  Metadata,
+  TxReceipt,
+  idlFactory as idlFactoryDip20,
+} from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
 
 import { ethers } from 'ethers';
 // export const DFINITY_HOST = 'https://boundary.ic0.app/';
@@ -38,6 +49,14 @@ export const useUserStore = defineStore('user', () => {
   let httpAgent: HttpAgent;
   let idlDip20: IDLDip20;
   let idlRecycle: IDLRecycle;
+
+  //Not sign in
+  let idlRecycleDefault = createActor<IDLRecycle>(CANISTER_ID_RECYCLE, idlFactoryRecycle, {
+    agent: new HttpAgent({ host: DFINITY_HOST }),
+  });
+  let idlDip20Default = createActor<IDLRecycle>(CANISTER_ID_DIP20, idlFactoryDip20, {
+    agent: new HttpAgent({ host: DFINITY_HOST }),
+  });
 
   const dip20Metadata = (() => {
     let _metadata: Metadata;
@@ -131,27 +150,16 @@ export const useUserStore = defineStore('user', () => {
     async getWhiteListInfo({ principal: _principal }: { principal?: string }) {
       const principal = Principal.from(_principal);
       const resp: [] | [RecycleWhitelistInfoResult] = await idlRecycle.get_user_whitelist(principal);
-      // if (!resp[0]) {
-      //   return { _result: 1, _desc: `Not found \'${_principal}\' in whitelist` };
-      // }
-      /* {owner: Principal;used: bigint; quota: bigint;} */
-      // const data = {
-      //   owner: resp[0]?.owner.toString(),
-      //   used: ethers.formatUnits(resp[0].used , 8),
-      //   quota: ethers.formatUnits(resp[0].quota , 8),
-      // };
       return { _result: 0, data: resp[0] }; // undefined | RecycleWhitelistInfoResult
     },
-
     async getOrders() {
-      const resp: {} | RecycleOrder = await idlRecycle.get_orders();
+      const list: Array<RecycleOrder> = await idlRecycleDefault.get_orders();
       const newList: RecycleOrder[] = [];
-      resp.forEach((item) => {
+      list.forEach((item) => {
         if (!ethers.isAddress(item.to)) return;
         newList.push(item);
       });
       newList.sort((a, b) => Number(a.createAt) - Number(b.createAt));
-
       return { _result: 0, data: newList };
     },
     /**
