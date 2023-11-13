@@ -71,7 +71,7 @@
         <NSpace class="w-full py-[10px] pl-[10px] border-b border-dashed border-gray-500" :size="[0, 8]">
           <NSpace class="w-full h-4 leading-4" justify="start" align="center" :size="[6, 0]">
             <img class="w-4 h-4" src="@/assets/icon_info.png" />
-            <NText class="text-xs" depth="3">1 DIP20 EMC = 0.4761904761904762 ARB EMC</NText>
+            <NText class="text-xs" depth="3">1 EMC (ARB) = 2.1 EMC (ICP)</NText>
           </NSpace>
           <template v-if="whiteListInfo.owner">
             <div class="w-full">
