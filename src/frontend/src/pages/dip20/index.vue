@@ -2,10 +2,10 @@
   <div class="page">
     <div class="container">
       <div class="card card-out" ref="rollOut">
-        <Claim />
+        <Claim :isTransfer="isTransfer" @update="onPressUpdate" />
       </div>
       <div class="card card-in" ref="rollIn">
-        <Transfer />
+        <Transfer @success="onPressTransfer" />
       </div>
 
       <div class="switch" ref="switchCtn">
@@ -55,6 +55,7 @@ export default defineComponent({
     const rollOut = ref<null | HTMLInputElement>(null);
 
     const isSwitch = ref(true); //false => left; true => right
+    const isTransfer = ref(false);
 
     const onSwitch = () => {
       // switchCtn.value?.classList.add('is-gx');
@@ -68,7 +69,21 @@ export default defineComponent({
       isSwitch.value = !isSwitch.value;
     };
 
-    return { onSwitch, switchCtn, rollIn, rollOut, isSwitch };
+    return {
+      onSwitch,
+      switchCtn,
+      rollIn,
+      rollOut,
+      isSwitch,
+      isTransfer,
+      onPressTransfer() {
+        isTransfer.value = true;
+        onSwitch();
+      },
+      onPressUpdate() {
+        isTransfer.value = false;
+      },
+    };
   },
 });
 </script>

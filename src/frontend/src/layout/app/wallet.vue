@@ -81,10 +81,7 @@
           </NSpace>
         </NSpace>
         <NSpace justify="space-between" align="center" :wrap-item="false" :size="0" style="margin: 12px 8px 0">
-          <a
-            href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks"
-            target="_blank"
-          >
+          <a href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks" target="_blank">
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
                 <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center">
@@ -93,17 +90,11 @@
                   </div>
                   <span class="wallet-footer-span">Buy ICP</span>
                 </NSpace>
-                <img
-                  src="@/assets/icon_wallet_mask.png"
-                  style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px"
-                />
+                <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
               </div>
             </div>
           </a>
-          <a
-            href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai"
-            target="_blank"
-          >
+          <a href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai" target="_blank">
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
                 <NSpace class="wallet-footer-button-bgcolor-content" justify="space-between" align="center">
@@ -117,10 +108,7 @@
                     <img src="@/assets/icon_coin_icp.png" width="20" height="20" />
                   </div>
                 </NSpace>
-                <img
-                  src="@/assets/icon_wallet_mask.png"
-                  style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px"
-                />
+                <img src="@/assets/icon_wallet_mask.png" style="position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; z-index: 10; width: 132px" />
               </div>
             </div>
           </a>
@@ -238,9 +226,8 @@ export default defineComponent({
   height: 390px;
   border-radius: 0px 0px 4px 4px;
   background-color: #181927;
-  box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1),
-    0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05),
-    0px 100px 86px 0px rgba(131, 125, 176, 0.01), 0px 338px 95px 0px rgba(131, 125, 176, 0);
+  box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1), 0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05), 0px 100px 86px 0px rgba(131, 125, 176, 0.01),
+    0px 338px 95px 0px rgba(131, 125, 176, 0);
   /* transition: 1s all linear; */
   overflow: hidden;
   z-index: 1;
@@ -309,14 +296,7 @@ export default defineComponent({
   height: 28px;
   border-radius: 50%;
   transform: rotate(-45deg);
-  background: conic-gradient(
-    from 180deg at 50% 50%,
-    #561ed0 0deg,
-    rgba(58, 27, 141, 0.8) 91.87500357627869deg,
-    #65238a 178.1249964237213deg,
-    rgba(79, 23, 185, 0.8) 266.2499928474426deg,
-    #3678e7 360deg
-  );
+  background: conic-gradient(from 180deg at 50% 50%, #561ed0 0deg, rgba(58, 27, 141, 0.8) 91.87500357627869deg, #65238a 178.1249964237213deg, rgba(79, 23, 185, 0.8) 266.2499928474426deg, #3678e7 360deg);
   filter: blur(2px);
   z-index: 6;
 }
@@ -414,9 +394,8 @@ export default defineComponent({
   margin-right: 12px;
   border-radius: 50%;
   background-color: #fff;
-  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))
-    drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05))
-    drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01)) drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05)) drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01))
+    drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
 }
 .coin-info-name {
   min-width: 32px;
@@ -479,8 +458,7 @@ export default defineComponent({
   font-weight: 400;
   border-radius: 50%;
   border: 1px solid #202020;
-  background: radial-gradient(37.5% 37.5% at 50% 50%, rgba(20, 0, 54, 0.2204) 0%, rgba(0, 0, 0, 0.38) 100%)
-    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  background: radial-gradient(37.5% 37.5% at 50% 50%, rgba(20, 0, 54, 0.2204) 0%, rgba(0, 0, 0, 0.38) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   box-sizing: border-box;
 }
 .wallet-footer-button {

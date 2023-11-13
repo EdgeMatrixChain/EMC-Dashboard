@@ -15,47 +15,25 @@
       </NSpace>
     </template>
     <template v-else>
-      <template v-if="!isViewHistory">
-        <NSpace class="w-full h-full py-12" vertical :wrap-item="false" align="center">
-          <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-            <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">You Can Claim</NText>
-            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
-              <div class="flex-[0.45] text-white">Balance</div>
-              <div class="flex-[0.45] text-white">Status</div>
-              <div class="flex-[0.1] text-white">Action</div>
-            </NSpace>
-            <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
-              <template v-for="(item, index) in depositOrders" :key="item.id">
-                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
-                  <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
-                  <NText class="flex-[0.45] text-white">{{ item.status ? 'withdrawn' : 'not withdrawn' }}</NText>
-                  <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status ? '#bbb' : '#397EFF' }" @click="onPressClaim(item, index)">Claim</NText>
-                </NSpace>
-              </template>
-            </NSpace>
+      <NSpace class="w-full h-full py-12" vertical :wrap-item="false" align="center">
+        <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
+          <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
+          <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
+            <div class="flex-[0.45] text-white">Amount</div>
+            <div class="flex-[0.45] text-white">Status</div>
+            <div class="flex-[0.1] text-white">Action</div>
           </NSpace>
-          <NText class="text-xs underline cursor-pointer" @click="onPressHistory">Check my claim history</NText>
-        </NSpace>
-      </template>
-      <template v-else>
-        <NSpace class="w-full h-full pt-12" vertical :wrap-item="false" align="center" :size="[0, 0]">
-          <NText class="text-xl mb-10 leading-5 font-bold text-white">Claim history</NText>
-          <img class="w-6 h-6 absolute top-7 left-9 cursor-pointer" src="@/assets/icon_back.svg" @click="onPressBack" />
-          <template v-if="historyList.length !== 0">
-            <NSpace class="w-full px-4 py-5 border-t border-dashed border-gray-500" :wrap-item="false" :size="[0, 20]">
-              <NSpace class="w-full" justify="space-between" align="center">
-                <NText depth="3">{{ '2023.10.23 10:35' }}</NText>
-                <NText depth="3">{{ '2300.13 EMC' }}</NText>
+          <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
+            <template v-for="(item, index) in orders" :key="item.id">
+              <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
+                <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
+                <NText class="flex-[0.45] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
+                <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
               </NSpace>
-            </NSpace>
-          </template>
-          <template v-else>
-            <NSpace class="w-full h-full" :wrap-item="false" align="center" justify="center">
-              <img class="w-[208px] h-[208px] -mt-[108px]" src="@/assets/img_history_none.svg" />
-            </NSpace>
-          </template>
+            </template>
+          </NSpace>
         </NSpace>
-      </template>
+      </NSpace>
     </template>
   </NSpace>
 </template>
@@ -63,6 +41,7 @@
 import { defineComponent, ref, computed, watch } from 'vue';
 import { NSpace, NText, NRadioGroup, NRadio, useMessage } from 'naive-ui';
 import { useETHUserStore } from '@/stores/eth-user';
+import { useUserStore } from '@/stores/user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Utils } from '@/tools/utils';
@@ -81,43 +60,85 @@ type DepositOrder = {
   updatedAt: string;
   proofIndex: number;
   proof: string[];
-  status: boolean;
+  status: string;
 };
+
+type Order = {
+  createdAt: string;
+  from: string;
+  fromAmount: string;
+  id: number;
+  owner: string;
+  to: string;
+  toAmount: string;
+  proofIndex: number;
+  proof: string[];
+  status: boolean;
+  claimed: boolean;
+};
+
 export default defineComponent({
   name: 'claim',
   components: { NSpace, NText, NRadioGroup, NRadio },
+  props: {
+    isTransfer: { type: Boolean, default: false },
+  },
+  emits: ['update'],
 
-  setup() {
+  setup(props, context) {
     const message = useMessage();
     const http = Http.getInstance();
     const ethUserStore = useETHUserStore();
+    const userStore = useUserStore();
 
     const apiManager = ApiManager.getInstance();
     const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x77cD77D841F7547AECb93c1Aa39d976495fBCAA1' });
 
-    const historyList = ref([]);
-    const isViewHistory = ref(false);
-
+    const orders = ref<Array<Order>>([]);
     const depositOrders = ref<Array<DepositOrder>>([]);
 
     const initDepositOrders = async () => {
+      //convert order
       const resp = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
         data: { to: ethUserStore.account0 || undefined },
       });
       depositOrders.value = resp.data || [];
+      console.log(depositOrders.value);
 
+      //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
         data: { contract: '0x77cd77d841f7547aecb93c1aa39d976495fbcaa1', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
-      depositOrders.value.forEach((item: DepositOrder) => {
-        item.status = claimeds.some((claimItem: any) => {
+      // ALL Transfer
+      const resp2 = await userStore.getOrders();
+      orders.value = [];
+      resp2.data.map((item: any) => {
+        // item.owner.toString() === userStore.icpPrincipal &&
+        if (item.to === ethUserStore.account0) {
+          item.from = item.from.toString();
+          item.owner = item.owner.toString();
+          item.toAmount = ethers.formatUnits(item.toAmount, 0);
+          orders.value.push(item);
+        }
+      });
+
+      orders.value.forEach((item: Order) => {
+        item.status = depositOrders.value.some((depositItem: DepositOrder) => {
+          if (item.id === depositItem.id) {
+            item.proof = depositItem.proof;
+            item.proofIndex = depositItem.proofIndex;
+          }
+          return item.id === depositItem.id;
+        });
+        item.claimed = claimeds.some((claimItem: any) => {
           return item.proofIndex === Number(claimItem.index);
         });
       });
+      console.log(orders.value);
     };
 
     watch(
@@ -131,24 +152,29 @@ export default defineComponent({
         immediate: true,
       }
     );
+    watch(
+      () => props.isTransfer,
+      (val) => {
+        if (val) {
+          initDepositOrders();
+          context.emit('update');
+        }
+      }
+      // {
+      //   immediate: true,
+      // }
+    );
 
     return {
-      ethSign: computed(() => ethUserStore.account0),
-      depositOrders,
-      isViewHistory,
-      historyList,
       ethers,
+      orders,
+      ethSign: computed(() => ethUserStore.account0),
+      orderStatus: ['withdrawn', 'pending', 'not withdrawn'],
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
       },
-      onPressHistory() {
-        isViewHistory.value = true;
-      },
-      onPressBack() {
-        isViewHistory.value = false;
-      },
-      async onPressClaim(item: DepositOrder, index: number) {
-        if (item.status) {
+      async onPressClaim(item: Order, index: number) {
+        if (!item.status || item.claimed) {
           message.error('Cannot be Claimed repeatedly');
           return;
         }
@@ -158,11 +184,9 @@ export default defineComponent({
           amount: BigInt(item.toAmount),
           merkleProof: item.proof,
         });
-
         console.info(resp);
         if (resp._result === 0) {
-          // initDepositOrders();
-          item.status = true;
+          item.claimed = true;
           message.success('Claimed');
         } else {
           message.error('Claim error');

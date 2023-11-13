@@ -18,121 +18,101 @@
       </NSpace>
     </template>
     <template v-else>
-      <template v-if="!isViewHistory">
-        <NSpace class="w-full h-full pt-12" vertical :wrap-item="false" align="center" :size="[0, 0]">
-          <NText class="text-xl mb-10 leading-5 font-bold text-white">Transfer your DIP20 EMC</NText>
-          <NSpace class="w-full" :wrap-item="false" :size="[0, 24]">
-            <NSpace class="w-full p-4 rounded-lg bg-[#463A8E]" justify="space-between" align="center" :size="[20, 0]">
-              <NSpace align="center" :size="[14, 0]">
-                <NSpace class="min-w-[120px]">
-                  <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
-                    <NText class="text-base text-white">Principal ID</NText>
-                  </NSpace>
+      <NSpace class="w-full h-full pt-12" vertical :wrap-item="false" align="center" :size="[0, 0]">
+        <NText class="text-xl mb-10 leading-5 font-bold text-white">Convert your DIP20 EMC</NText>
+        <NSpace class="w-full" :wrap-item="false" :size="[0, 24]">
+          <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+            <NSpace align="center" :size="[14, 0]">
+              <NSpace class="min-w-[120px]">
+                <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
+                  <NText class="text-base text-white">Principal ID</NText>
                 </NSpace>
-                <NText class="text-white">{{ Utils.formatAddress(principal, 11) }}</NText>
               </NSpace>
-              <NSpace align="center" :size="[12, 0]">
-                <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_unconnect.png" @click="onPressUnConnect" />
-                <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
-                  <template #trigger>
-                    <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
-                  </template>
-                  <NText class="text-white">{{ principal }}</NText>
-                </NTooltip>
-              </NSpace>
+              <NText class="text-white">{{ Utils.formatAddress(principal, 11) }}</NText>
             </NSpace>
-            <NSpace class="w-full p-4 rounded-lg bg-[#463A8E]" justify="space-between" align="center" :size="[20, 0]">
-              <NSpace align="center" :size="[14, 0]">
-                <NSpace class="min-w-[120px]">
-                  <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
-                    <NText class="text-base text-white">Account</NText>
-                  </NSpace>
-                </NSpace>
-                <NText class="text-white">{{ Utils.formatAddress(account, 11) }}</NText>
-              </NSpace>
+            <NSpace align="center" :size="[12, 0]">
+              <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnect" />
               <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
                 <template #trigger>
                   <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
                 </template>
-                <NText class="text-white">{{ account }}</NText>
+                <NText class="text-white">{{ principal }}</NText>
               </NTooltip>
             </NSpace>
-            <NSpace class="w-full p-4 rounded-lg bg-[#463A8E]" justify="space-between" align="center" :size="[20, 0]">
-              <NSpace align="center" :size="[14, 0]">
-                <NSpace class="min-w-[120px]">
-                  <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
-                    <NText class="text-base text-white">Balance</NText>
-                  </NSpace>
+          </NSpace>
+          <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+            <NSpace align="center" :size="[14, 0]">
+              <NSpace class="min-w-[120px]">
+                <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
+                  <NText class="text-base text-white">Account</NText>
                 </NSpace>
-                <NText class="text-white">{{ `${balance} EMC` }} </NText>
               </NSpace>
-              <img class="w-7 h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
+              <NText class="text-white">{{ Utils.formatAddress(account, 11) }}</NText>
             </NSpace>
+            <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
+              <template #trigger>
+                <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
+              </template>
+              <NText class="text-white">{{ account }}</NText>
+            </NTooltip>
           </NSpace>
-          <NSpace class="w-full py-[10px] pl-[10px] border-b border-dashed border-gray-500" :size="[0, 8]">
-            <NSpace class="w-full h-4 leading-4" justify="start" align="center" :size="[6, 0]">
-              <img class="w-4 h-4" src="@/assets/icon_info.png" />
-              <NText class="text-xs" depth="3">1 DIP20 EMC = 0.4761904761904762 ARB EMC</NText>
-            </NSpace>
-            <template v-if="whiteListInfo.owner">
-              <div class="w-full">
-                <img class="w-4 h-4 mr-[6px] inline-block" src="@/assets/icon_success.png" />
-                <NText class="text-xs" style="text-shadow: 0px 0px 10px #ffffff">{{ `You are a participant in the pre-saleyou have ${whiteListInfo.quota} tokens will get anadditional ${whiteListInfo.quota} bonus` }}</NText>
-              </div>
-            </template>
-          </NSpace>
-          <NSpace class="w-full h-full py-4" vertical align="center" justify="space-around">
-            <template v-if="!ethPrincipal">
-              <NSpace class="px-4" align="center" :size="[20, 8]">
-                <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]" @click="onPressConnectETH">
-                  <img class="w-8 h-8" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
-                  <NText class="text-white">MetaMask</NText>
+          <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+            <NSpace align="center" :size="[14, 0]">
+              <NSpace class="min-w-[120px]">
+                <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
+                  <NText class="text-base text-white">Balance</NText>
                 </NSpace>
-                <!-- <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]">
+              </NSpace>
+              <NText class="text-white">{{ `${balance} EMC` }} </NText>
+            </NSpace>
+            <img class="w-7 h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
+          </NSpace>
+        </NSpace>
+        <NSpace class="w-full py-[10px] pl-[10px] border-b border-dashed border-gray-500" :size="[0, 8]">
+          <NSpace class="w-full h-4 leading-4" justify="start" align="center" :size="[6, 0]">
+            <img class="w-4 h-4" src="@/assets/icon_info.png" />
+            <NText class="text-xs" depth="3">1 DIP20 EMC = 0.4761904761904762 ARB EMC</NText>
+          </NSpace>
+          <template v-if="whiteListInfo.owner">
+            <div class="w-full">
+              <img class="w-4 h-4 mr-[6px] inline-block" src="@/assets/icon_success.png" />
+              <NText class="text-xs" style="text-shadow: 0px 0px 10px #ffffff">{{ `You are a participant in the pre-saleyou have ${whiteListInfo.quota} tokens will get anadditional ${whiteListInfo.quota} bonus` }}</NText>
+            </div>
+          </template>
+        </NSpace>
+        <NSpace class="w-full h-full py-4" vertical align="center" justify="space-around">
+          <template v-if="!ethPrincipal">
+            <NSpace class="px-4" align="center" justify="center" :size="[20, 8]">
+              <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]" @click="onPressConnectETH">
+                <img class="w-8 h-8" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
+                <NText class="text-white">MetaMask</NText>
+              </NSpace>
+              <NText class="text-xs" depth="3">Connect Metamask and Receive your EMC TOKEN on ARBITRUM</NText>
+              <!-- <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]">
                   <img class="w-8 h-8" src="@/assets/wallet_wallet_connect.png" alt="Wallet connect" />
                   <NText class="text-white">Wallet connect</NText>
                 </NSpace> -->
-              </NSpace>
-            </template>
-            <template v-else>
-              <NSpace class="px-4" vertical align="center" :size="[0, 8]">
-                <NSpace class="w-[362px] h-8 leading-8 rounded-lg bg-[#463A8E]" justify="center">
-                  <NText class="text-white">{{ Utils.formatAddress(ethPrincipal, 11) }}</NText>
-                </NSpace>
-                <NText class="text-xs" depth="3">{{ `You are expected to receive ${tokenAmount !== 0 ? tokenAmount?.toFixed(4) : '0'} ARB EMC TOKEN` }}</NText>
-              </NSpace>
-            </template>
-            <NSpace class="px-4" vertical align="center" :size="[0, 8]">
-              <NSpace class="relative w-[232px] h-10 leading-10 rounded bg-gradient-to-r from-[#2F82FF] to-[#BC3BFB] overflow-hidden cursor-pointer" justify="center" @click="onPressDeposit">
-                <NSpin :show="loading">
-                  <NText class="text-white">Transfer</NText>
-                  <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
-                </NSpin>
-              </NSpace>
-              <NText class="text-xs underline cursor-pointer" @click="onPressHistory">Check my transfer history</NText>
-            </NSpace>
-          </NSpace>
-        </NSpace>
-      </template>
-      <template v-else>
-        <NSpace class="w-full h-full pt-12" vertical :wrap-item="false" align="center" :size="[0, 0]">
-          <NText class="text-xl mb-10 leading-5 font-bold text-white">Transfer history</NText>
-          <img class="w-6 h-6 absolute top-7 left-9 cursor-pointer" src="@/assets/icon_back.svg" @click="onPressBack" />
-          <template v-if="historyList.length !== 0">
-            <NSpace class="w-full px-4 py-5 border-t border-dashed border-gray-500" :wrap-item="false" :size="[0, 20]">
-              <NSpace class="w-full" justify="space-between" align="center">
-                <NText depth="3">{{ '2023.10.23 10:35' }}</NText>
-                <NText depth="3">{{ '2300.13 EMC' }}</NText>
-              </NSpace>
             </NSpace>
           </template>
           <template v-else>
-            <NSpace class="w-full h-full" :wrap-item="false" align="center" justify="center">
-              <img class="w-[208px] h-[208px] -mt-[108px]" src="@/assets/img_history_none.svg" />
+            <NSpace class="px-4" vertical align="center" :size="[0, 8]">
+              <NSpace class="w-[362px] h-10 leading-10 rounded-lg bg-[#463A8E]" justify="center">
+                <NText class="text-white">{{ Utils.formatAddress(ethPrincipal, 11) }}</NText>
+              </NSpace>
+              <NText class="text-xs" depth="3">{{ `You are expected to receive ${tokenAmount !== 0 ? tokenAmount?.toFixed(4) : '0'} ARB EMC TOKEN` }}</NText>
             </NSpace>
           </template>
+          <NSpace class="px-4" vertical align="center" :size="[0, 8]">
+            <NSpace class="relative w-[232px] h-10 leading-10 rounded bg-gradient-to-r from-[#2F82FF] to-[#BC3BFB] overflow-hidden cursor-pointer" justify="center" @click="onPressDeposit">
+              <NSpin :show="loading">
+                <NText class="text-white">Transfer</NText>
+                <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
+              </NSpin>
+            </NSpace>
+          </NSpace>
         </NSpace>
-      </template>
+      </NSpace>
+      <!-- <History :visible="isViewHistory" @cancel="onPressBack" /> -->
     </template>
   </NSpace>
 </template>
@@ -145,6 +125,7 @@ import { ethers } from 'ethers';
 import { useUserStore } from '@/stores/user';
 import { useETHUserStore } from '@/stores/eth-user';
 
+import History from './history.vue';
 import Content from '@/components/icp-connect/content.vue';
 
 type whiteListInfoType = {
@@ -154,9 +135,10 @@ type whiteListInfoType = {
 };
 export default defineComponent({
   name: 'transfer',
-  components: { NSpace, NText, NIcon, NButton, NTooltip, NCard, Content, NSpin },
+  components: { NSpace, NText, NIcon, NButton, NTooltip, NCard, NSpin, Content, History },
+  emits: ['success'],
 
-  setup() {
+  setup(props, context) {
     const RADIO = 2.1;
 
     const http = Http.getInstance();
@@ -167,9 +149,6 @@ export default defineComponent({
     const loading = ref(false);
     const balance = ref('0');
     const whiteListInfo = ref<whiteListInfoType>({ owner: '', used: '', quota: '' });
-
-    const isViewHistory = ref(false);
-    const historyList = ref([]);
 
     const init = async (principal: string) => {
       const resp = await userStore.getWhiteListInfo({ principal: principal });
@@ -223,8 +202,6 @@ export default defineComponent({
       whiteListInfo,
       tokenAmount,
       Utils,
-      isViewHistory,
-      historyList,
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
         message.success('Connect Success');
@@ -253,22 +230,16 @@ export default defineComponent({
           const resp2 = await userStore.deposit({ account: ethUserStore.account0, isWhiteList: Boolean(whiteListInfo.value.owner !== '') });
           console.info(resp2);
           if (resp2._result !== 0) {
-            message.error('');
+            message.error('error');
           } else {
             message.success('Success');
           }
           loading.value = false;
-          // isViewHistory.value = true;
           init(userStore.icpPrincipal);
+          context.emit('success');
         } else {
-          message.error('');
+          message.error('error');
         }
-      },
-      onPressHistory() {
-        isViewHistory.value = true;
-      },
-      onPressBack() {
-        isViewHistory.value = false;
       },
     };
   },
