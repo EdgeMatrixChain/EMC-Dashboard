@@ -1,7 +1,7 @@
 import { BrowserProvider, Contract, Wallet, JsonRpcProvider, formatEther } from 'ethers';
 import type { Eip1193Provider } from 'ethers';
 import { Web3Utils } from '@/web3/utils';
-import { getDefaultNetwork } from './network';
+import { getDefaultNetwork, getNetworkConfig } from './network';
 
 export type CallOption = {
   contract: string;
@@ -44,6 +44,10 @@ export class Web3Service {
     return signer;
   }
 
+  /**
+   * Unused
+   * @returns
+   */
   async connect() {
     const [err, accounts] = await Web3Utils.to(this.provider!.send('eth_requestAccounts', []));
 
@@ -56,6 +60,71 @@ export class Web3Service {
     }
 
     return { _result: 0, accounts };
+  }
+
+  async addToken(config: {
+    type?: 'ERC20' | 'ERC721' | 'ERC1155';
+    address: string;
+    symbol: string;
+    decimals: number;
+    image?: string;
+    tokenId?: string;
+  }) {
+    const { type, address, symbol, decimals, image, tokenId } = config;
+    if (!this.provider) {
+      return { _result: 2, _desc: 'Please connect wallet first' };
+    }
+    if (!address || !symbol || !decimals) return { _result: 2, _desc: 'Config [address | symbol | decimals] is empty' };
+    const tokenConfig = {
+      type: type || 'ERC20',
+      options: {
+        address,
+        symbol,
+        decimals,
+        image,
+      },
+    };
+    const [err, resp] = await Web3Utils.to(this.provider!.send('wallet_watchAsset', tokenConfig));
+    if (err) {
+      return { _result: 1, _desc: `Add token error: ${err}`, err };
+    }
+    return { _result: 0, data: resp };
+  }
+
+  async addNetwork(chainId: number) {
+    const nc = getNetworkConfig(chainId);
+    if (!nc) return { _result: 1, _desc: 'Network config not found' };
+    const chainConfig = {
+      chainId: `0x${nc.chainId.toString(16)}`,
+      chainName: nc.chainName,
+      rpcUrls: nc.rpcUrls,
+      nativeCurrency: { decimals: nc.decimals, name: nc.symbolName, symbol: nc.symbol },
+      blockExplorerUrls: nc.blockExplorerUrls,
+    };
+    const [err, resp] = await Web3Utils.to(this.provider!.send('wallet_addEthereumChain', [chainConfig]));
+    if (err) {
+      return { _result: 1, _desc: `Add network error: ${err}` };
+    }
+    return { _result: 0, data: resp };
+  }
+
+  async switchNetwork(chainId: number): Promise<Resp> {
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const [err, resp] = await Web3Utils.to(
+      this.provider!.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }])
+    );
+    if (!err) {
+      return { _result: 0, data: resp };
+    }
+    if (err.error.code === 4902) {
+      const resp = await this.addNetwork(chainId);
+      if (resp._result === 0) {
+        return await this.switchNetwork(chainId);
+      } else {
+        return resp;
+      }
+    }
+    return { _result: 1, _desc: `Switch network error: ${err}` };
   }
 
   async getChainId() {
@@ -88,7 +157,7 @@ export class Web3Service {
 
     const gasPrice = feeData.gasPrice || 0n;
     console.log('Current gas price:', gasPrice.toString());
-    
+
     const totalGasCost = gasEstimate * gasPrice;
     console.log('Total gas cost:', formatEther(totalGasCost));
     return totalGasCost;
