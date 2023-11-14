@@ -3,7 +3,7 @@
     <template v-for="item in providers">
       <NSpace class="wallet-border" align="center" justify="center" :wrap-item="false">
         <NSpace class="wallet-content w-full h-full cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ backgroundColor: bgColor }" @click="onPressConnect(item)">
-          <img style="width: 48px; height: 48px; object-fit: contain" :src="item.meta.icon.dark" />
+          <img style="width: 44px; height: 44px; object-fit: contain" :src="item.meta.icon.dark" />
           <NSpace vertical :wrap-item="false" :size="[0, 8]">
             <NText class="text-[18px] leading-[18px] text-white">{{ item.meta.name }}</NText>
           </NSpace>

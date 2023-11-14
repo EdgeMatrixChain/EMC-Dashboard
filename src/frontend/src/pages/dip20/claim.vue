@@ -145,6 +145,8 @@ export default defineComponent({
           return item.proofIndex === Number(claimItem.index);
         });
       });
+      console.log(orders.value);
+
       loading.value = false;
     };
 

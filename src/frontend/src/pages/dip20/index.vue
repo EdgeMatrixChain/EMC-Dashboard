@@ -98,7 +98,7 @@ export default defineComponent({
   background: linear-gradient(0deg, #9b51e050 0%, #9b51e0 100%);
   border-radius: 11px;
   overflow: hidden;
-  margin: 0 auto;
+  margin: calc(50vh - 391px) auto 0;
 }
 .container {
   width: 100%;
