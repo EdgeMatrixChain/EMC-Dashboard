@@ -4,10 +4,13 @@
       <NSpace class="w-full h-full pt-[80px] px-12" vertical :wrap-item="false" align="center" :size="[0, 48]">
         <NText class="text-[40px] leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
         <NText class="text-[20px] leading-[20px] text-white mt-3">Connect ICP Wallet</NText>
-        <NSpace class="w-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
-          <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
-          <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
+        <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
+          <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
+            <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
+            <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
+          </NSpace>
         </NSpace>
+
         <!-- <NSpace class="w-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]">
           <img class="w-11 h-11" src="@/assets/wallet_wallet_connect.png" alt="Wallet connect" />
           <NText class="text-[18px] leading-[18px] text-white">Wallet connect</NText>
@@ -15,31 +18,33 @@
       </NSpace>
     </template>
     <template v-else>
-      <NSpace class="w-full h-full py-12" vertical :wrap-item="false" align="center">
-        <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-          <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
-          <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
-            <div class="flex-[0.45] text-white">Amount</div>
-            <div class="flex-[0.45] text-white">Status</div>
-            <div class="flex-[0.1] text-white">Action</div>
+      <NSpace class="w-full h-full py-12 o" vertical :wrap-item="false" align="center">
+        <NSpin class="w-full h-full" :show="loading">
+          <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
+            <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
+            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
+              <div class="flex-[0.45] text-white">Amount</div>
+              <div class="flex-[0.45] text-white">Status</div>
+              <div class="flex-[0.1] text-white">Action</div>
+            </NSpace>
+            <NSpace class="table w-full px-8" :wrap-item="false" :size="[0, 0]">
+              <template v-for="(item, index) in orders" :key="item.id">
+                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
+                  <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
+                  <NText class="flex-[0.45] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
+                  <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
+                </NSpace>
+              </template>
+            </NSpace>
           </NSpace>
-          <NSpace class="w-full px-8" :wrap-item="false" :size="[0, 0]">
-            <template v-for="(item, index) in orders" :key="item.id">
-              <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
-                <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
-                <NText class="flex-[0.45] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
-                <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
-              </NSpace>
-            </template>
-          </NSpace>
-        </NSpace>
+        </NSpin>
       </NSpace>
     </template>
   </NSpace>
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from 'vue';
-import { NSpace, NText, NRadioGroup, NRadio, useMessage } from 'naive-ui';
+import { NSpace, NText, NSpin, NRadioGroup, useMessage } from 'naive-ui';
 import { useETHUserStore } from '@/stores/eth-user';
 import { useUserStore } from '@/stores/user';
 import { ApiManager } from '@/web3/api';
@@ -79,7 +84,7 @@ type Order = {
 
 export default defineComponent({
   name: 'claim',
-  components: { NSpace, NText, NRadioGroup, NRadio },
+  components: { NSpace, NText, NRadioGroup, NSpin },
   props: {
     isTransfer: { type: Boolean, default: false },
   },
@@ -92,24 +97,26 @@ export default defineComponent({
     const userStore = useUserStore();
 
     const apiManager = ApiManager.getInstance();
-    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x77cD77D841F7547AECb93c1Aa39d976495fBCAA1' });
+    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x0E3Ebd0B160ED0625E844c379b2943d0216D45A2' });
 
+    const loading = ref(false);
     const orders = ref<Array<Order>>([]);
     const depositOrders = ref<Array<DepositOrder>>([]);
 
     const initDepositOrders = async () => {
+      loading.value = true;
+
       //convert order
       const resp = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
         data: { to: ethUserStore.account0 || undefined },
       });
       depositOrders.value = resp.data || [];
-      console.log(depositOrders.value);
 
       //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0x77cd77d841f7547aecb93c1aa39d976495fbcaa1', topic: 'Claimed' },
+        data: { contract: '0x0e3ebd0b160ed0625e844c379b2943d0216d45a2', topic: 'Claimed' },
       });
       const claimeds = resp1.data || [];
 
@@ -138,7 +145,7 @@ export default defineComponent({
           return item.proofIndex === Number(claimItem.index);
         });
       });
-      console.log(orders.value);
+      loading.value = false;
     };
 
     watch(
@@ -168,6 +175,7 @@ export default defineComponent({
     return {
       ethers,
       orders,
+      loading,
       ethSign: computed(() => ethUserStore.account0),
       orderStatus: ['withdrawn', 'pending', 'not withdrawn'],
       async onPressConnectETH() {
@@ -189,11 +197,48 @@ export default defineComponent({
           item.claimed = true;
           message.success('Claimed');
         } else {
-          message.error('Claim error');
+          if (resp._desc?.startsWith('Error: execution reverted')) {
+            message.error('Claim error');
+          } else {
+            message.error('Claim cancel');
+          }
         }
       },
     };
   },
 });
 </script>
-<style scoped></style>
+<style scoped>
+.table {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.table::-webkit-scrollbar {
+  display: none;
+}
+.wallet-border {
+  position: relative;
+  height: 72px;
+  border-radius: 8px;
+  background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1);
+  background-size: 400%;
+  animation: border 12s linear infinite;
+  z-index: 1;
+  box-sizing: border-box;
+}
+.wallet-content {
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.wallet-border:hover {
+  padding: 2px;
+}
+
+@keyframes border {
+  100% {
+    background-position: -400% 0;
+  }
+}
+</style>

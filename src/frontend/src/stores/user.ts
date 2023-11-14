@@ -7,20 +7,9 @@ import { Principal } from '@dfinity/principal';
 import type { Agent, Identity } from '@dfinity/agent';
 import { createActor } from '@/web3icp/declarations';
 import { principalToAccountIdentifier } from '@/web3icp/account-id';
-import {
-  _SERVICE as IDLRecycle,
-  Result as RecycleResult,
-  idlFactory as idlFactoryRecycle,
-  WhitelistInfoResult as RecycleWhitelistInfoResult,
-  Order as RecycleOrder,
-} from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
+import { _SERVICE as IDLRecycle, Result as RecycleResult, idlFactory as idlFactoryRecycle, WhitelistInfoResult as RecycleWhitelistInfoResult, Order as RecycleOrder } from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
 
-import {
-  _SERVICE as IDLDip20,
-  Metadata,
-  TxReceipt,
-  idlFactory as idlFactoryDip20,
-} from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
+import { _SERVICE as IDLDip20, Metadata, TxReceipt, idlFactory as idlFactoryDip20 } from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
 
 import { ethers } from 'ethers';
 // export const DFINITY_HOST = 'https://boundary.ic0.app/';
@@ -159,7 +148,7 @@ export const useUserStore = defineStore('user', () => {
         if (!ethers.isAddress(item.to)) return;
         newList.push(item);
       });
-      newList.sort((a, b) => Number(a.createAt) - Number(b.createAt));
+      newList.sort((a, b) => Number(a.id) - Number(b.id));
       return { _result: 0, data: newList };
     },
     /**
