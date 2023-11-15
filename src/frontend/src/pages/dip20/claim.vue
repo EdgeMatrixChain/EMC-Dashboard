@@ -5,7 +5,13 @@
         <NText class="text-[40px] leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
         <NText class="text-[20px] leading-[20px] text-white mt-3">Connect ICP Wallet</NText>
         <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
-          <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
+          <NSpace
+            class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer"
+            justify="center"
+            align="center"
+            :size="[20, 0]"
+            @click="onPressConnectETH"
+          >
             <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
             <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
           </NSpace>
@@ -22,17 +28,34 @@
         <NSpin class="w-full h-full" :show="loading">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
             <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
-            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
+            <NSpace
+              class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]"
+              align="center"
+              :wrap-item="false"
+              :size="[0, 0]"
+            >
               <div class="flex-[0.45] text-white">Amount</div>
               <div class="flex-[0.45] text-white">Status</div>
               <div class="flex-[0.1] text-white">Action</div>
             </NSpace>
             <NSpace class="table w-full px-8" :wrap-item="false" :size="[0, 0]">
               <template v-for="(item, index) in orders" :key="item.id">
-                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
-                  <NText class="flex-[0.45] text-white">{{ Number(ethers.formatUnits(item.toAmount, 18)).toFixed(4) }}</NText>
-                  <NText class="flex-[0.45] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
-                  <NText class="flex-[0.1] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
+                <NSpace
+                  class="w-full py-3 text-base border-b border-solid border-gray-500"
+                  :wrap-item="false"
+                  justify="space-between"
+                  align="center"
+                >
+                  <NText class="flex-[0.45] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
+                  <NText class="flex-[0.45] text-white">{{
+                    item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1]
+                  }}</NText>
+                  <NText
+                    class="flex-[0.1] cursor-pointer"
+                    :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }"
+                    @click="onPressClaim(item, index)"
+                    >Claim</NText
+                  >
                 </NSpace>
               </template>
             </NSpace>
@@ -112,40 +135,69 @@ export default defineComponent({
         data: { to: ethUserStore.account0 || undefined },
       });
       depositOrders.value = resp.data || [];
-
+      const convertOrders = new Map<number, any>();
+      (resp.data || []).forEach((item: any) => {
+        convertOrders.set(item.id, item);
+      });
       //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
         data: { contract: '0x0e3ebd0b160ed0625e844c379b2943d0216d45a2', topic: 'Claimed' },
       });
-      const claimeds = resp1.data || [];
-
+      const claimeds = new Map<number, any>();
+      (resp1.data || []).forEach((item: any) => {
+        claimeds.set(item.index, item);
+      });
       // ALL Transfer
-      const resp2 = await userStore.getOrders();
-      orders.value = [];
-      resp2.data.map((item: any) => {
-        // item.owner.toString() === userStore.icpPrincipal &&
-        if (item.to === ethUserStore.account0) {
-          item.from = item.from.toString();
-          item.owner = item.owner.toString();
-          item.toAmount = ethers.formatUnits(item.toAmount, 0);
-          orders.value.push(item);
-        }
-      });
-
-      orders.value.forEach((item: Order) => {
-        item.status = depositOrders.value.some((depositItem: DepositOrder) => {
-          if (item.id === depositItem.id) {
-            item.proof = depositItem.proof;
-            item.proofIndex = depositItem.proofIndex;
+      const { data: rawData } = await userStore.getOrders();
+      const newRawData = rawData.filter((item) => item.to.toLocaleLowerCase() === ethUserStore.account0.toLocaleLowerCase());
+      const _orders: Order[] = [];
+      newRawData.forEach((item) => {
+        const newItem: any = {
+          ...item,
+          from: item.from.toString(),
+          owner: item.owner.toString(),
+          toAmount: ethers.formatUnits(item.toAmount, 18),
+          status: false,
+          claimd: false,
+        };
+        const converted = convertOrders.get(item.id);
+        if (converted) {
+          newItem.proof = converted.proof;
+          newItem.proofIndex = converted.proofIndex;
+          newItem.status = true;
+          const claimed = claimeds.get(newItem.proofIndex);
+          if (claimed) {
+            newItem.claimd = true;
           }
-          return item.id === depositItem.id;
-        });
-        item.claimed = claimeds.some((claimItem: any) => {
-          return item.proofIndex === Number(claimItem.index);
-        });
+        }
+        _orders.push(newItem);
       });
-      console.log(orders.value);
+      console.info(_orders);
+      orders.value = _orders;
+      // rawData.map((item: any) => {
+      //   // item.owner.toString() === userStore.icpPrincipal &&
+      //   if (item.to === ethUserStore.account0) {
+      //     item.from = item.from.toString();
+      //     item.owner = item.owner.toString();
+      //     item.toAmount = ethers.formatUnits(item.toAmount, 0);
+      //     orders.value.push(item);
+      //   }
+      // });
+
+      // orders.value.forEach((item: Order) => {
+      //   item.status = depositOrders.value.some((depositItem: DepositOrder) => {
+      //     if (item.id === depositItem.id) {
+      //       item.proof = depositItem.proof;
+      //       item.proofIndex = depositItem.proofIndex;
+      //     }
+      //     return item.id === depositItem.id;
+      //   });
+      //   item.claimed = claimeds.some((claimItem: any) => {
+      //     return item.proofIndex === Number(claimItem.index);
+      //   });
+      // });
+      // console.log(orders.value);
 
       loading.value = false;
     };
@@ -196,11 +248,11 @@ export default defineComponent({
 
         const resp = await merkleClaimApi.claim({
           index: proofIndex,
-          account: to,
+          account: to.toLocaleLowerCase(),
           amount: BigInt(toAmount),
           merkleProof: proof,
         });
-        console.info(proofIndex, to, toAmount, proof);
+        console.info(proofIndex, to, toAmount, JSON.stringify(proof));
 
         console.info(resp);
         if (resp._result === 0) {
