@@ -126,7 +126,7 @@ export default defineComponent({
       });
       const claimeds = new Map<number, any>();
       (resp1.data || []).forEach((item: any) => {
-        claimeds.set(item.index, item);
+        claimeds.set(Number(item.index), item);
       });
       // ALL Transfer
       const { data: rawData } = await userStore.getOrders();
@@ -139,7 +139,7 @@ export default defineComponent({
           owner: item.owner.toString(),
           toAmount: ethers.formatUnits(item.toAmount, 18),
           status: false,
-          claimd: false,
+          claimed: false,
         };
         const converted = convertOrders.get(item.id);
         if (converted) {
@@ -148,7 +148,7 @@ export default defineComponent({
           newItem.status = true;
           const claimed = claimeds.get(newItem.proofIndex);
           if (claimed) {
-            newItem.claimd = true;
+            newItem.claimed = true;
           }
         }
         _orders.push(newItem);
