@@ -146,6 +146,7 @@ export const useUserStore = defineStore('user', () => {
       const newList: RecycleOrder[] = [];
       list.forEach((item) => {
         if (!ethers.isAddress(item.to)) return;
+        item.to = item.to.toLocaleLowerCase();
         newList.push(item);
       });
       newList.sort((a, b) => Number(a.id) - Number(b.id));
