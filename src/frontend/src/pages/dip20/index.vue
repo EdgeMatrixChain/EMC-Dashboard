@@ -2,10 +2,10 @@
   <div class="page">
     <div class="container">
       <div class="card card-out" ref="rollOut">
-        <Claim :isTransfer="isTransfer" @update="onPressUpdate" />
+        <Claim :isUpdate="isUpdateClaim" @update="onPressUpdateClaim" />
       </div>
       <div class="card card-in" ref="rollIn">
-        <Transfer @success="onPressTransfer" />
+        <Transfer :isUpdate="isUpdateTransfer" @update="onPressUpdateTransfer" @success="onPressTransfer" />
       </div>
 
       <div class="switch" ref="switchCtn">
@@ -55,7 +55,8 @@ export default defineComponent({
     const rollOut = ref<null | HTMLInputElement>(null);
 
     const isSwitch = ref(true); //false => left; true => right
-    const isTransfer = ref(false);
+    const isUpdateClaim = ref(false);
+    const isUpdateTransfer = ref(false);
 
     const onSwitch = () => {
       // switchCtn.value?.classList.add('is-gx');
@@ -67,6 +68,11 @@ export default defineComponent({
       rollOut.value?.classList.toggle('is-txl');
       rollOut.value?.classList.toggle('is-z');
       isSwitch.value = !isSwitch.value;
+      if (isSwitch.value) {
+        isUpdateTransfer.value = true;
+      } else {
+        isUpdateClaim.value = true;
+      }
     };
 
     return {
@@ -75,13 +81,18 @@ export default defineComponent({
       rollIn,
       rollOut,
       isSwitch,
-      isTransfer,
-      onPressTransfer() {
-        isTransfer.value = true;
-        onSwitch();
+      isUpdateClaim,
+      isUpdateTransfer,
+
+      onPressUpdateTransfer() {
+        isUpdateTransfer.value = false;
       },
-      onPressUpdate() {
-        isTransfer.value = false;
+      onPressUpdateClaim() {
+        isUpdateClaim.value = false;
+      },
+      onPressTransfer() {
+        isUpdateTransfer.value = true;
+        onSwitch();
       },
     };
   },

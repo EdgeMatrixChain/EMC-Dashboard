@@ -5,13 +5,7 @@
         <NText class="text-[40px] leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
         <NText class="text-[20px] leading-[20px] text-white mt-3">Connect ICP Wallet</NText>
         <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
-          <NSpace
-            class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer"
-            justify="center"
-            align="center"
-            :size="[20, 0]"
-            @click="onPressConnectETH"
-          >
+          <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
             <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
             <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
           </NSpace>
@@ -28,34 +22,20 @@
         <NSpin class="w-full h-full" :show="loading">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
             <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
-            <NSpace
-              class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]"
-              align="center"
-              :wrap-item="false"
-              :size="[0, 0]"
-            >
-              <div class="flex-[0.45] text-white">Amount</div>
-              <div class="flex-[0.45] text-white">Status</div>
-              <div class="flex-[0.1] text-white">Action</div>
+            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
+              <div class="flex-[0.4] text-white">Amount</div>
+              <div class="flex-[0.4] text-white">Status</div>
+              <NSpace class="flex-[0.2] text-white" :size="[36, 0]" justify="end" align="center">
+                <NText>Action</NText>
+                <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
+              </NSpace>
             </NSpace>
             <NSpace class="table w-full px-8" :wrap-item="false" :size="[0, 0]">
               <template v-for="(item, index) in orders" :key="item.id">
-                <NSpace
-                  class="w-full py-3 text-base border-b border-solid border-gray-500"
-                  :wrap-item="false"
-                  justify="space-between"
-                  align="center"
-                >
-                  <NText class="flex-[0.45] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
-                  <NText class="flex-[0.45] text-white">{{
-                    item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1]
-                  }}</NText>
-                  <NText
-                    class="flex-[0.1] cursor-pointer"
-                    :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }"
-                    @click="onPressClaim(item, index)"
-                    >Claim</NText
-                  >
+                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
+                  <NText class="flex-[0.4] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
+                  <NText class="flex-[0.4] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
+                  <NText class="flex-[0.2] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
                 </NSpace>
               </template>
             </NSpace>
@@ -109,7 +89,7 @@ export default defineComponent({
   name: 'claim',
   components: { NSpace, NText, NRadioGroup, NSpin },
   props: {
-    isTransfer: { type: Boolean, default: false },
+    isUpdate: { type: Boolean, default: false },
   },
   emits: ['update'],
 
@@ -214,16 +194,13 @@ export default defineComponent({
       }
     );
     watch(
-      () => props.isTransfer,
+      () => props.isUpdate,
       (val) => {
         if (val) {
           initDepositOrders();
           context.emit('update');
         }
       }
-      // {
-      //   immediate: true,
-      // }
     );
 
     return {
@@ -234,6 +211,10 @@ export default defineComponent({
       orderStatus: ['withdrawn', 'pending', 'not withdrawn'],
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
+      },
+      onPressRefresh() {
+        initDepositOrders();
+        context.emit('update');
       },
       async onPressClaim(item: Order, index: number) {
         if (!item.status || item.claimed) {

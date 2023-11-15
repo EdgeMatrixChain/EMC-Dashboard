@@ -67,7 +67,10 @@
                   </NSpace>
                   <NText class="text-white">{{ `${balance} EMC` }} </NText>
                 </NSpace>
-                <img class="w-7 h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
+                <NSpace align="center" :size="[14, 0]">
+                  <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
+                  <img class="w-7 h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
+                </NSpace>
               </NSpace>
             </NSpace>
             <NSpace class="w-full py-[10px] pl-[10px] border-b border-dashed border-gray-500" :size="[0, 8]">
@@ -123,8 +126,6 @@
           </NSpace>
         </NSpace>
       </NSpin>
-
-      <!-- <History :visible="isViewHistory" @cancel="onPressBack" /> -->
     </template>
   </NSpace>
 </template>
@@ -147,7 +148,10 @@ type whiteListInfoType = {
 export default defineComponent({
   name: 'transfer',
   components: { NSpace, NText, NIcon, NButton, NTooltip, NCard, NSpin, Content },
-  emits: ['success'],
+  props: {
+    isUpdate: { type: Boolean, default: false },
+  },
+  emits: ['success', 'update'],
 
   setup(props, context) {
     const RADIO = 2.1;
@@ -205,7 +209,16 @@ export default defineComponent({
           message.success('Connect Success');
         }
       }
-      // { immediate: true }
+    );
+    watch(
+      () => props.isUpdate,
+      (val) => {
+        if (val) {
+          if (!userStore.icpPrincipal) return;
+          init(userStore.icpPrincipal);
+          context.emit('update');
+        }
+      }
     );
 
     return {
@@ -226,12 +239,12 @@ export default defineComponent({
         if (loading.value === true) return;
         whiteListInfo.value = { owner: '', used: '', quota: '' };
         userStore.disconnect();
-        // message.success('Success');
-        // console.log('onPressUnConnect');
+      },
+      onPressRefresh() {
+        if (!userStore.icpPrincipal) return;
+        init(userStore.icpPrincipal);
       },
       async onPressDeposit() {
-        // console.log(balance.value);
-        // return;
         if (!ethUserStore.account0) {
           message.error('No Connect of MetaMmask');
           return;
