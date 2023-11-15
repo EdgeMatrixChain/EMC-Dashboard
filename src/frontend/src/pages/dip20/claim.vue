@@ -188,12 +188,20 @@ export default defineComponent({
           message.error('Cannot be Claimed repeatedly');
           return;
         }
-        const resp = await merkleClaimApi.claim({
-          index: item.proofIndex,
-          account: item.to,
-          amount: BigInt(item.toAmount),
-          merkleProof: item.proof,
+        const resp1 = await http.get({
+          url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
+          data: { id: item.id },
         });
+        const { proofIndex, to, toAmount, proof } = resp1.data[0];
+
+        const resp = await merkleClaimApi.claim({
+          index: proofIndex,
+          account: to,
+          amount: BigInt(toAmount),
+          merkleProof: proof,
+        });
+        console.info(proofIndex, to, toAmount, proof);
+
         console.info(resp);
         if (resp._result === 0) {
           item.claimed = true;
