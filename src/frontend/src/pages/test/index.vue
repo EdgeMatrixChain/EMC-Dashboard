@@ -45,6 +45,7 @@ import { useUserStore } from '@/stores/user';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
+import { ERC20Api } from '@/web3/api/erc20';
 
 import Content from '@/components/icp-connect/content.vue';
 type DepositOrder = {
@@ -74,6 +75,11 @@ export default defineComponent({
     //eth
     const apiManager = ApiManager.getInstance();
     const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0xbc11851363a64b10FB15864Cd3eA719425cd46Ee' });
+
+    // const erc20Api = apiManager.create(ERC20Api, { address: 'EMC' });
+    // const {data:balance} = await erc20Api.balanceOf({account:ethUserStore.account0});
+    // console.info(balance)
+
     const depositOrders = ref<Array<DepositOrder>>([]);
     const initDepositOrders = async () => {
       const resp = await http.get({
