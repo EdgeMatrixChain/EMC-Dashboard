@@ -115,7 +115,7 @@ export default defineComponent({
     const userStore = useUserStore();
 
     const apiManager = ApiManager.getInstance();
-    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0x0E3Ebd0B160ED0625E844c379b2943d0216D45A2' });
+    const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9' });
 
     const loading = ref(false);
     const orders = ref<Array<Order>>([]);
@@ -137,7 +137,7 @@ export default defineComponent({
       //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0x0e3ebd0b160ed0625e844c379b2943d0216d45a2', topic: 'Claimed' },
+        data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed' },
       });
       const claimeds = new Map<number, any>();
       (resp1.data || []).forEach((item: any) => {
