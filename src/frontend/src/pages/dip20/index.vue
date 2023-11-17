@@ -14,7 +14,7 @@
           <NSpace vertical :size="[24, 24]">
             <div class="text-base text-center">
               ICP Contract Address: <br />
-              fx5dl-qyaaa-aaaag-qcbga-cai
+              aeex5-aqaaa-aaaam-abm3q-cai
             </div>
             <div class="text-base text-center">
               Arbitrum Contract Address: <br />

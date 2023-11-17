@@ -1,8 +1,8 @@
 <template>
-  <NSpace vertical :wrap-item="false" :size="[0, 28]">
+  <NSpace class="w-full" vertical :wrap-item="false" :size="[0, 28]">
     <template v-for="item in providers">
-      <NSpace class="wallet-border" align="center" justify="center" :wrap-item="false">
-        <NSpace class="wallet-content w-full h-full cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ backgroundColor: bgColor }" @click="onPressConnect(item)">
+      <NSpace class="item-border w-full" align="center" justify="center" :wrap-item="false">
+        <NSpace class="item-content w-full h-full bg-[#13262F] cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ backgroundColor: bgColor }" @click="onPressConnect(item)">
           <img style="width: 44px; height: 44px; object-fit: contain" :src="item.meta.icon.dark" />
           <NSpace vertical :wrap-item="false" :size="[0, 8]">
             <NText class="text-[18px] leading-[18px] text-white">{{ item.meta.name }}</NText>
@@ -39,7 +39,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.wallet-border {
+.item-border {
   position: relative;
   height: 72px;
   border-radius: 8px;
@@ -49,12 +49,12 @@ export default defineComponent({
   z-index: 1;
   box-sizing: border-box;
 }
-.wallet-content {
+.item-content {
   border-radius: 6px;
   padding: 10px;
 }
 
-.wallet-border:hover {
+.item-border:hover {
   padding: 2px;
 }
 

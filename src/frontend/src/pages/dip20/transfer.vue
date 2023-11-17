@@ -30,7 +30,7 @@
                       <NText class="text-base text-white">Principal ID</NText>
                     </NSpace>
                   </NSpace>
-                  <NText class="text-white">{{ Utils.formatAddress(principal, 11) }}</NText>
+                  <NText class="text-white">{{ principalStr }}</NText>
                 </NSpace>
                 <NSpace align="center" :size="[12, 0]">
                   <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnect" />
@@ -49,7 +49,7 @@
                       <NText class="text-base text-white">Account</NText>
                     </NSpace>
                   </NSpace>
-                  <NText class="text-white">{{ Utils.formatAddress(account, 11) }}</NText>
+                  <NText class="text-white">{{ accountStr }}</NText>
                 </NSpace>
                 <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
                   <template #trigger>
@@ -76,19 +76,17 @@
             <NSpace class="w-full py-[10px] pl-[10px] border-b border-dashed border-gray-500" :size="[0, 8]">
               <NSpace class="w-full h-4 leading-4" justify="start" align="center" :size="[6, 0]">
                 <img class="w-4 h-4" src="@/assets/icon_info.png" />
-                <template v-if="whiteListInfo.owner">
+                <!-- <template v-if="whiteListInfo.owner">
                   <NText class="text-xs" depth="3">1 EMC (ARB) = 1 EMC (ICP) PreSale Whitelist</NText>
-                </template>
-                <template v-else>
-                  <NText class="text-xs" depth="3">1 EMC (ARB) = 2.1 EMC (ICP)</NText>
-                </template>
+                </template> -->
+                <NText class="text-xs" depth="3">1 EMC (ARB) = 2.1 EMC (ICP)</NText>
               </NSpace>
-              <template v-if="whiteListInfo.owner">
+              <!-- <template v-if="whiteListInfo.owner">
                 <div class="w-full">
                   <img class="w-4 h-4 mr-[6px] inline-block" src="@/assets/icon_success.png" />
                   <NText class="text-xs" style="text-shadow: 0px 0px 10px #ffffff">{{ `You are a participant in the pre-saleyou have ${whiteListInfo.quota} tokens will get anadditional ${whiteListInfo.quota} bonus` }}</NText>
                 </div>
-              </template>
+              </template> -->
             </NSpace>
           </NSpace>
           <NSpace class="w-full h-full py-4 flex-1" vertical align="center" justify="space-around">
@@ -108,9 +106,17 @@
             <template v-else>
               <NSpace class="px-4" vertical align="center" :size="[0, 8]">
                 <NSpace class="w-[362px] h-10 px-4 leading-10 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
-                  <img class="w-6 h-6" src="@/assets/icon_arbitrum.png" />
+                  <img class="w-6 h-6 bg-[#7065B1] rounded-full p-[2px]" src="@/assets/icon_arbitrum.svg" />
                   <NText class="text-white">{{ Utils.formatAddress(ethPrincipal, 11) }}</NText>
-                  <div class="w-6 h-6"></div>
+                  <NSpace align="center" :size="[12, 0]">
+                    <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnectETH" />
+                    <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
+                      <template #trigger>
+                        <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
+                      </template>
+                      <NText class="text-white">{{ ethPrincipal }}</NText>
+                    </NTooltip>
+                  </NSpace>
                 </NSpace>
                 <NText class="text-xs" depth="3">{{ `You are expected to receive ${tokenAmount !== 0 ? tokenAmount?.toFixed(4) : '0'} ARB EMC TOKEN` }}</NText>
               </NSpace>
@@ -140,11 +146,11 @@ import { useETHUserStore } from '@/stores/eth-user';
 
 import Content from '@/components/icp-connect/content.vue';
 
-type whiteListInfoType = {
-  owner: string | undefined;
-  used: string;
-  quota: string;
-};
+// type whiteListInfoType = {
+//   owner: string | undefined;
+//   used: string;
+//   quota: string;
+// };
 export default defineComponent({
   name: 'transfer',
   components: { NSpace, NText, NIcon, NButton, NTooltip, NCard, NSpin, Content },
@@ -165,20 +171,20 @@ export default defineComponent({
     const initLoading = ref(false);
 
     const balance = ref('0');
-    const whiteListInfo = ref<whiteListInfoType>({ owner: '', used: '', quota: '' });
+    // const whiteListInfo = ref<whiteListInfoType>({ owner: '', used: '', quota: '' });
 
     const init = async (principal: string) => {
       initLoading.value = true;
-      const resp = await userStore.getWhiteListInfo({ principal: principal });
+      // const resp = await userStore.getWhiteListInfo({ principal: principal });
 
-      if (resp.data !== undefined && ethers.formatUnits(resp.data.quota, 8) !== '0') {
-        const data = {
-          owner: resp.data?.owner.toString(),
-          used: ethers.formatUnits(resp.data.used, 8),
-          quota: ethers.formatUnits(resp.data.quota, 8),
-        };
-        whiteListInfo.value = data;
-      }
+      // if (resp.data !== undefined && ethers.formatUnits(resp.data.quota, 8) !== '0') {
+      //   const data = {
+      //     owner: resp.data?.owner.toString(),
+      //     used: ethers.formatUnits(resp.data.used, 8),
+      //     quota: ethers.formatUnits(resp.data.quota, 8),
+      //   };
+      //   whiteListInfo.value = data;
+      // }
 
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/dip20balance',
@@ -190,15 +196,16 @@ export default defineComponent({
 
     const tokenAmount = computed(() => {
       const balanceAmount = Number(balance.value);
-      if (balanceAmount === 0) return 0;
-      if (whiteListInfo.value.quota) {
-        const result = Math.min(balanceAmount, Number(whiteListInfo.value.quota));
-        if (result !== 0) {
-          return Number(result);
-        }
-      } else {
-        return balanceAmount / RADIO;
-      }
+      // if (balanceAmount === 0) return 0;
+      // if (whiteListInfo.value.quota) {
+      //   const result = Math.min(balanceAmount, Number(whiteListInfo.value.quota));
+      //   if (result !== 0) {
+      //     return Number(result);
+      //   }
+      // } else {
+      return balanceAmount / RADIO;
+
+      // }
     });
 
     watch(
@@ -224,21 +231,29 @@ export default defineComponent({
     return {
       ethPrincipal: computed(() => ethUserStore.account0),
       principal: computed(() => userStore.icpPrincipal),
+      principalStr: computed(() => Utils.formatAddress(userStore.icpPrincipal, 11)),
       account: computed(() => userStore.icpAccount),
+      accountStr: computed(() => Utils.formatAddress(userStore.icpAccount, 11)),
+
       balance,
-      whiteListInfo,
+      // whiteListInfo,
       tokenAmount,
       Utils,
       loading,
       initLoading,
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
-        message.success('Connect Success of MetaMmask');
+        message.success('No Connection of Metamask');
       },
       onPressUnConnect() {
         if (loading.value === true) return;
-        whiteListInfo.value = { owner: '', used: '', quota: '' };
+        // whiteListInfo.value = { owner: '', used: '', quota: '' };
         userStore.disconnect();
+      },
+
+      onPressUnConnectETH() {
+        if (loading.value === true) return;
+        ethUserStore.signOut();
       },
       onPressRefresh() {
         if (!userStore.icpPrincipal) return;
@@ -255,7 +270,7 @@ export default defineComponent({
           // return; principal: userStore.icpPrincipal,
           const resp = await userStore.dip20Approve({ amount: balance.value });
           console.info(resp);
-          const resp2 = await userStore.deposit({ account: ethUserStore.account0, isWhiteList: Boolean(whiteListInfo.value.owner !== '') });
+          const resp2 = await userStore.deposit({ account: ethUserStore.account0, isWhiteList: false });
           console.info(resp2);
           if (resp2._result !== 0) {
             message.error('Error');

@@ -14,10 +14,10 @@
         <NSpace class="wallet-main-account" justify="space-between">
           <div>
             <div class="theme-font-style">Account ID</div>
-            <div class="account-id" @click="onPressCopy(account)">
+            <NSpace class="account-id" @click="onPressCopy(account)" :size="[0, 0]">
               <span>{{ Utils.formatAddress(account, 6) }}</span>
-              <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 0px 4px" />
-            </div>
+              <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 4px 4px" />
+            </NSpace>
           </div>
           <NButton class="logout-button" icon-placement="left" secondary strong @click="onPressLogout">
             <span class="logout-button-span">Log out</span>
@@ -30,7 +30,7 @@
           <div class="theme-font-style">Principal ID</div>
           <div class="principal-id" @click="onPressCopy(principal)">
             <span>{{ principal }}</span>
-            <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 -1px 4px" />
+            <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 4px 4px; display: inline-block" />
           </div>
         </div>
         <!-- <NSpace class="wallet-main-link" justify="space-between">
@@ -84,7 +84,7 @@
           <a href="https://ramp.alchemypay.org/?crypto=ICP&network=ICP&appId=W8eeN2mFk96o0L1w&callbackUrl=https://api.yumi.io/api/fiat_orders/webhooks" target="_blank">
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
-                <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center">
+                <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center" :size="[12, 0]">
                   <div class="wallet-footer-icon">
                     <img src="@/assets/icon_wallet.svg" width="14" height="14" />
                   </div>
@@ -97,7 +97,7 @@
           <a href="https://app.icpswap.com/swap?input=ryjl3-tyaaa-aaaaa-aaaba-cai&output=aeex5-aqaaa-aaaam-abm3q-cai" target="_blank">
             <div class="wallet-footer-button">
               <div class="wallet-footer-button-bgcolor">
-                <NSpace class="wallet-footer-button-bgcolor-content" justify="space-between" align="center">
+                <NSpace class="wallet-footer-button-bgcolor-content" justify="center" align="center" :size="[12, 0]">
                   <div class="wallet-info-icon">
                     <img src="@/assets/icon_coin_emc.png" width="20" height="20" />
                   </div>
@@ -124,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, computed, defineComponent } from 'vue';
+import { ref, onMounted, computed, defineComponent, watch } from 'vue';
 import { NSpace, NModal, NButton, useMessage } from 'naive-ui';
 import copy from 'copy-to-clipboard';
 import { Utils } from '@/tools/utils';
@@ -183,6 +183,8 @@ export default defineComponent({
         }),
       ]);
       icpMetaData.value = metaData;
+      console.log(metaData.decimals);
+
       const balanceStr = ethers.formatUnits(balance, Number(metaData.decimals));
       icpBalance.value = balanceStr.replace(/(\.\d{4})\d+/, '$1');
       return icpBalance.value;
@@ -223,8 +225,8 @@ export default defineComponent({
   top: 72px;
   right: 32px;
   width: 380px;
-  height: 390px;
-  border-radius: 0px 0px 4px 4px;
+  height: 406px;
+  border-radius: 0px 0px 8px 8px;
   background-color: #181927;
   box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1), 0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05), 0px 100px 86px 0px rgba(131, 125, 176, 0.01),
     0px 338px 95px 0px rgba(131, 125, 176, 0);
@@ -373,7 +375,7 @@ export default defineComponent({
 .coin-info {
   width: 100%;
   height: 72px;
-  margin-top: 8px;
+  margin-top: 16px;
   padding: 0px 8px;
   background-color: #191a37;
   border: 4px solid #1d1f40;
@@ -416,7 +418,10 @@ export default defineComponent({
 .coin-info-balance-box {
   width: 144px;
   padding: 6px 0;
-  background: linear-gradient(90deg, #191a37 0%, #23234f 54.17%, #191a37 100%);
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  border-image: linear-gradient(to right, #ffffff00, #ffffff10, #ffffff00) 1;
+  background: linear-gradient(90deg, #191a37 -0.49%, #23234f 53.94%, #191a37 100%);
   text-align: center;
 }
 
@@ -462,25 +467,25 @@ export default defineComponent({
   box-sizing: border-box;
 }
 .wallet-footer-button {
+  position: relative;
   width: 140px;
   height: 40px;
   border-radius: 6px;
   border: 1px solid #861bb87c;
   padding: 4px;
-  position: relative;
 }
 .wallet-footer-button-bgcolor {
   width: 100%;
   height: 100%;
-  padding: 0 12px;
+  /* padding: 0 12px; */
   border-radius: 4px;
   background: linear-gradient(90deg, #340695 0%, #851bb8 100%);
   box-sizing: border-box;
 }
 .wallet-footer-button-bgcolor-content {
   position: absolute;
-  width: 116px;
-  height: 40px;
+  width: 130px;
+  height: 30px;
   z-index: 11;
 }
 .wallet-footer-icon {
@@ -491,7 +496,6 @@ export default defineComponent({
   height: 24px;
   border-radius: 50%;
   background: linear-gradient(119deg, #5c19f1 0%, #920fd8 100%);
-  margin-right: 12px;
 }
 .wallet-footer-span {
   color: #fff;
@@ -504,7 +508,7 @@ export default defineComponent({
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #212653;
+  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;

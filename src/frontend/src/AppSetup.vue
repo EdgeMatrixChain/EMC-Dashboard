@@ -16,16 +16,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import {
-  NLoadingBarProvider,
-  NMessageProvider,
-  NNotificationProvider,
-  NDialogProvider,
-  NGlobalStyle,
-  NThemeEditor,
-  darkTheme,
-  NConfigProvider,
-} from 'naive-ui';
+import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
@@ -67,7 +58,6 @@ export default defineComponent({
         itemTextColorActive: '#fff',
         itemColorActiveHover: '#5C1AE5',
       },
-
     };
 
     const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);

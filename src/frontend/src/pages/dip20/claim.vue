@@ -1,6 +1,6 @@
 <template>
   <NSpace class="w-full h-full bg-[#1a1c34]" vertical :wrap-item="false" align="center">
-    <template v-if="!ethSign">
+    <template v-if="!ethPrincipal">
       <NSpace class="w-full h-full pt-[80px] px-12" vertical :wrap-item="false" align="center" :size="[0, 48]">
         <NText class="text-[40px] leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
         <NText class="text-[20px] leading-[20px] text-white mt-3">Connect ICP Wallet</NText>
@@ -21,8 +21,21 @@
       <NSpace class="w-full h-full py-12 o" vertical :wrap-item="false" align="center">
         <NSpin class="w-full h-full" :show="loading">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-            <NText class="mb-9 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
-            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" :wrap-item="false" :size="[0, 0]">
+            <NText class="mb-6 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
+            <NSpace class="w-[362px] h-10 px-4 mb-8 leading-10 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
+              <img class="w-6 h-6 bg-[#7065B1] rounded-full p-[2px]" src="@/assets/icon_arbitrum.svg" />
+              <NText class="text-white">{{ ethPrincipalStr }}</NText>
+              <NSpace align="center" :size="[12, 0]">
+                <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnectETH" />
+                <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
+                  <template #trigger>
+                    <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
+                  </template>
+                  <NText class="text-white">{{ ethPrincipal }}</NText>
+                </NTooltip>
+              </NSpace>
+            </NSpace>
+            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" justify="space-between" :wrap-item="false" :size="[0, 0]">
               <div class="flex-[0.4] text-white">Amount</div>
               <div class="flex-[0.4] text-white">Status</div>
               <NSpace class="flex-[0.2] text-white" :size="[36, 0]" justify="end" align="center">
@@ -32,10 +45,12 @@
             </NSpace>
             <NSpace class="table w-full px-8" :wrap-item="false" :size="[0, 0]">
               <template v-for="(item, index) in orders" :key="item.id">
-                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center">
+                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
                   <NText class="flex-[0.4] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
                   <NText class="flex-[0.4] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
-                  <NText class="flex-[0.2] cursor-pointer" :style="{ color: item.status && !item.claimed ? '#397EFF' : '#bbb' }" @click="onPressClaim(item, index)">Claim</NText>
+                  <div class="flex-[0.2] text-left">
+                    <NButton class="w-[80px]" ghost :color="item.status && !item.claimed ? '#397EFF' : '#626273'" @click="onPressClaim(item, index)"> Claim </NButton>
+                  </div>
                 </NSpace>
               </template>
             </NSpace>
@@ -47,7 +62,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from 'vue';
-import { NSpace, NText, NSpin, NRadioGroup, useMessage } from 'naive-ui';
+import { NSpace, NText, NSpin, NRadioGroup, NTooltip, NButton, useMessage } from 'naive-ui';
 import { useETHUserStore } from '@/stores/eth-user';
 import { useUserStore } from '@/stores/user';
 import { ApiManager } from '@/web3/api';
@@ -87,7 +102,7 @@ type Order = {
 
 export default defineComponent({
   name: 'claim',
-  components: { NSpace, NText, NRadioGroup, NSpin },
+  components: { NSpace, NText, NRadioGroup, NTooltip, NButton, NSpin },
   props: {
     isUpdate: { type: Boolean, default: false },
   },
@@ -207,7 +222,9 @@ export default defineComponent({
       ethers,
       orders,
       loading,
-      ethSign: computed(() => ethUserStore.account0),
+      ethPrincipal: computed(() => ethUserStore.account0),
+      ethPrincipalStr: computed(() => Utils.formatAddress(ethUserStore.account0, 11)),
+
       orderStatus: ['withdrawn', 'pending', 'not withdrawn'],
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
@@ -215,6 +232,9 @@ export default defineComponent({
       onPressRefresh() {
         initDepositOrders();
         context.emit('update');
+      },
+      onPressUnConnectETH() {
+        ethUserStore.signOut();
       },
       async onPressClaim(item: Order, index: number) {
         if (!item.status || item.claimed) {
@@ -253,7 +273,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .table {
-  max-height: 450px;
+  max-height: 400px;
   overflow-y: auto;
 }
 

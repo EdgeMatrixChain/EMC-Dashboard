@@ -111,7 +111,7 @@ export default defineComponent({
         loading.value = true;
         const resp = await userStore.dip20Approve({ amount: '1' });
         console.info(resp);
-        const resp2 = await userStore.deposit({ account: formData.value.account });
+        const resp2 = await userStore.deposit({ account: formData.value.account, isWhiteList: false });
         console.info(resp2);
         loading.value = false;
       },

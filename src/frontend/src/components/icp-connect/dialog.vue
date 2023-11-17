@@ -1,28 +1,33 @@
 <template>
-  <NModal :show="visible" :mask-closable="false">
-    <NCard title="Connect" style="width: 100%; max-width: 600px">
-      <template #header-extra>
-        <NButton quaternary circle @click="onPressClose">
-          <template #icon>
-            <NIcon><IconClose /></NIcon>
-          </template>
-        </NButton>
-      </template>
-      <Content />
+  <NModal :show="visible" :mask-closable="false" :block-scroll="false">
+    <NCard style="width: 100%; max-width: 516px; border-radius: 12px; overflow: hidden; border: 16px solid rgba(255, 255, 255, 0.1); padding: 36px 24px" content-style="padding:0">
+      <NButton class="absolute top-5 right-5" size="tiny" quaternary circle @click="onPressClose">
+        <template #icon>
+          <NIcon size="26"><IconClose /></NIcon>
+        </template>
+      </NButton>
+      <NSpace  vertical align="center" :wrap-item="false" :size="[0, 16]">
+        <NText class="text-[28px] leading-[28px] text-white">Connect wallet</NText>
+        <NText class="text-[#C1C1C1] mb-3">Select a wallet you want to connect to EMC</NText>
+        <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
+          <Content />
+        </NSpace>
+      </NSpace>
     </NCard>
   </NModal>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
-import { NModal, NCard, NButton, NIcon } from 'naive-ui';
-import { CopyOutline as IconClose } from '@vicons/ionicons5';
+import { NModal, NCard, NButton, NIcon, NSpace, NText } from 'naive-ui';
+import { CloseCircleOutline as IconClose } from '@vicons/ionicons5';
 import Content from './content.vue';
 export default defineComponent({
   name: 'icp-connect-dialog',
-  components: { NModal, NCard, NButton, NIcon, Content, IconClose },
+  components: { NModal, NCard, NButton, NIcon, NSpace, NText, Content, IconClose },
   props: {
     visible: { type: Boolean },
+    chainName: { type: String },
   },
   emits: ['update:visible'],
   setup(props, ctx) {
