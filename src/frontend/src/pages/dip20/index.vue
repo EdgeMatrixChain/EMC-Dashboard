@@ -242,7 +242,8 @@ export default defineComponent({
   width: 26px;
   height: 46px;
   background: url('@/assets/icon_switch_arrow_max.svg') 100% no-repeat;
-  animation: left-max 1s linear infinite;
+  animation: left-max 3s ease infinite;
+  transform-origin: 50% 50%;
 }
 
 .switch-arrow-min {
@@ -252,27 +253,32 @@ export default defineComponent({
   width: 20px;
   height: 46px;
   background: url('@/assets/icon_switch_arrow_min.svg') 100% no-repeat;
-  animation: left-min 1s linear infinite;
+  animation: left-min 3s ease infinite;
+  transform-origin: 50% 50%;
 }
 
 @keyframes left-max {
   0% {
     transform: translateX(0);
   }
-  30% {
+
+  11% {
+    transform: translateX(0);
+  }
+  22% {
     transform: translateX(20px);
   }
-  40% {
+  27% {
+    transform: translateX(0);
+  }
+  33% {
     transform: translateX(20px);
   }
-  80% {
-    transform: translateX(0px);
-  }
-  90% {
-    transform: translateX(0px);
+  44% {
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(0px);
+    transform: translateX(0);
   }
 }
 
@@ -280,49 +286,24 @@ export default defineComponent({
   0% {
     transform: translateX(0);
   }
-  30% {
-    transform: translateX(20px);
-  }
-  40% {
-    transform: translateX(22px);
-  }
-  80% {
-    transform: translateX(0px);
-  }
-  90% {
-    transform: translateX(-2px);
-  }
-  100% {
-    transform: translateX(0px);
-  }
 
-  /* 0%,
-  20%,
-  40%,
-  60%,
-  80%,
-  100% {
-    transform: translateX(0px);
+  11% {
+    transform: translateX(0);
   }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
+  22% {
     transform: translateX(20px);
   }
-  22%,
-  42%,
-  62%,
-  82% {
-    transform: translateX(-4px);
+  27% {
+    transform: translateX(0);
   }
-  12%,
-  32%,
-  52%,
-  72%,
-  92% {
-    transform: translateX(24px);
-  } */
+  33% {
+    transform: translateX(20px);
+  }
+  44% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 </style>
