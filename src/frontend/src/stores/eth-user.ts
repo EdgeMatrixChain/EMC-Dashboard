@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { Metamask } from '@/web3/metamask';
+import { getDefaultNetwork } from '@/web3/network';
 import { Web3Service } from '@/web3';
 
 interface User {
@@ -20,7 +21,7 @@ export const useETHUserStore = defineStore('ethuser', () => {
   const accounts = ref<string[]>([]);
   const account0 = ref<string>('');
   const chainId = ref<number | undefined>();
-  const CHAIN_ID = 421613;
+  const CHAIN_ID = getDefaultNetwork().chainId;
 
   const getWalletService = (type: string) => {
     switch (type) {
