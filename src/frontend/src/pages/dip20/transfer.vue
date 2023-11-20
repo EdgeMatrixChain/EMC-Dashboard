@@ -243,7 +243,7 @@ export default defineComponent({
       initLoading,
       async onPressConnectETH() {
         await ethUserStore.signIn({ type: 'metamask' });
-        message.success('No Connection of Metamask');
+        message.success('Connection successful');
       },
       onPressUnConnect() {
         if (loading.value === true) return;
@@ -261,7 +261,7 @@ export default defineComponent({
       },
       async onPressDeposit() {
         if (!ethUserStore.account0) {
-          message.error('No Connect of MetaMmask');
+          message.error('No Connection of Metamask');
           return;
         }
         if (Number(balance.value) > 0) {
