@@ -22,6 +22,7 @@ export const useETHUserStore = defineStore('ethuser', () => {
   const account0 = ref<string>('');
   const chainId = ref<number | undefined>();
   const CHAIN_ID = getDefaultNetwork().chainId;
+  const w3s = Web3Service.getInstance();
 
   const getWalletService = (type: string) => {
     switch (type) {
@@ -41,7 +42,6 @@ export const useETHUserStore = defineStore('ethuser', () => {
     const wallet = new WalletService();
     const walletProvider = await wallet.getProvider();
 
-    const w3s = Web3Service.getInstance();
     w3s.setup({ provider: walletProvider });
 
     const resp = await w3s.connect();
@@ -90,7 +90,18 @@ export const useETHUserStore = defineStore('ethuser', () => {
     user.value = defaultUser();
     return { _result: 0 };
   };
+  const addToken = async ({ type, address, symbol, decimals }: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number }) => {
+    const resp = await w3s.addToken({
+      type: type,
+      address: address,
+      symbol: symbol,
+      decimals: decimals,
+      // image: 'path/to/image',
+      // tokenId: '123456',
+    });
 
+    return { _result: resp._result, _desc: resp._desc };
+  };
   return {
     user,
     accounts,
@@ -98,5 +109,6 @@ export const useETHUserStore = defineStore('ethuser', () => {
     chainId,
     signIn,
     signOut,
+    addToken,
   };
 });

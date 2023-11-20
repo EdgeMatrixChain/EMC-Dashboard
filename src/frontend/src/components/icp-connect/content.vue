@@ -1,11 +1,14 @@
 <template>
-  <NSpace class="w-full" vertical :wrap-item="false" :size="[0, 28]">
+  <NSpace class="w-full" vertical :wrap-item="false" :size="[0, 32]">
     <template v-for="item in providers">
-      <NSpace class="item-border w-full" align="center" justify="center" :wrap-item="false">
-        <NSpace class="item-content w-full h-full bg-[#13262F] cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ backgroundColor: bgColor }" @click="onPressConnect(item)">
+      <NSpace class="item-border w-full overflow-hidden rounded" align="center" justify="center" :wrap-item="false">
+        <NSpace class="realtive w-full h-full bg-[#13262F] cursor-pointer" align="center" justify="center" :wrap-item="false" :size="[20, 0]" :style="{ backgroundColor: bgColor }" @click="onPressConnect(item)">
           <img style="width: 44px; height: 44px; object-fit: contain" :src="item.meta.icon.dark" />
           <NSpace vertical :wrap-item="false" :size="[0, 8]">
             <NText class="text-[18px] leading-[18px] text-white">{{ item.meta.name }}</NText>
+          </NSpace>
+          <NSpace class="absolute top-0 right-0 py-[2px] px-4 rounded-bl bg-[#FA904F]" :wrap-item="false" align="center" justify="center" v-if="item.meta.name === 'Plug Wallet'">
+            <img class="w-5 h-5" src="@/assets/icon_recommend.svg" />
           </NSpace>
         </NSpace>
       </NSpace>
@@ -42,20 +45,17 @@ export default defineComponent({
 .item-border {
   position: relative;
   height: 72px;
-  border-radius: 8px;
   background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1);
   background-size: 400%;
   animation: border 12s linear infinite;
   z-index: 1;
   box-sizing: border-box;
-}
-.item-content {
-  border-radius: 6px;
-  padding: 10px;
+  border: 2px solid;
+  border-color: #4248a7;
 }
 
 .item-border:hover {
-  padding: 2px;
+  border-color: transparent;
 }
 
 @keyframes border {

@@ -1,55 +1,71 @@
 <template>
-  <div class="page">
-    <div class="container">
-      <div class="card card-out" ref="rollOut">
-        <Claim :isUpdate="isUpdateClaim" @update="onPressUpdateClaim" />
-      </div>
-      <div class="card card-in" ref="rollIn">
-        <Transfer :isUpdate="isUpdateTransfer" @update="onPressUpdateTransfer" @success="onPressTransfer" />
-      </div>
+  <NSpace class="page" align="center" justify="center" :wrap-item="false">
+    <div class="main">
+      <div class="container">
+        <div class="card card-out" ref="rollOut">
+          <Claim :isUpdate="isUpdateClaim" @update="onPressUpdateClaim" />
+        </div>
+        <div class="card card-in" ref="rollIn">
+          <Transfer :isUpdate="isUpdateTransfer" @update="onPressUpdateTransfer" @success="onPressTransfer" />
+        </div>
 
-      <div class="switch" ref="switchCtn">
-        <NSpace class="w-full h-full" vertical :size="[24, 98]" align="center" justify="center" :wrap-item="false">
-          <div class="text-[32px] text-center">Convert your $EMC from ICP (DIP20) to Arbitrum (ERC20)</div>
-          <NSpace vertical :size="[24, 24]">
-            <div class="text-base text-center">
-              ICP Contract Address: <br />
-              aeex5-aqaaa-aaaam-abm3q-cai
-            </div>
-            <div class="text-base text-center">
-              Arbitrum Contract Address: <br />
-              0xDFB8BE6F8c87f74295A87de951974362CedCFA30
-            </div>
+        <div class="switch" ref="switchCtn">
+          <NSpace class="w-full h-full" vertical :size="[24, 56]" align="center" justify="center" :wrap-item="false">
+            <div class="text-[32px] text-center">Convert your $EMC from ICP (DIP20) to Arbitrum (ERC20)</div>
+            <NSpace vertical :size="[24, 24]">
+              <div class="text-base text-center">
+                ICP Contract Address: <br />
+                aeex5-aqaaa-aaaam-abm3q-cai
+              </div>
+              <div class="text-base text-center">
+                Arbitrum Contract Address: <br />
+                0xDFB8BE6F8c87f74295A87de951974362CedCFA30
+              </div>
+              <NSpace class="px-4 mt-6" vertical align="center" :size="[0, 8]">
+                <NSpace class="relative w-[232px] h-10 leading-10 rounded bg-gradient-to-r from-[#49DEFF] to-[#F64FFF] overflow-hidden cursor-pointer" justify="center" @click="onPressAddToken">
+                  <NText class="text-white">Add Token</NText>
+                  <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
+                </NSpace>
+              </NSpace>
+            </NSpace>
+            <template v-if="isSwitch">
+              <div class="switch-arrow-left" @click="onSwitch">
+                <div class="switch-arrow-min"></div>
+                <div class="switch-arrow-max"></div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="switch-arrow-right" @click="onSwitch">
+                <div class="switch-arrow-min"></div>
+                <div class="switch-arrow-max"></div>
+              </div>
+            </template>
           </NSpace>
-
-          <template v-if="isSwitch">
-            <div class="switch-arrow-left" @click="onSwitch">
-              <div class="switch-arrow-min"></div>
-              <div class="switch-arrow-max"></div>
-            </div>
-          </template>
-          <template v-else>
-            <div class="switch-arrow-right" @click="onSwitch">
-              <div class="switch-arrow-min"></div>
-              <div class="switch-arrow-max"></div>
-            </div>
-          </template>
-        </NSpace>
+        </div>
       </div>
     </div>
-  </div>
+    <img class="fixed bottom-0 right-0 z-1 opacity-20" src="@/assets/back_transfer.png" />
+  </NSpace>
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { NSpace } from 'naive-ui';
+import { NSpace, useMessage, NText } from 'naive-ui';
 import Transfer from './transfer.vue';
 import Claim from './claim.vue';
+import { useETHUserStore } from '@/stores/eth-user';
+import { ERC20Api } from '@/web3/api/erc20';
+import { ApiManager } from '@/web3/api';
 
 export default defineComponent({
   name: 'dip20',
-  components: { NSpace, Transfer, Claim },
+  components: { NSpace, NText, Transfer, Claim },
 
   setup() {
+    const ethUserStore = useETHUserStore();
+    const apiManager = ApiManager.getInstance();
+
+    const message = useMessage();
+
     const switchCtn = ref<null | HTMLInputElement>(null);
     const rollIn = ref<null | HTMLInputElement>(null);
     const rollOut = ref<null | HTMLInputElement>(null);
@@ -94,12 +110,36 @@ export default defineComponent({
         isUpdateTransfer.value = true;
         onSwitch();
       },
+
+      async onPressAddToken() {
+        const address = '0xDFB8BE6F8c87f74295A87de951974362CedCFA30';
+        const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: address });
+        const { data: _decimals } = await erc20Api.decimals();
+        const { data: _symbol } = await erc20Api.symbol();
+
+        const resp = await ethUserStore.addToken({
+          type: 'ERC20',
+          address: address,
+          symbol: _symbol,
+          decimals: Number(_decimals),
+        });
+
+        if (resp._result !== 0) {
+          message.error(resp._desc as string);
+        } else {
+          message.success('Add Token succeeded');
+        }
+      },
     };
   },
 });
 </script>
 <style scoped>
 .page {
+  width: 100%;
+  height: calc(100vh - 132px);
+}
+.main {
   position: relative;
   width: 1190px;
   min-width: 1190px;
@@ -109,7 +149,8 @@ export default defineComponent({
   background: linear-gradient(0deg, #9b51e050 0%, #9b51e0 100%);
   border-radius: 11px;
   overflow: hidden;
-  margin: calc(50vh - 391px) auto 0;
+  z-index: 2;
+  /* margin: calc(50vh - 391px) auto 0; */
 }
 .container {
   width: 100%;

@@ -78,9 +78,9 @@ export default defineComponent({
     });
 
     async function initEMCBalance() {
-      const erc20Api = apiManager.create(ERC20Api, { address: '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea' });
+      const address = '0xDFB8BE6F8c87f74295A87de951974362CedCFA30';
+      const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: address });
       const { data: balance } = await erc20Api.balanceOf({ account: ethUserStore.account0 });
-      console.info(balance);
       const balanceStr = ethers.formatUnits(balance, 18);
       emcBalance.value = balanceStr.replace(/(\.\d{4})\d+/, '$1');
       return emcBalance.value;

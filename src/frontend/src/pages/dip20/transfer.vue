@@ -19,14 +19,14 @@
     </template>
     <template v-else>
       <NSpin :show="initLoading">
-        <NSpace class="w-full h-full min-h-[646px] pt-12" vertical :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
+        <NSpace class="w-full h-full min-h-[646px] py-[82px]" vertical :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-            <NText class="text-xl mb-10 leading-5 font-bold text-white">Convert your DIP20 EMC</NText>
-            <NSpace class="w-full" :wrap-item="false" :size="[0, 28]">
-              <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+            <NText class="text-[32px] leading-8 mb-10 font-bold text-white">Convert your DIP20 EMC</NText>
+            <NSpace class="w-full" :wrap-item="false" :size="[0, 32]">
+              <NSpace class="w-full px-4 py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
                 <NSpace align="center" :size="[14, 0]">
                   <NSpace class="min-w-[120px]">
-                    <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
+                    <NSpace class="px-4 py-2 h-10 rounded-full bg-[#443C68]" justify="center" align="center">
                       <NText class="text-base text-white">Principal ID</NText>
                     </NSpace>
                   </NSpace>
@@ -42,7 +42,7 @@
                   </NTooltip>
                 </NSpace>
               </NSpace>
-              <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+              <!-- <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
                 <NSpace align="center" :size="[14, 0]">
                   <NSpace class="min-w-[120px]">
                     <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
@@ -57,11 +57,11 @@
                   </template>
                   <NText class="text-white">{{ account }}</NText>
                 </NTooltip>
-              </NSpace>
-              <NSpace class="w-full p-4 rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
+              </NSpace> -->
+              <NSpace class="w-full px-4 py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
                 <NSpace align="center" :size="[14, 0]">
                   <NSpace class="min-w-[120px]">
-                    <NSpace class="px-4 py-2 h-10 rounded-full bg-[#604ECB]" justify="center" align="center">
+                    <NSpace class="px-4 py-2 h-10 rounded-full bg-[#443C68]" justify="center" align="center">
                       <NText class="text-base text-white">Balance</NText>
                     </NSpace>
                   </NSpace>
@@ -79,7 +79,7 @@
                 <!-- <template v-if="whiteListInfo.owner">
                   <NText class="text-xs" depth="3">1 EMC (ARB) = 1 EMC (ICP) PreSale Whitelist</NText>
                 </template> -->
-                <NText class="text-xs" depth="3">1 EMC (ARB) = 2.1 EMC (ICP)</NText>
+                <NText class="text-xs" depth="3">2.1 EMC (ICP) = 1 EMC (ARB)</NText>
               </NSpace>
               <!-- <template v-if="whiteListInfo.owner">
                 <div class="w-full">
@@ -89,10 +89,10 @@
               </template> -->
             </NSpace>
           </NSpace>
-          <NSpace class="w-full h-full py-4 flex-1" vertical align="center" justify="space-around">
+          <NSpace class="w-full h-full pt-8 flex-1" vertical align="center" justify="space-between">
             <template v-if="!ethPrincipal">
               <NSpace class="px-4" align="center" justify="center" :size="[20, 8]">
-                <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]" @click="onPressConnectETH">
+                <NSpace class="min-w-[360px] h-11 leading-11 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]" @click="onPressConnectETH">
                   <img class="w-8 h-8" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
                   <NText class="text-white">MetaMask</NText>
                 </NSpace>
@@ -105,7 +105,7 @@
             </template>
             <template v-else>
               <NSpace class="px-4" vertical align="center" :size="[0, 8]">
-                <NSpace class="w-[362px] h-10 px-4 leading-10 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
+                <NSpace class="w-[362px] h-11 leading-11 px-4 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
                   <img class="w-6 h-6 bg-[#7065B1] rounded-full p-[2px]" src="@/assets/icon_arbitrum.svg" />
                   <NText class="text-white">{{ Utils.formatAddress(ethPrincipal, 11) }}</NText>
                   <NSpace align="center" :size="[12, 0]">

@@ -289,6 +289,8 @@ export default defineComponent({
   animation: border 12s linear infinite;
   z-index: 1;
   box-sizing: border-box;
+  border: 2px solid;
+  border-color: #4248a7;
 }
 .wallet-content {
   border-radius: 6px;
@@ -296,7 +298,7 @@ export default defineComponent({
 }
 
 .wallet-border:hover {
-  padding: 2px;
+  border-color: transparent;
 }
 
 @keyframes border {

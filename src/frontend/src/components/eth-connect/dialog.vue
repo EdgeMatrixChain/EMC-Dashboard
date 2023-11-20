@@ -1,22 +1,24 @@
 <template>
   <NModal :show="visible" :mask-closable="false" :block-scroll="false">
-    <NCard style="width: 100%; max-width: 516px; border-radius: 12px; overflow: hidden; border: 16px solid rgba(255, 255, 255, 0.1); padding: 36px 24px" content-style="padding:0">
-      <NButton class="absolute top-5 right-5" size="tiny" quaternary circle @click="onPressClose">
-        <template #icon>
-          <NIcon size="26"><IconClose /></NIcon>
-        </template>
-      </NButton>
-      <NSpace vertical align="center" :wrap-item="false" :size="[0, 16]">
-        <NText class="text-[28px] leading-[28px] text-white">Connect wallet</NText>
-        <NText class="text-[#C1C1C1] mb-3">Select a wallet you want to connect to EMC</NText>
-        <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
-          <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#13262F] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
-            <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
-            <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
+    <div class="p-4 bg-[#ffffff30] rounded-xl w-[512px]">
+      <NCard style="width: 100%; border-radius: 6px; overflow: hidden; padding: 36px 24px" content-style="padding:0">
+        <NButton class="absolute top-5 right-5" size="tiny" quaternary circle @click="onPressClose">
+          <template #icon>
+            <NIcon size="26"><IconClose /></NIcon>
+          </template>
+        </NButton>
+        <NSpace vertical align="center" :wrap-item="false" :size="[0, 16]">
+          <NText class="text-[28px] leading-[28px] text-white">Connect wallet</NText>
+          <NText class="text-[#C1C1C1] mb-3">Select a wallet you want to connect to EMC</NText>
+          <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
+            <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#13262F] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
+              <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
+              <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
+            </NSpace>
           </NSpace>
         </NSpace>
-      </NSpace>
-    </NCard>
+      </NCard>
+    </div>
   </NModal>
 </template>
 
@@ -60,6 +62,8 @@ export default defineComponent({
   animation: border 12s linear infinite;
   z-index: 1;
   box-sizing: border-box;
+  border: 2px solid;
+  border-color: #4248a7;
 }
 .wallet-content {
   border-radius: 6px;
@@ -67,7 +71,7 @@ export default defineComponent({
 }
 
 .wallet-border:hover {
-  padding: 2px;
+  border-color: transparent;
 }
 
 @keyframes border {
