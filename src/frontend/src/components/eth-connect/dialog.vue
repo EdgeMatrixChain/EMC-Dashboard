@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :mask-closable="false" :block-scroll="false">
-    <div class="p-4 bg-[#ffffff30] rounded-xl w-[512px]">
+    <div class="p-4 bg-[#ffffff30] rounded-xl w-[512px]" style="-webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px)">
       <NCard style="width: 100%; border-radius: 6px; overflow: hidden; padding: 36px 24px" content-style="padding:0">
         <NButton class="absolute top-5 right-5" size="tiny" quaternary circle @click="onPressClose">
           <template #icon>
@@ -63,7 +63,7 @@ export default defineComponent({
   z-index: 1;
   box-sizing: border-box;
   border: 2px solid;
-  border-color: #4248a7;
+  border-color: #282250;
 }
 .wallet-content {
   border-radius: 6px;

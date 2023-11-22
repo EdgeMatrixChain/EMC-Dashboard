@@ -1,27 +1,30 @@
 <template>
-  <NSpace class="page" align="center" justify="center" :wrap-item="false">
-    <div class="main">
-      <div class="container">
-        <div class="card card-out" ref="rollOut">
+  <div class="page h-full fixed top-0 left-0 right-0 flex justify-center items-start xl:items-center pt-[392px] xl:pt-[40px] bg-[#1a1c34] xl:bg-[#101014]">
+    <div class="main xl:relative xl:w-[1190px] xl:h-[648px] p-0 xl:p-[1px] w-full">
+      <div class="page-container" style="display: flex; flex-direction: column-reverse; align-items: center">
+        <div class="card card-out w-full xl:absolute xl:w-[638px]" ref="rollOut">
           <Claim :isUpdate="isUpdateClaim" @update="onPressUpdateClaim" />
         </div>
-        <div class="card card-in" ref="rollIn">
+        <div class="card card-in w-full xl:absolute xl:w-[638px]" ref="rollIn">
           <Transfer :isUpdate="isUpdateTransfer" @update="onPressUpdateTransfer" @success="onPressTransfer" />
         </div>
 
-        <div class="switch" ref="switchCtn">
-          <NSpace class="w-full h-full" vertical :size="[24, 56]" align="center" justify="center" :wrap-item="false">
-            <div class="text-[32px] text-center">Convert your $EMC from ICP (DIP20) to Arbitrum (ERC20)</div>
-            <NSpace vertical :size="[24, 24]">
-              <div class="text-base text-center">
+        <div class="switch w-full top-0 left-0 right-0 xl:top-[1px] xl:w-[552px] xl:p-6 pt-16" ref="switchCtn">
+          <NSpace class="w-full h-full" vertical :size="[0, 0]" align="center" justify="center" :wrap-item="false">
+            <div class="text-[20px] xl:text-[32px] text-center mb-4 xl:mb-[56px]">
+              Convert your $EMC from <br />
+              ICP (DIP20) to Arbitrum (ERC20)
+            </div>
+            <NSpace class="text-center" vertical :size="[0, 0]">
+              <NText class="xl:text-base">
                 ICP Contract Address: <br />
                 aeex5-aqaaa-aaaam-abm3q-cai
-              </div>
-              <div class="text-base text-center">
+              </NText>
+              <NText class="block xl:text-base my-4 xl:my-6">
                 Arbitrum Contract Address: <br />
                 0xDFB8BE6F8c87f74295A87de951974362CedCFA30
-              </div>
-              <NSpace class="px-4 mt-6" vertical align="center" :size="[0, 8]">
+              </NText>
+              <NSpace class="px-4 mt-5 xl:mt-6" vertical align="center" :size="[0, 8]">
                 <NSpace class="relative w-[232px] h-10 leading-10 rounded bg-gradient-to-r from-[#49DEFF] to-[#F64FFF] overflow-hidden cursor-pointer" justify="center" @click="onPressAddToken">
                   <NText class="text-white">Add Token</NText>
                   <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
@@ -29,13 +32,13 @@
               </NSpace>
             </NSpace>
             <template v-if="isSwitch">
-              <div class="switch-arrow-left" @click="onSwitch">
+              <div class="switch-arrow-left hidden xl:block" @click="onSwitch">
                 <div class="switch-arrow-min"></div>
                 <div class="switch-arrow-max"></div>
               </div>
             </template>
             <template v-else>
-              <div class="switch-arrow-right" @click="onSwitch">
+              <div class="switch-arrow-right hidden xl:block" @click="onSwitch">
                 <div class="switch-arrow-min"></div>
                 <div class="switch-arrow-max"></div>
               </div>
@@ -45,7 +48,7 @@
       </div>
     </div>
     <img class="fixed bottom-0 right-0 z-1 opacity-20" src="@/assets/back_transfer.png" />
-  </NSpace>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
@@ -137,38 +140,28 @@ export default defineComponent({
 <style scoped>
 .page {
   width: 100%;
-  height: calc(100vh - 132px);
+  /* height: calc(100vh - 132px); */
+  /* min-height: 100vh; */
+  overflow: scroll;
 }
 .main {
-  position: relative;
-  width: 1190px;
-  min-width: 1190px;
-  min-height: 648px;
-  height: 648px;
-  padding: 1px;
   background: linear-gradient(0deg, #9b51e050 0%, #9b51e0 100%);
   border-radius: 11px;
-  overflow: hidden;
   z-index: 2;
-  /* margin: calc(50vh - 391px) auto 0; */
 }
-.container {
+.page-container {
   width: 100%;
   height: 100%;
   border-radius: 11px;
-  overflow: hidden;
   background-color: #1a1c34;
 }
 .card {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
   top: 1px;
   bottom: 1px;
   left: 1px;
-  width: 638px;
-  height: calc(100% - 2px);
   transition: 1.25s;
   box-sizing: border-box;
   border-radius: 11px 0 0 11px;
@@ -186,19 +179,18 @@ export default defineComponent({
 }
 
 .switch {
+  /* display: none; */
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 1px;
   left: calc(100% - 553px);
   height: calc(100% - 2px);
-  width: 552px;
-  padding: 24px;
   z-index: 200;
   transition: 1.25s;
-  background: url('@/assets/back_transfer_switch.png') no-repeat;
+  background: url('@/assets/back_transfer_switch.png') no-repeat 100%;
   border-radius: 0 11px 11px 0;
+  background-size: cover;
 }
 
 .switch_button {
@@ -345,6 +337,13 @@ export default defineComponent({
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .switch {
+    left: 0;
+    height: 392px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :mask-closable="false" :block-scroll="false">
-    <div class="p-4 bg-[#ffffff30] rounded-xl w-[512px]">
+    <div class="p-4 bg-[#ffffff30] rounded-xl w-[512px]" style="-webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px)">
       <NCard style="width: 100%; border-radius: 6px; overflow: hidden; padding: 36px 24px" content-style="padding:0">
         <NButton class="absolute top-5 right-5" size="tiny" quaternary circle @click="onPressClose">
           <template #icon>
@@ -10,7 +10,7 @@
         <NSpace vertical align="center" :wrap-item="false" :size="[0, 16]">
           <NText class="text-[28px] leading-[28px] text-white">Connect wallet</NText>
           <NText class="text-[#C1C1C1] mb-3">Select a wallet you want to connect to EMC</NText>
-          <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
+          <NSpace class="w-full" align="center" justify="center" :wrap-item="false">
             <Content />
           </NSpace>
         </NSpace>

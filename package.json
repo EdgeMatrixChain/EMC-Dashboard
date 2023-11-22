@@ -28,6 +28,7 @@
     "@emcecosystem/auth-client": "^1.0.2",
     "@metamask/sdk": "^0.10.0",
     "@vicons/ionicons5": "^0.12.0",
+    "@vueuse/core": "^10.3.0",
     "axios": "^1.4.0",
     "copy-to-clipboard": "^3.3.3",
     "echarts": "^5.4.2",

@@ -1,11 +1,11 @@
 <template>
   <NSpin :show="show">
     <NLayout content-style="padding-top: 84px;">
-      <NLayoutHeader class="n-header">
+      <NLayoutHeader class="n-header bg-[#ffffff20] xl:bg-[#18181c]">
         <Header @isLoading="isLoading" />
       </NLayoutHeader>
 
-      <NLayoutContent content-style="width:1440px;margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
+      <NLayoutContent class="xl:w-[1440px]" style="margin: auto" content-style="margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
         <template v-if="ready">
           <router-view v-slot="{ Component, route }">
             <transition name="slide-fade">
@@ -78,5 +78,7 @@ export default defineComponent({
   top: 0;
   height: 84px;
   z-index: 99;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
 }
 </style>

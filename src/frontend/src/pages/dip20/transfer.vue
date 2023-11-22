@@ -1,30 +1,22 @@
 <template>
-  <NSpace class="w-full h-full px-12 bg-[#1a1c34]" vertical :wrap-item="false" align="center">
+  <NSpace class="w-full h-full px-4 xl:px-12 bg-[#1a1c34]" vertical :wrap-item="false" align="center">
     <template v-if="!principal">
-      <NSpace class="w-full h-full pt-[80px]" vertical :wrap-item="false" align="center" :size="[0, 48]">
-        <NText class="text-[40px] leading-[40px] font-bold text-white">Transfer Your EMC </NText>
-        <NText class="text-xl leading-5 text-white mt-3">Connect ICP Wallet</NText>
-        <NCard style="width: 100%; background-color: #1a1c34" :bordered="false" content-style="padding:0">
+      <div class="flex flex-col items-center w-full h-full pt-10 pb-5 xl:pt-[80px] xl:pb-0 gap-y-3 xl:gap-y-12">
+        <NText class="text-[20px] xl:text-[40px] leading-[20px] xl:leading-[40px] font-bold text-white">Transfer Your EMC </NText>
+        <NText class="xl:text-xl leading-5 text-white mt-0 mb-2 xl:mb-0 xl:mt-3">Connect ICP Wallet</NText>
+        <NCard class="max-w-lg" style="width: 100%; background-color: #1a1c34" :bordered="false" content-style="padding:0">
           <Content bgColor="#463a8e" />
         </NCard>
-        <!-- <NSpace class="w-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]">
-          <img class="w-11 h-11" src="@/assets/wallet_icp.png" alt="ICP" />
-          <NText class="text-[18px] leading-[18px] text-white">INTERNET IDENTITY</NText>
-        </NSpace>
-        <NSpace class="w-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]">
-          <img class="w-11 h-11" src="@/assets/wallet_plug.png" alt="Plug" />
-          <NText class="text-[18px] leading-[18px] text-white">Plug</NText>
-        </NSpace> -->
-      </NSpace>
+      </div>
     </template>
     <template v-else>
       <NSpin :show="initLoading">
-        <NSpace class="w-full h-full min-h-[646px] py-[82px]" vertical :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
+        <NSpace class="w-full h-full xl:min-h-[646px] pt-8 pb-5 xl:py-[80px]" vertical :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-            <NText class="text-[32px] leading-8 mb-10 font-bold text-white">Convert your DIP20 EMC</NText>
+            <NText class="text-[20px] leading-5 xl:text-[32px] xl:leading-8 mb-9 xl:mb-10 font-bold text-white">Convert your DIP20 EMC</NText>
             <NSpace class="w-full" :wrap-item="false" :size="[0, 32]">
-              <NSpace class="w-full px-4 py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
-                <NSpace align="center" :size="[14, 0]">
+              <NSpace class="w-full p-3 xl:px-4 xl:py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :wrap="false" :size="[20, 0]">
+                <NSpace class="h-8 xl:h-10" align="center" :wrap="false" :size="[14, 0]">
                   <NSpace class="min-w-[120px]">
                     <NSpace class="px-4 py-2 h-10 rounded-full bg-[#443C68]" justify="center" align="center">
                       <NText class="text-base text-white">Principal ID</NText>
@@ -32,11 +24,11 @@
                   </NSpace>
                   <NText class="text-white">{{ principalStr }}</NText>
                 </NSpace>
-                <NSpace align="center" :size="[12, 0]">
-                  <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnect" />
-                  <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
+                <NSpace align="center" :wrap="false" :size="[12, 0]">
+                  <img class="w-4 xl:w-5 h-4 xl:h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnect" />
+                  <NTooltip placement="top-end" trigger="click" :style="{ maxWidth: '350px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
                     <template #trigger>
-                      <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
+                      <img class="w-4 xl:w-6 h-4 xl:h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
                     </template>
                     <NText class="text-white">{{ principal }}</NText>
                   </NTooltip>
@@ -58,8 +50,8 @@
                   <NText class="text-white">{{ account }}</NText>
                 </NTooltip>
               </NSpace> -->
-              <NSpace class="w-full px-4 py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :size="[20, 0]">
-                <NSpace align="center" :size="[14, 0]">
+              <NSpace class="w-full p-3 xl:px-4 xl:py-[18px] rounded-lg bg-[#2A2C47]" justify="space-between" align="center" :wrap="false" :size="[20, 0]">
+                <NSpace class="h-8 xl:h-10" align="center" :wrap="false" :size="[14, 0]">
                   <NSpace class="min-w-[120px]">
                     <NSpace class="px-4 py-2 h-10 rounded-full bg-[#443C68]" justify="center" align="center">
                       <NText class="text-base text-white">Balance</NText>
@@ -68,8 +60,8 @@
                   <NText class="text-white">{{ `${balance} EMC` }} </NText>
                 </NSpace>
                 <NSpace align="center" :size="[14, 0]">
-                  <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
-                  <img class="w-7 h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
+                  <img class="w-4 h-4 xl:w-5 xl:h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
+                  <img class="w-6 h-6 xl:w-7 xl:h-7 bg-white rounded-full" src="@/assets/icon_coin_emc.png" />
                 </NSpace>
               </NSpace>
             </NSpace>
@@ -89,11 +81,18 @@
               </template> -->
             </NSpace>
           </NSpace>
-          <NSpace class="w-full h-full pt-8 flex-1" vertical align="center" justify="space-between">
+          <NSpace class="w-full h-full pt-5 xl:pt-8 xl:flex-1" vertical align="center" justify="space-between" :wrap-item="false">
             <template v-if="!ethPrincipal">
-              <NSpace class="px-4" align="center" justify="center" :size="[20, 8]">
-                <NSpace class="min-w-[360px] h-11 leading-11 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]" @click="onPressConnectETH">
-                  <img class="w-8 h-8" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
+              <NSpace class="text-center" vertical align="center" justify="center" :wrap-item="false" :size="[20, 8]">
+                <NSpace
+                  class="w-full xl:w-[360px] h-11 leading-11 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer"
+                  :wrap-item="false"
+                  justify="center"
+                  align="center"
+                  :size="[12, 0]"
+                  @click="onPressConnectETH"
+                >
+                  <img class="w-6 xl:w-8 h-6 xl:h-8" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
                   <NText class="text-white">MetaMask</NText>
                 </NSpace>
                 <NText class="text-xs" depth="3">Connect Metamask and Receive your EMC TOKEN on ARBITRUM</NText>
@@ -104,7 +103,7 @@
               </NSpace>
             </template>
             <template v-else>
-              <NSpace class="px-4" vertical align="center" :size="[0, 8]">
+              <NSpace vertical align="center" :size="[0, 8]">
                 <NSpace class="w-[362px] h-11 leading-11 px-4 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
                   <img class="w-6 h-6 bg-[#7065B1] rounded-full p-[2px]" src="@/assets/icon_arbitrum.svg" />
                   <NText class="text-white">{{ Utils.formatAddress(ethPrincipal, 11) }}</NText>
@@ -121,13 +120,11 @@
                 <NText class="text-xs" depth="3">{{ `You are expected to receive ${tokenAmount !== 0 ? tokenAmount?.toFixed(4) : '0'} ARB EMC TOKEN` }}</NText>
               </NSpace>
             </template>
-            <NSpace class="px-4" vertical align="center" :size="[0, 8]">
-              <NSpace class="relative w-[232px] h-10 leading-10 rounded bg-gradient-to-r from-[#2F82FF] to-[#BC3BFB] overflow-hidden cursor-pointer" justify="center" @click="onPressDeposit">
-                <NSpin :show="loading">
-                  <NText class="text-white">Transfer</NText>
-                  <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
-                </NSpin>
-              </NSpace>
+            <NSpace class="relative w-[232px] h-10 leading-10 mt-5 xl:mt-0 rounded bg-gradient-to-r from-[#2F82FF] to-[#BC3BFB] overflow-hidden cursor-pointer" justify="center" @click="onPressDeposit">
+              <NSpin :show="loading">
+                <NText class="text-white">Transfer</NText>
+                <!-- <img class="absolute inset-0" src="@/assets/icon_wallet_mask.png"  /> -->
+              </NSpin>
             </NSpace>
           </NSpace>
         </NSpace>
@@ -231,9 +228,9 @@ export default defineComponent({
     return {
       ethPrincipal: computed(() => ethUserStore.account0),
       principal: computed(() => userStore.icpPrincipal),
-      principalStr: computed(() => Utils.formatAddress(userStore.icpPrincipal, 11)),
+      principalStr: computed(() => Utils.formatAddress(userStore.icpPrincipal, 8)),
       account: computed(() => userStore.icpAccount),
-      accountStr: computed(() => Utils.formatAddress(userStore.icpAccount, 11)),
+      accountStr: computed(() => Utils.formatAddress(userStore.icpAccount, 8)),
 
       balance,
       // whiteListInfo,

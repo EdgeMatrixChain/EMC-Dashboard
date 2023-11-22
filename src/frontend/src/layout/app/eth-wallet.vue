@@ -1,5 +1,5 @@
 <template>
-  <NModal :show="visible" :block-scroll="false" :on-mask-click="onPressMask">
+  <NModal class="n-modal" :show="visible" :block-scroll="false" :on-mask-click="onPressMask">
     <div class="wallet-bgcolor">
       <div class="wallet-mask">
         <div class="wallet-mask-header"></div>
@@ -298,5 +298,11 @@ export default defineComponent({
   font-size: 12px;
   font-weight: 300;
   line-height: 12px;
+}
+@media screen and (max-width: 1280px) {
+  .n-modal {
+    left: 0;
+    right: 0;
+  }
 }
 </style>

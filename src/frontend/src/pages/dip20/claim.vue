@@ -1,13 +1,13 @@
 <template>
   <NSpace class="w-full h-full bg-[#1a1c34]" vertical :wrap-item="false" align="center">
     <template v-if="!ethPrincipal">
-      <NSpace class="w-full h-full pt-[80px] px-12" vertical :wrap-item="false" align="center" :size="[0, 48]">
-        <NText class="text-[40px] leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
-        <NText class="text-[20px] leading-[20px] text-white mt-3">Connect ICP Wallet</NText>
-        <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
+      <div class="flex flex-col items-center w-full h-full px-4 xl:px-12 pt-5 pb-[40px] xl:pt-[80px] gap-y-3 xl:gap-y-12">
+        <NText class="text-[20px] xl:text-[40px] leading-[20px] xl:leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
+        <NText class="xl:text-xl leading-5 text-white mt-0 mb-2 xl:mb-0 xl:mt-3">Connect ICP Wallet</NText>
+        <NSpace class="wallet-border max-w-lg w-full h-[56px] xl:h-[72px]" align="center" justify="center" :wrap-item="false">
           <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
-            <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
-            <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
+            <img class="w-9 h-9 xl:w-11 xl:h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
+            <NText class="xl:text-[18px] xl:leading-[18px] text-white">MetaMask</NText>
           </NSpace>
         </NSpace>
 
@@ -15,19 +15,19 @@
           <img class="w-11 h-11" src="@/assets/wallet_wallet_connect.png" alt="Wallet connect" />
           <NText class="text-[18px] leading-[18px] text-white">Wallet connect</NText>
         </NSpace> -->
-      </NSpace>
+      </div>
     </template>
     <template v-else>
-      <NSpace class="w-full h-full py-12 o" vertical :wrap-item="false" align="center">
+      <NSpace class="w-full h-full pt-10 xl:pt-[60px] pb-[40px]" vertical :wrap-item="false" align="center">
         <NSpin class="w-full h-full" :show="loading">
           <NSpace class="w-full h-full" vertical :wrap-item="false" align="center" :size="[0, 0]">
-            <NText class="mb-6 text-[32px] leading-[32px] font-bold text-white">To be Claimed</NText>
-            <NSpace class="w-[362px] h-10 px-4 mb-8 leading-10 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
+            <NText class="text-[20px] leading-5 xl:text-[32px] xl:leading-8 mb-4 xl:mb-10 font-bold text-white">To be Claimed</NText>
+            <NSpace class="w-[362px] h-10 px-4 mb-6 xl:mb-8 leading-10 rounded-lg bg-[#463A8E]" justify="space-between" align="center">
               <img class="w-6 h-6 bg-[#7065B1] rounded-full p-[2px]" src="@/assets/icon_arbitrum.svg" />
               <NText class="text-white">{{ ethPrincipalStr }}</NText>
               <NSpace align="center" :size="[12, 0]">
                 <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_unconnect.svg" @click="onPressUnConnectETH" />
-                <NTooltip placement="top-end" trigger="hover" :style="{ maxWidth: '400px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
+                <NTooltip placement="top-end" trigger="click" :style="{ maxWidth: '350px', borderRadius: '8px', background: '#5F51AE' }" :arrow-style="{ background: '#5F51AE' }">
                   <template #trigger>
                     <img class="w-6 h-6 cursor-pointer" src="@/assets/icon_view_all.svg" />
                   </template>
@@ -35,20 +35,20 @@
                 </NTooltip>
               </NSpace>
             </NSpace>
-            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[18px]" align="center" justify="space-between" :wrap-item="false" :size="[0, 0]">
-              <div class="flex-[0.4] text-white">Amount</div>
-              <div class="flex-[0.4] text-white">Status</div>
-              <NSpace class="flex-[0.2] text-white" :size="[36, 0]" justify="end" align="center">
+            <NSpace class="w-full h-[50px] px-8 bg-[#463A8E] text-[14px] xl:text-[18px]" align="center" justify="space-between" :wrap-item="false" :size="[0, 0]">
+              <div class="flex-[0.3] text-white">Amount</div>
+              <div class="flex-[0.45] text-white">Status</div>
+              <div class="flex-[0.25] text-white flex items-center justify-start gap-x-4 xl:gap-x-9">
                 <NText>Action</NText>
-                <img class="w-5 h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
-              </NSpace>
+                <img class="w-4 h-4 xl:w-5 xl:h-5 cursor-pointer" src="@/assets/icon_refresh.png" @click="onPressRefresh" />
+              </div>
             </NSpace>
-            <NSpace class="table w-full px-8" :wrap-item="false" :size="[0, 0]">
+            <NSpace class="table xl:overflow-auto w-full px-8 xl:max-h-[368px]" :wrap-item="false" :size="[0, 0]">
               <template v-for="(item, index) in orders" :key="item.id">
-                <NSpace class="w-full py-3 text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
-                  <NText class="flex-[0.4] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
-                  <NText class="flex-[0.4] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
-                  <div class="flex-[0.2] text-left">
+                <NSpace class="w-full py-3 text-[12px] xl:text-base border-b border-solid border-gray-500" :wrap-item="false" justify="space-between" align="center" :size="[0, 0]">
+                  <NText class="flex-[0.3] text-white">{{ Number(item.toAmount).toFixed(4) }}</NText>
+                  <NText class="flex-[0.45] text-white">{{ item.status ? (item.claimed ? orderStatus[0] : orderStatus[2]) : orderStatus[1] }}</NText>
+                  <div class="flex-[0.25] text-left">
                     <NButton class="w-[80px]" ghost :color="item.status && !item.claimed ? '#397EFF' : '#626273'" @click="onPressClaim(item, index)"> Claim </NButton>
                   </div>
                 </NSpace>
@@ -137,7 +137,7 @@ export default defineComponent({
       //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed' },
+        data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed', size: 100 },
       });
       const claimeds = new Map<number, any>();
       (resp1.data || []).forEach((item: any) => {
@@ -272,17 +272,11 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.table {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
 .table::-webkit-scrollbar {
   display: none;
 }
 .wallet-border {
   position: relative;
-  height: 72px;
   border-radius: 8px;
   background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1);
   background-size: 400%;

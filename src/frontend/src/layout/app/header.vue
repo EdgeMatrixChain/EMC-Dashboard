@@ -1,22 +1,23 @@
 <template>
-  <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false">
+  <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
     <NSpace class="header-cell">
       <RouterLink :to="{ path: '/' }">
         <img class="header-icon" />
       </RouterLink>
     </NSpace>
-    <NSpace class="header-cell" align="center" justify="space-between" :wrap-item="false" :wrap="false" :size="[40, 0]">
-      <NSpace class="header-tabs" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
-        <template v-for="item in tabs">
-          <RouterLink :to="{ path: item.path }" style="text-decoration: none; color: inherit">
-            <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-              <span class="header-tabs-item-text">{{ item.name }}</span>
-            </div>
-          </RouterLink>
-        </template>
-      </NSpace>
-
-      <NSelect style="min-width: 160px" v-model:value="selectValue" :options="options" :render-label="renderLabel" @update:value="handleUpdateValue" />
+    <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
+      <template v-if="!isTablet && !isMobile">
+        <NSpace class="header-tabs" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
+          <template v-for="item in tabs">
+            <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
+              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
+                <span class="header-tabs-item-text whitespace-nowrap">{{ item.label }}</span>
+              </div>
+            </RouterLink>
+          </template>
+        </NSpace>
+      </template>
+      <NSelect style="min-width: 134px" v-model:value="selectValue" :options="options" :render-label="renderLabel" @update:value="handleUpdateValue" :show-checkmark="false" />
       <template v-if="chainName === 'ICP'">
         <template v-if="principal">
           <div class="header-user" @click="onPressUserICP">
@@ -24,14 +25,14 @@
               <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
                 <div class="carousel-item">
                   {{ walletBalance.emcBalance }} EMC
-                  <div class="carousel-item-icon">
-                    <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                  <div class="carousel-item-icon xl:w-7 xl:h-7 w-5 h-5 hidden xl:flex">
+                    <img class="xl:w-4 xl:h-4 w-2 h-2" src="@/assets/icon_wallet.svg" />
                   </div>
                 </div>
                 <div class="carousel-item">
                   {{ walletBalance.icpBalance }} ICP
-                  <div class="carousel-item-icon">
-                    <img src="@/assets/icon_swap.svg" width="16" height="16" />
+                  <div class="carousel-item-icon xl:w-7 xl:h-7 w-5 h-5 hidden xl:flex">
+                    <img class="xl:w-4 xl:h-4 w-2 h-2" src="@/assets/icon_swap.svg" />
                   </div>
                 </div>
                 <div class="carousel-item">
@@ -61,7 +62,7 @@
               <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
                 <div class="carousel-item">
                   {{ EMCBalanceETH }} EMC
-                  <div class="carousel-item-icon">
+                  <div class="carousel-item-icon hidden xl:flex">
                     <img src="@/assets/icon_wallet.svg" width="16" height="16" />
                   </div>
                 </div>
@@ -82,16 +83,24 @@
           </div>
         </template>
       </template>
+      <template v-if="isTablet || isMobile">
+        <NDropdown :options="tabs" size="large" @select="onSelect" trigger="click">
+          <NButton type="default" circle strong quaternary size="large">
+            <template #icon>
+              <NIcon size="28"><IconMenu /></NIcon>
+            </template>
+          </NButton>
+        </NDropdown>
+      </template>
       <ICPConnectDialog v-model:visible="showConnect" />
       <ETHConnectDialog v-model:visible="showConnectETH" />
-    </NSpace>
+    </div>
   </NSpace>
 </template>
 <script lang="ts">
 import { ref, defineComponent, watch, h, onMounted, computed } from 'vue';
-import { NAvatar, NText, NSpin, NSpace, NCarousel, NSelect, SelectOption, SelectRenderTag, SelectRenderLabel, useMessage } from 'naive-ui';
-import { RouterLink } from 'vue-router';
-import { useRoute } from 'vue-router';
+import { NAvatar, NText, NSpin, NSpace, NCarousel, NSelect, SelectOption, SelectRenderTag, SelectRenderLabel, useMessage, NDropdown, NButton, NIcon } from 'naive-ui';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
 import { useETHUserStore } from '@/stores/eth-user';
@@ -99,31 +108,36 @@ import ICPWallet from './icp-wallet.vue';
 import ETHWallet from './eth-wallet.vue';
 import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import ETHConnectDialog from '@/components/eth-connect/dialog.vue';
+import { MenuSharp as IconMenu } from '@vicons/ionicons5';
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 type tabkey = number;
 
 type TabItem = {
   id: tabkey;
-  name: string;
-  path: string;
+  label: string;
+  key: string;
 };
 
 const tabConfigs: TabItem[] = [
-  { id: 1, name: 'Home', path: '/home' },
-  { id: 2, name: 'Node', path: '/nodes' },
+  { id: 1, label: 'Home', key: '/home' },
+  { id: 2, label: 'Node', key: '/nodes' },
+  { id: 3, label: 'Transfer token', key: '/dip20' },
+
   // { id: 3, name: 'Marketplace', path: '/market' },
 ];
 
 const initTabKey = -1;
 
 export default defineComponent({
-  components: { RouterLink, NSpin, NSpace, NCarousel, NSelect, ETHWallet, ICPWallet, NAvatar, NText, ICPConnectDialog, ETHConnectDialog },
+  components: { RouterLink, NSpin, NSpace, NCarousel, NSelect, ETHWallet, ICPWallet, NAvatar, NText, ICPConnectDialog, ETHConnectDialog, NDropdown, NButton, NIcon, IconMenu },
   emits: ['isLoading'],
   setup(props, context) {
     const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
     const userStore = useUserStore();
     const ethUserStore = useETHUserStore();
+    const router = useRouter();
 
     const currentTabKey = ref<tabkey>(initTabKey);
     const route = useRoute();
@@ -136,8 +150,14 @@ export default defineComponent({
       emcBalance: '',
       icpBalance: '',
     });
-
     const EMCBalanceETH = ref('-1');
+
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+
+    // props.config.forEach((item: TabItem) => {
+    //   options.push({ key: item.path, label:  });
+    // });
 
     const options: Array<SelectOption> = [
       {
@@ -193,7 +213,7 @@ export default defineComponent({
       watch(
         () => route.path,
         (path, oldVal) => {
-          const item = tabs.value.find((item) => item.path === path);
+          const item = tabs.value.find((item) => item.key === path);
           currentTabKey.value = item?.id || initTabKey;
         },
         { immediate: true }
@@ -263,6 +283,15 @@ export default defineComponent({
       selectValue: ref('ICP'),
       options,
       renderLabel,
+      onSelect(path: string) {
+        if (path.startsWith('http')) {
+          window.open(path);
+        } else {
+          router.push(path);
+        }
+      },
+      isMobile,
+      isTablet,
     };
   },
 });
@@ -272,9 +301,11 @@ export default defineComponent({
   --header-height: 84px;
   height: var(--header-height);
 }
+
 .header-cell {
   position: relative;
   padding: 0 32px;
+  flex-shrink: 0;
 }
 
 .header-icon {
@@ -304,11 +335,9 @@ export default defineComponent({
   justify-content: center;
 }
 .carousel-item-icon {
-  display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.2);
   filter: drop-shadow(0px 2px 4px rgba(37, 0, 54, 0.1));
@@ -372,6 +401,29 @@ export default defineComponent({
   .header-icon {
     /* content: url('@/assets/logo.light.png'); */
     content: url('@/assets/logo.png');
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .header-cell {
+    padding: 0 12px;
+  }
+
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    /* content: url('@/assets/logo.light.png'); */
+    content: url('@/assets/icon_coin_emc.png');
+  }
+
+  .header-user {
+    width: 102px;
+    height: 36px;
+  }
+  .header-user-text,
+  .carousel-item {
+    font-weight: normal;
+    font-size: 12px;
   }
 }
 </style>
