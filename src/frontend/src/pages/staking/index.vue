@@ -464,9 +464,9 @@ const daysList: dayItem[] = [
 ];
 const currentDay = ref<dayItem>(daysList[0]);
 
-// 0xd5C70C233e63bf1551A15E47f9cFb8259A53bF51 测试用
-// 0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea 正式网
-const emcContract = '0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea';
+// 0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea 测试用
+// 0x0B41968E3B98feFFF433cF780245D0A16C0a69fE 正式网
+const emcContract = '0x0B41968E3B98feFFF433cF780245D0A16C0a69fE';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
 // 周期
