@@ -2,7 +2,7 @@
   <div class="page">
     <div class="mask-bgcolor-left"></div>
     <div class="page-node">
-      <div class="page-search">
+      <div class="page-search w-full max-w-[960px]">
         <div class="page-search-icon">
           <img src="@/assets/icon_search.png" width="20" height="20" />
         </div>
@@ -19,23 +19,25 @@
         </div>
         <div class="node-list-table">
           <div class="node-list-theader">
-            <div class="node-list-theader-item">Node ID</div>
+            <div class="node-list-theader-item min-w-[80px]">Node ID</div>
             <div class="node-list-theader-item">Avg E-Power</div>
             <div class="node-list-theader-item">Today Reward</div>
-            <div class="node-list-theader-item">Last Update</div>
-            <div class="node-list-theader-item">Run Time</div>
+            <div class="node-list-theader-item hidden xl:block">Last Update</div>
+            <div class="node-list-theader-item hidden xl:block">Run Time</div>
           </div>
           <div class="node-list-body">
             <template v-if="nodeInfoList.length !== 0">
               <template v-for="(item, index) in nodeInfoList" :key="item._id">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item._id) }}</div>
-                    <div class="node-list-main-item">{{ item.avgPower == '0' || !item.avgPower ? '--' : item.avgPower }}</div>
-                    <div class="node-list-main-item">≈ {{ item.reward }}</div>
-                    <div class="node-list-main-item">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
+                    <div class="node-list-main-item min-w-[80px] text-[12px] xl:text-[14px]">{{ Utils.formatAddress(item._id, isDesktop ? 11 : 4) }}</div>
+                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower ? '--' : item.avgPower }}</div>
+                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div>
 
-                    <div class="node-list-main-item">{{ item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime) }}</div>
+                    <template v-if="isSmallDesktop || isDesktop">
+                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime) }}</div>
+                    </template>
                   </div>
                 </RouterLink>
               </template>
@@ -49,7 +51,7 @@
     </div>
     <!--v-model:page-size="pageSize" show-size-picker :page-sizes="[10]" -->
     <NSpace class="pagination" justify="center">
-      <NPagination v-model:page="page" :page-count="pageCount" @update:page="handlePageChange" size="large" />
+      <NPagination v-model:page="page" :page-count="pageCount" @update:page="handlePageChange" size="large" :page-slot="isDesktop ? 10 : 6" />
     </NSpace>
   </div>
 </template>
@@ -62,6 +64,7 @@ import { Utils } from '@/tools/utils';
 import { useRoute, useRouter } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 
 type NodeListItem = {
   _id: string;
@@ -95,6 +98,9 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const useReward = useRewardStore();
+    const isSmallDesktop = useIsSmallDesktop();
+    const isDesktop = useIsDesktop();
+
     const rewardData = ref<any[]>([]);
     const searchValue = ref('');
     onActivated(() => {
@@ -132,6 +138,8 @@ export default defineComponent({
 
     return {
       Utils,
+      isSmallDesktop,
+      isDesktop,
       moment,
       page,
       pageCount,
@@ -166,7 +174,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   display: flex;
-  width: 960px;
   height: 48px;
   margin: 32px auto;
   padding: 0 14px;
@@ -253,7 +260,6 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   color: #fff;
-  font-size: 14px;
   font-weight: 400;
   line-height: 56px;
   cursor: pointer;

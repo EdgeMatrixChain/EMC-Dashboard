@@ -3,11 +3,11 @@
     <!-- <div class="page-mask"></div> -->
     <div class="mask-bgcolor-left"></div>
     <div class="mask-bgcolor-center"></div>
-    <div class="card-body">
+    <NGrid class="card-body mb-14" x-gap="96" y-gap="48" cols=" 300:1 800:2 1392:3" item-responsive>
       <template v-for="(item, index) in dataInfo">
-        <div class="card-body-item">
+        <NGridItem class="card-body-item">
           <template v-if="item.data !== ''">
-            <NSpace class="card-item-info" :vertical="true">
+            <NSpace class="card-item-info" vertical justify="space-between">
               <div class="card-item-title">
                 <span>{{ item.name }}</span>
               </div>
@@ -24,9 +24,9 @@
           <template v-else>
             <NSpin size="small" />
           </template>
-        </div>
+        </NGridItem>
       </template>
-    </div>
+    </NGrid>
     <div class="map-body">
       <WorldMap></WorldMap>
     </div>
@@ -58,8 +58,8 @@
         </template>
       </div>
     </div> -->
-    <div class="data-body">
-      <div class="node-list">
+    <NGrid class="data-body" x-gap="56" y-gap="48" cols=" 300:1  1392:2">
+      <NGridItem class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
         </div>
@@ -77,7 +77,7 @@
               <template v-for="(item, index) in nodeList" :key="item.nodeID">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID, isDesktop ? 11 : 4) }}</div>
                     <div class="node-list-main-item">{{ item.reward }}</div>
                   </div>
                 </RouterLink>
@@ -88,8 +88,8 @@
             </template>
           </div>
         </div>
-      </div>
-      <div class="node-list">
+      </NGridItem>
+      <NGridItem class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
         </div>
@@ -107,7 +107,7 @@
               <template v-for="(item, index) in nodeList1" :key="item.nodeID">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID) }}</div>
+                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID, isDesktop ? 11 : 4) }}</div>
                     <div class="node-list-main-item">{{ item.reward }}</div>
                   </div>
                 </RouterLink>
@@ -118,9 +118,9 @@
             </template>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- <div class="models-body">
+      </NGridItem>
+    </NGrid>
+    <!-- <div class="models-body"> 
       <div class="models-body-header">
         <span class="models-body-header-span">Featured Models</span>
         <div class="models-body-header-explore">
@@ -138,8 +138,9 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, computed, onUnmounted, defineComponent, nextTick } from 'vue';
-import { NPopover, NSpin, NSpace } from 'naive-ui';
+import { ref, onMounted, defineComponent } from 'vue';
+import { NPopover, NSpin, NSpace, NGrid, NGridItem } from 'naive-ui';
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 import WorldMap from '@/components/world-map/index.vue';
 import ModelsItem from '@/components/models-item.vue';
 import axios from 'axios';
@@ -167,8 +168,6 @@ type DataInfoItem = {
   tips: string;
 };
 
-const http = Http.getInstance();
-
 export default defineComponent({
   components: {
     WorldMap,
@@ -176,9 +175,14 @@ export default defineComponent({
     NPopover,
     NSpace,
     NSpin,
+    NGrid,
+    NGridItem,
   },
 
   setup() {
+    const http = Http.getInstance();
+    const isSmallDesktop = useIsSmallDesktop();
+    const isDesktop = useIsDesktop();
     const blockData = ref('');
     const transactionsData = ref('');
     const nodeList = ref<NodeListItem[]>([]);
@@ -200,7 +204,6 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-
       const endpoints = ['https://api.edgematrix.pro/api/v1/blocks', 'https://api.edgematrix.pro/api/v1/dip20transactions', 'https://api.edgematrix.pro/api/v1/nodes', 'https://api.edgematrix.pro/api/v1/nodestatsnapshot'];
       endpoints.forEach(async (item, index) => {
         const data = await fetchAndFormatData(item);
@@ -252,6 +255,8 @@ export default defineComponent({
 
     return {
       Utils,
+      isSmallDesktop,
+      isDesktop,
       blockData,
       transactionsData,
       nodeList,
@@ -287,33 +292,23 @@ export default defineComponent({
   filter: blur(50px);
 }
 
-.card-body {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 56px 0;
-  border-radius: 20px;
-}
-
 .card-body-item {
   position: relative;
-  width: calc(((100% - 92px * 2) / 3));
+  width: 100%;
+  /* width: calc(((100% - 92px * 2) / 3)); */
   height: 180px;
-  margin-right: 92px;
-  margin-bottom: 48px;
   border-radius: 10px;
   border: 1px solid #676767;
   background: linear-gradient(180deg, #292929 0%, #121212 64.06%, #000 100%);
   overflow: hidden;
   box-sizing: border-box;
 }
-.card-body-item:nth-child(3n) {
+/* .card-body-item:nth-child(3n) {
   margin-right: 0;
-}
+} */
 .card-item-info {
   position: absolute;
-  padding: 32px 24px;
+  padding: 32px 24px 16px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -331,13 +326,13 @@ export default defineComponent({
 .card-item-data {
   height: 36px;
   line-height: 36px;
-  margin: 24px 0 16px;
+  /* margin: 16px 0 12px; */
 }
 .card-item-footer {
   color: #f2d6ff;
   font-size: 14px;
   font-weight: 300;
-  line-height: 14px;
+  line-height: 20px;
 }
 .card-body-item-bg-small {
   position: absolute;
@@ -476,10 +471,10 @@ export default defineComponent({
 }
 
 .node-list {
-  flex: 0.475;
+  /* flex: 0.475; */
   /* width: 880px; */
-  width: 0;
-  height: 456px;
+  /* width: 0; */
+  min-height: 456px;
   padding: 24px 20px 0;
   border-radius: 15px;
   background: linear-gradient(169deg, #201e43 0%, rgba(32, 30, 67, 0.6) 100%);

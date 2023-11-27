@@ -1,42 +1,42 @@
 <template>
   <div class="page">
-    <div class="main">
-      <div class="node-detail">
+    <NGrid class="main pt-4 mb-10" x-gap="96" y-gap="48" cols="1 1200:2 " item-responsive>
+      <NGridItem class="node-detail">
         <div class="main-header">Node Details</div>
         <div class="main-bgcolor" style="border-left-color: #8f7df8">
           <div class="main-table">
             <template v-for="item in nodeList">
               <div class="main-table-item">
-                <div class="main-table-item-name" style="flex: 0.25">
+                <div class="main-table-item-name min-w-[128px] xl:min-w-[200px]">
                   <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
-                <div class="main-table-item-info" style="flex: 0.75">
-                  <NEllipsis class="main-table-item-info-span" style="max-width: 400px"> {{ item.info }} </NEllipsis>
+                <div class="main-table-item-info">
+                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{ item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
           </div>
         </div>
-      </div>
-      <div class="node-detail">
+      </NGridItem>
+      <NGridItem class="node-detail">
         <div class="main-header">Node Details</div>
         <div class="main-bgcolor" style="border-left-color: #5554fe">
           <div class="main-table">
             <template v-for="(item, index) in infoList">
               <div class="main-table-item">
-                <div class="main-table-item-name" style="flex: 0.35">
+                <div class="main-table-item-name min-w-[128px] xl:min-w-[200px]">
                   <img class="main-table-item-icon" :src="item.icon" />
-                  <span class="main-table-item-name-span">{{ item.name }} :</span>
+                  <span class="main-table-item-name-span text-[12px] xl:text-[18px]">{{ item.name }} :</span>
                 </div>
-                <div class="main-table-item-info" style="flex: 0.65">
-                  <NEllipsis class="main-table-item-info-span" style="max-width: 400px"> {{ item.info }} </NEllipsis>
+                <div class="main-table-item-info">
+                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{ item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
           </div>
         </div>
-      </div>
-    </div>
+      </NGridItem>
+    </NGrid>
     <template v-if="modelList.length !== 0">
       <div class="main-header">Deployed Application——Stable diffusion</div>
       <div class="deployed-bgcolor">
@@ -60,7 +60,7 @@
 import { ref, defineComponent, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
-import { NDatePicker, NEllipsis } from 'naive-ui';
+import { NDatePicker, NEllipsis, NGrid, NGridItem } from 'naive-ui';
 import { useRewardStore } from '@/stores/reward';
 
 import moment from 'moment';
@@ -83,6 +83,8 @@ export default defineComponent({
     ModelsItem,
     NDatePicker,
     NEllipsis,
+    NGrid,
+    NGridItem,
   },
   setup() {
     const router = useRouter();
@@ -229,23 +231,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 16px;
-  margin-bottom: 40px;
-}
 .main-header {
   margin-bottom: 24px;
   font-weight: 400;
   font-size: 20px;
-  line-height: 20px;
+  line-height: 28px;
   color: #fff;
   text-shadow: 0px 2px 8px #762db6;
 }
 .node-detail {
-  width: calc(50% - 56px);
+  width: 100%;
+  /* width: calc(50% - 56px); */
 }
 .main-bgcolor {
   width: 100%;
@@ -277,7 +273,7 @@ export default defineComponent({
 .main-table-item-name {
   display: flex;
   align-items: center;
-  width: 0;
+  /* width: 0; */
 }
 .main-table-item-icon {
   width: 24px;
@@ -287,14 +283,12 @@ export default defineComponent({
 
 .main-table-item-name-span {
   color: #a6b6d1;
-  font-size: 18px;
   font-weight: 400;
   line-height: 62px;
 }
 
 .main-table-item-info-span {
   color: #fff;
-  font-size: 16px;
   font-weight: 400;
   line-height: 62px;
 }
