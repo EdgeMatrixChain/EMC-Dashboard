@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
+    // "noImplicitAny": false,
     "paths": {
       "@/*": ["./src/frontend/src/*"]
     }
