@@ -13,21 +13,21 @@
         <div
           class="flex flex-col items-center justify-center relative pb-[32px] mb-[32px] md:pb-[0] md:mb-[0] md:pr-[100px] after:bg-white/20 after:absolute after:bottom-0 md:after:bottom-auto md:after:right-[50px] after:content-[''] after:flex md:after:w-[1px] after:w-[40px] md:after:h-[40px] after:h-[1px]"
         >
-          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">25,349.239</p>
+          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.totalStaked || '-----' }}</p>
           <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL EMC STAKED</em>
         </div>
         <div
           class="flex flex-col items-center justify-center relative pb-[32px] mb-[32px] md:pb-[0] md:mb-[0] md:pr-[100px] after:bg-white/20 after:absolute after:bottom-0 md:after:bottom-auto md:after:right-[50px] after:content-[''] after:flex md:after:w-[1px] after:w-[40px] md:after:h-[40px] after:h-[1px]"
         >
-          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">864,769</p>
-          <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL VALIDATORS</em>
+          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.earnings || '-----' }}</p>
+          <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL EARNING</em>
         </div>
-        <div
+        <!-- <div
           class="flex flex-col items-center justify-center relative pb-[32px] mb-[32px] md:pb-[0] md:mb-[0] md:pr-[100px] after:bg-white/20 after:absolute after:bottom-0 md:after:bottom-auto md:after:right-[50px] after:content-[''] after:flex md:after:w-[1px] after:w-[40px] md:after:h-[40px] after:h-[1px]"
         >
           <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">874,490</p>
           <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">Volume in circulation</em>
-        </div>
+        </div> -->
         <div class="flex flex-col items-center justify-center">
           <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">2.7%~7.1%</p>
           <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">APR</em>
@@ -38,7 +38,13 @@
 </template>
 
 <script lang="ts" setup>
+import { defineProps } from 'vue';
 import Bg from './bg.vue';
+
+const props = defineProps({
+  earnings: Number,
+  totalStaked: Number,
+});
 </script>
 
 <style scoped></style>

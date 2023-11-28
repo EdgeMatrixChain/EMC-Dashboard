@@ -33,6 +33,12 @@ export class EMCApi extends Api {
     });
   }
 
+  async permanentTotal() {
+    return super.call({
+      method: 'permanentTotal',
+    });
+  }
+
   async createVestingSchedule({ account, start, cycleUnit, amount }: VestingScheduleOption) {
     return super.call({
       method: 'createVestingSchedule',
