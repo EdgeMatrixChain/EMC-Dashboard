@@ -66,7 +66,7 @@ export default defineComponent({
   border-color: #282250;
 }
 .wallet-content {
-  border-radius: 6px;
+  border-radius: 5px;
   padding: 10px;
 }
 

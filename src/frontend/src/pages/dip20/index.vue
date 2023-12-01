@@ -141,8 +141,8 @@ export default defineComponent({
 .page {
   width: 100%;
   /* height: calc(100vh - 132px); */
-  /* min-height: 100vh; */
-  overflow: scroll;
+  /* min-height: 101vh; */
+  overflow: auto;
 }
 .main {
   background: linear-gradient(0deg, #9b51e050 0%, #9b51e0 100%);

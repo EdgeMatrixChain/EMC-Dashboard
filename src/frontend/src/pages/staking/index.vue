@@ -364,7 +364,9 @@ import { useRoute } from 'vue-router';
 import { NPopover, NInputNumber, NDatePicker, NModal, NCard, useMessage } from 'naive-ui';
 import Star from './components/star.vue';
 import Ask from './components/ask.vue';
-import Header from './components/header.vue';
+// import Header from './components/header.vue';
+import Header from '@/layout/app/header.vue';
+
 import Banner from './components/banner.vue';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';

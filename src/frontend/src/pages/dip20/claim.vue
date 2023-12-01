@@ -3,7 +3,7 @@
     <template v-if="!ethPrincipal">
       <div class="flex flex-col items-center w-full h-full px-4 xl:px-12 pt-5 pb-[40px] xl:pt-[80px] gap-y-3 xl:gap-y-12">
         <NText class="text-[20px] xl:text-[40px] leading-[20px] xl:leading-[40px] font-bold text-white">Claim Your ARB EMC!</NText>
-        <NText class="xl:text-xl leading-5 text-white mt-0 mb-2 xl:mb-0 xl:mt-3">Connect ICP Wallet</NText>
+        <NText class="xl:text-xl leading-5 text-white mt-0 mb-2 xl:mb-0 xl:mt-3">Connect Arbitrum</NText>
         <NSpace class="wallet-border max-w-lg w-full h-[56px] xl:h-[72px]" align="center" justify="center" :wrap-item="false">
           <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
             <img class="w-9 h-9 xl:w-11 xl:h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
@@ -117,6 +117,8 @@ export default defineComponent({
     const apiManager = ApiManager.getInstance();
     const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9' });
 
+    const pageNo = ref(1);
+    const pageSize = ref(999);
     const loading = ref(false);
     const orders = ref<Array<Order>>([]);
     const depositOrders = ref<Array<DepositOrder>>([]);
@@ -134,11 +136,13 @@ export default defineComponent({
       (resp.data || []).forEach((item: any) => {
         convertOrders.set(item.id, item);
       });
+
       //ALL  Claimed
       const resp1 = await http.get({
         url: 'https://api.edgematrix.pro/api/v1/event/query',
-        data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed', size: 100 },
+        data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed', page: pageNo.value, size: pageSize.value },
       });
+
       const claimeds = new Map<number, any>();
       (resp1.data || []).forEach((item: any) => {
         claimeds.set(Number(item.index), item);
@@ -170,6 +174,7 @@ export default defineComponent({
       });
       console.info(_orders);
       orders.value = _orders;
+
       // rawData.map((item: any) => {
       //   // item.owner.toString() === userStore.icpPrincipal &&
       //   if (item.to === ethUserStore.account0) {
