@@ -40,16 +40,13 @@
     <template v-if="modelList.length !== 0">
       <div class="main-header">Deployed Application——Stable diffusion</div>
       <div class="deployed-bgcolor">
-        <template v-for="item in modelList">
-          <template v-if="modelName === item.model_name" :key="item.hash">
-            <ModelsItem class="mode-item" :item="item" :modelName="modelName" :nodeID="nodeId" />
+        <NGrid x-gap="24" y-gap="24" cols="1356:4 1037:3 718:2 399:1" item-responsive>
+          <template v-for="item in modelList">
+            <NGridItem>
+              <ModelsItem class="mode-item" :item="item" />
+            </NGridItem>
           </template>
-        </template>
-        <template v-for="item in modelList">
-          <template v-if="modelName !== item.model_name" :key="item.hash">
-            <ModelsItem class="mode-item" :item="item" />
-          </template>
-        </template>
+        </NGrid>
       </div>
     </template>
     <template v-else> </template>
@@ -57,16 +54,16 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, computed, watch } from 'vue';
+import { ref, defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { NDatePicker, NEllipsis, NGrid, NGridItem } from 'naive-ui';
 import { useRewardStore } from '@/stores/reward';
-
 import moment from 'moment';
-
 import axios from 'axios';
+
 import ModelsItem from '@/components/models-item.vue';
+
 import iconCpu from '@/assets/icon_cpu.svg';
 import iconGpu from '@/assets/icon_gpu.svg';
 import iconIP from '@/assets/icon_ip.png';
@@ -76,6 +73,12 @@ import iconModel from '@/assets/icon_model.png';
 type ModelItem = {
   hash: string;
   model_name: string;
+  model_sn: string;
+  config: string;
+  filename: string;
+  sha256: string;
+  title: string;
+  cover: string;
 };
 
 export default defineComponent({
@@ -89,128 +92,132 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const useReward = useRewardStore();
-    const modelName = ref('');
-    const nodeinfo = ref({});
 
-    const nodeList = ref([
-      { name: 'Node ID', info: '--' },
-      { name: 'Startup Time', info: '--' },
-      { name: 'Run Time', info: '--' },
-      { name: 'Reward', info: '--' },
-      { name: 'AvgPower', info: '--' },
-    ]);
-
-    const infoList = ref([
-      { name: 'CPU', icon: iconCpu, info: '--' },
-      { name: 'Mac Address', icon: iconGpu, info: '--' },
-      { name: 'IP Address', icon: iconIP, info: '--' },
-      { name: 'Memory', icon: iconMemory, info: '--' },
-      { name: 'Model Name', icon: iconModel, info: '--' },
-    ]);
+    const nodeId: string = router.currentRoute.value.params.id as string;
 
     const modelList = ref<ModelItem[]>([]);
-    const nodeId: any = ref(router.currentRoute.value.params.id);
-    onMounted(async () => {
-      axios
-        .get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
-          params: { nodeid: nodeId.value },
-        })
-        .then((resp) => {
-          const data = resp.data;
-          if (data._result !== 0) return;
-          const dataInfo = data?.data;
-          if (Object.keys(dataInfo).length !== 0) {
-            dataInfoFunction(data.data);
-          } else {
-            axios
-              .get('https://api.edgematrix.pro/api/v1/nodeinfo', {
-                params: { nodeid: nodeId.value },
-              })
-              .then((resp) => {
-                const data = resp.data;
-                if (data._result !== 0) return;
-                dataInfoFunction(data.data);
-              });
-          }
-        });
+    const nodeList = ref([
+      { name: 'Node ID', key: 'nodeId', info: '--' },
+      { name: 'Startup Time', key: 'startTime', info: '--' },
+      { name: 'Run Time', key: 'runTime', info: '--' },
+      { name: 'Reward', key: 'reward', info: '--' },
+      { name: 'AvgPower', key: 'avgPower', info: '--' },
+    ]);
+    const infoList = ref([
+      { name: 'CPU', key: 'cpu', icon: iconCpu, info: '--' },
+      { name: 'Mac Address', key: 'mac', icon: iconGpu, info: '--' },
+      { name: 'IP Address', key: 'ip', icon: iconIP, info: '--' },
+      { name: 'Memory', key: 'memory', icon: iconMemory, info: '--' },
+      { name: 'Model Name', key: 'modelName', icon: iconModel, info: '--' },
+    ]);
 
-      // ---------
-      const dataInfoFunction = (data: any) => {
-        nodeList.value.findIndex((item) => {
-          if (item.name === 'Node ID') {
-            if (!data._id) return;
-            item.info = Utils.formatAddress(data._id);
-          } else if (item.name === 'Startup Time') {
-            if (!data.startupTime) return;
-            item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
-          } else if (item.name === 'Run Time') {
-            if (data.startupTime === data.runTime) return;
-            item.info = Utils.formatDate(data.runTime);
-          } else if (item.name === 'Reward') {
-            reward();
-          } else if (item.name === 'AvgPower') {
-            if (!data.avgPower) return;
-            if (data.avgPower !== 0) {
-              item.info = data.avgPower;
-            } else {
-              item.info = '--';
-            }
-          }
-        });
-        infoList.value.findIndex((item) => {
-          if (item.name === 'CPU') {
-            if (data.cpuInfo) {
-              item.info = JSON.parse(data.cpuInfo).ModelName;
-            }
-          } else if (item.name === 'IP Address') {
-            if (!data.ipInfo) return;
-            if (Object.keys(data.ipInfo).length === 0) return;
-
-            item.info = data.ipInfo.ipAddr;
-          } else if (item.name === 'Mac Address') {
-            if (!data.macAddr) return;
-            item.info = data.macAddr;
-          } else if (item.name === 'Memory') {
-            if (!data.memoryInfo) return;
-            const formatMemory = JSON.parse(data.memoryInfo);
-            item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
-          } else if (item.name === 'Model Name') {
-            axios
-              .get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
-                params: { nodeid: nodeId.value },
-              })
-              .then((resp) => {
-                const data1 = resp.data;
-                if (data1._result !== 0 || data1.data === '') return;
-                const dataList = JSON.parse(data1.data);
-                if (typeof dataList !== 'object') return;
-                if (dataList && dataList.detail !== 'Not Found') {
-                  modelList.value = dataList;
-                }
-                if (modelList.value.length === 0 || !data.appSpec) return;
-                const findObject = modelList.value.find((item) => item.hash === data.appSpec);
-                if (findObject) {
-                  item.info = findObject.model_name;
-                  modelName.value = findObject.model_name;
-                } else {
-                  item.info = '--';
-                }
-              });
-          }
-        });
-      };
+    onMounted(() => {
+      init(nodeId);
     });
 
-    const reward = async () => {
+    const init = async (nodeId: string) => {
+      const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
+        params: { nodeid: nodeId },
+      });
+      if (resp.data._result !== 0) return;
+      const nodeinfosnapshot = resp.data.data;
+      if (Object.keys(nodeinfosnapshot).length !== 0) {
+        dataInfoFunction(nodeinfosnapshot, nodeId);
+        return;
+      }
+
+      const resp1 = await axios.get('https://api.edgematrix.pro/api/v1/nodeinfo', {
+        params: { nodeid: nodeId },
+      });
+      if (resp1.data._result !== 0) return;
+      dataInfoFunction(resp1.data.data, nodeId);
+    };
+
+    const dataInfoFunction = (data: any, nodeId: string) => {
+      nodeList.value.forEach((item) => {
+        if (item.key === 'nodeId') {
+          if (!data._id) return;
+          item.info = Utils.formatAddress(data._id);
+        } else if (item.key === 'startTime') {
+          if (!data.startupTime) return;
+          item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
+        } else if (item.key === 'runTime') {
+          if (data.startupTime === data.runTime) return;
+          item.info = Utils.formatDate(data.runTime);
+        } else if (item.key === 'reward') {
+          reward(nodeId);
+        } else if (item.key === 'avgPower') {
+          if (!data.avgPower) return;
+          item.info = data.avgPower;
+        }
+      });
+
+      infoList.value.forEach(async (item) => {
+        if (item.key === 'cpu') {
+          if (data.cpuInfo) {
+            item.info = JSON.parse(data.cpuInfo).ModelName;
+          }
+        } else if (item.key === 'mac') {
+          if (!data.macAddr) return;
+          item.info = data.macAddr;
+        } else if (item.key === 'ip') {
+          if (!data.ipInfo) return;
+          if (Object.keys(data.ipInfo).length === 0) return;
+          item.info = data.ipInfo.ipAddr;
+        } else if (item.key === 'memory') {
+          if (!data.memoryInfo) return;
+          const formatMemory = JSON.parse(data.memoryInfo);
+          item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
+        } else if (item.key === 'modelName') {
+          const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
+            params: { nodeid: nodeId },
+          });
+          const modelsData = resp.data;
+          if (modelsData._result !== 0 || modelsData.data === '') return;
+          modelList.value = JSON.parse(modelsData.data) || [];
+
+          const comparator = (a: any, b: any) => {
+            const aSha256 = Boolean(a.sha256);
+            const bSha256 = Boolean(b.sha256);
+
+            if (aSha256 && !bSha256) {
+              return -1;
+            } else if (!aSha256 && bSha256) {
+              return 1;
+            } else {
+              return 0;
+            }
+          };
+
+          modelList.value.sort(comparator);
+
+          const resp1 = await axios.get('https://client.emchub.ai/emchub/api/client/modelInfo/queryList', {
+            params: { pageNo: 1, pageSize: 99 },
+          });
+          const modelAllList = resp1.data.pageInfo?.list;
+
+          modelList.value.forEach((modelItem: ModelItem) => {
+            if (!modelItem.sha256) return;
+            const resp = modelAllList.find((modelItemAllItems: any) => modelItem.sha256 === modelItemAllItems.modelVersions[0].hashCodeSha256);
+            console.log(resp);
+            if (!resp) return;
+            const previewPicturesUrl = JSON.parse(resp.modelVersions[0].previewPicturesUrl)[0] || [];
+            modelItem.cover = previewPicturesUrl.url;
+            modelItem.model_name = resp.modelName;
+            modelItem.model_sn = resp.modelSn;
+            item.info = modelItem.model_name;
+          });
+          console.log(modelList.value);
+        }
+      });
+    };
+
+    const reward = async (nodeId: string) => {
       const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
       const localList = Utils.getLocalStorage('icp.reward.list')?.list || [];
-
       if (localList.length === 0) return;
-
-      const reward = localList.find((item: any) => item.nodeID === nodeId.value);
-
+      const reward = localList.find((item: any) => item.nodeID === nodeId);
       if (!reward) return;
-
       if (reward.reward !== '0') {
         nodeList.value[3].info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
       } else {
@@ -219,18 +226,19 @@ export default defineComponent({
     };
 
     return {
-      Utils,
-      nodeId,
       nodeList,
       infoList,
       modelList,
-      modelName,
     };
   },
 });
 </script>
 
 <style scoped>
+.page {
+  width: 100%;
+  min-height: 101vh;
+}
 .main-header {
   margin-bottom: 24px;
   font-weight: 400;
@@ -299,7 +307,7 @@ export default defineComponent({
   justify-content: flex-start;
   flex-wrap: wrap;
   width: 100%;
-  padding: 24px 16px 0px 10px;
+  padding: 16px;
   background-color: #1c2025;
   backdrop-filter: blur(60px);
   border-radius: 12px;
@@ -309,12 +317,7 @@ export default defineComponent({
 }
 
 .mode-item {
-  margin-right: 50px;
-  margin-bottom: 36px;
   border: 1px solid #464646;
   background-color: #191d22;
-}
-.mode-item:nth-child(4n) {
-  margin-right: 0px;
 }
 </style>

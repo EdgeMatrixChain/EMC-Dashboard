@@ -1,25 +1,22 @@
 <template>
-  <div class="models-card" id="card" ref="card">
-    <template v-if="!item.hash">
-      <img src="@/assets/icon_not_image.png" width="240" height="240" />
+  <div class="models-card" :style="{ background: item.background }">
+    <template v-if="item.cover">
+      <img :src="item.cover" style="width: 100%; height: 100%; object-fit: cover" />
     </template>
     <template v-else>
       <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
-    <div class="models-card-info">
+    <!-- <div class="models-card-info">
       <div class="models-card-title">{{ item.model_name }}</div>
-      <!-- <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
-        <div class="models-card-owner">
-          <img
-            class="models-card-owner-avtatr"
-            src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"
-          />
-          <div class="models-card-owner-name">Hery</div>
-        </div> -->
-    </div>
+      <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
+      <div class="models-card-owner">
+        <img class="models-card-owner-avtatr" src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"/>
+        <div class="models-card-owner-name">Hery</div>
+      </div>
+    </div> -->
     <!-- <div class="models-card-type"><span class="models-card-type-span">LORA</span></div> -->
-    <template v-if="modelName === item.model_name">
-      <a :href="'https://6tq33-2iaaa-aaaap-qbhpa-cai.icp0.io/#/txt2img?nodeid=' + nodeID" target="_blank">
+    <template v-if="item.sha256">
+      <a :href="`https://emchub.ai/#/models/${item.model_sn}`" target="_blank">
         <div class="models-card-run">
           <img class="models-card-run-image" src="@/assets/icon_run.svg" />
           <span class="models-card-type-span">RUN</span>
@@ -30,44 +27,36 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, watch, nextTick } from 'vue';
+import { ref, defineComponent, watch } from 'vue';
 export default defineComponent({
   props: {
     item: { type: Object, default: {} },
-    modelName: { type: String, default: '' },
-    nodeID: { type: String, default: '' },
   },
-
-  /* background: linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%); */
 
   setup(props) {
     const item = ref(props.item);
-    const modelName = ref(props.modelName);
-    const nodeID = ref(props.nodeID);
-    onMounted(() => {
-      const random = Math.floor(Math.random() * 3);
-      nextTick(() => {
-        // const card = ref<any>(null);
-        const card: HTMLElement | null = document.getElementById('card');
-
+    watch(
+      () => props.item,
+      (val, oldVal) => {
+        const random = Math.floor(Math.random() * 3);
         const list = [
           'linear-gradient(180deg, rgba(24, 15, 122, 0.28) 0%, rgba(134, 28, 185, 0.28) 100%)',
           'linear-gradient(180deg, rgba(15, 71, 122, 0.28) 0%, rgba(85, 43, 71, 0.28) 100%)',
           'linear-gradient(180deg, rgba(122, 15, 105, 0.28) 0%, rgba(105, 83, 50, 0.28) 100',
         ];
-        if (!card) return;
-        card.style.background = list[random];
-      });
-    });
+        val.background = list[random];
+      },
+      { immediate: true }
+    );
 
-    return { item, modelName, nodeID };
+    return { item };
   },
 });
 </script>
 <style scoped>
 .models-card {
   position: relative;
-  width: 300px;
+  width: 100%;
   height: 400px;
   border-radius: 6px;
   display: flex;
