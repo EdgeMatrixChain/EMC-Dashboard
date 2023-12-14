@@ -1,5 +1,5 @@
 <template>
-  <div class="models-card" :style="{ background: item.background }">
+  <div class="models-card" :style="{ background: item.background }" @click="onPressItem(item)">
     <template v-if="item.cover">
       <img :src="item.cover" style="width: 100%; height: 100%; object-fit: cover" />
     </template>
@@ -18,19 +18,21 @@
       </div> -->
     </div>
     <!-- <div class="models-card-type"><span class="models-card-type-span">LORA</span></div> -->
-    <template v-if="item.sha256">
-      <a :href="`https://emchub.ai/#/models/${item.model_sn}`" target="_blank">
-        <div class="models-card-run">
+    <!-- <template v-if="item.sha256"> -->
+    <!-- <a :href="`https://emchub.ai/#/models/${item.model_sn}`" target="_blank"> -->
+    <!-- <div class="models-card-run">
           <img class="models-card-run-image" src="@/assets/icon_run.svg" />
           <span class="models-card-type-span">RUN</span>
-        </div>
-      </a>
-    </template>
+        </div> -->
+    <!-- </a> -->
+    <!-- </template> -->
   </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, watch } from 'vue';
+import { useMessage } from 'naive-ui';
+
 export default defineComponent({
   props: {
     item: { type: Object, default: {} },
@@ -38,6 +40,16 @@ export default defineComponent({
 
   setup(props) {
     const item = ref(props.item);
+    const message = useMessage();
+
+    const onPressItem = (item: any) => {
+      if (!item.model_sn) {
+        message.warning('The model cannot be run');
+        return;
+      }
+      window.open(`https://emchub.ai/#/models/${item.model_sn}`, '_blank');
+    };
+
     watch(
       () => props.item,
       (val, oldVal) => {
@@ -54,7 +66,7 @@ export default defineComponent({
       { immediate: true }
     );
 
-    return { item };
+    return { item, onPressItem };
   },
 });
 </script>
@@ -68,6 +80,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .models-card-info {

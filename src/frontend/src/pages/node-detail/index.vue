@@ -182,10 +182,10 @@ export default defineComponent({
           const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
             params: { nodeid: nodeId },
           });
-          isLoading.value = false;
           const modelsData = resp.data;
           if (modelsData._result !== 0 || modelsData.data === '') return;
           const models = JSON.parse(modelsData.data);
+          isLoading.value = false;
 
           if (typeof models !== 'object' || !models.length) {
             modelList.value = [];
