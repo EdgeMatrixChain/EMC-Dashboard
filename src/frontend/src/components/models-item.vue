@@ -6,14 +6,17 @@
     <template v-else>
       <img src="@/assets/icon_not_image.png" width="240" height="240" />
     </template>
-    <!-- <div class="models-card-info">
+    <div class="models-card-info">
       <div class="models-card-title">{{ item.model_name }}</div>
-      <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
+      <!-- <div class="models-card-desc">A powerful model created by XpucT that is great for both photorealism and artistic creations.</div>
       <div class="models-card-owner">
-        <img class="models-card-owner-avtatr" src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"/>
+        <img
+          class="models-card-owner-avtatr"
+          src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"
+        />
         <div class="models-card-owner-name">Hery</div>
-      </div>
-    </div> -->
+      </div> -->
+    </div>
     <!-- <div class="models-card-type"><span class="models-card-type-span">LORA</span></div> -->
     <template v-if="item.sha256">
       <a :href="`https://emchub.ai/#/models/${item.model_sn}`" target="_blank">
@@ -73,6 +76,7 @@ export default defineComponent({
   padding: 12px 12px 14px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
+  border-radius: 0px 0px 6px 6px;
 }
 .models-card-title {
   color: #fff;
