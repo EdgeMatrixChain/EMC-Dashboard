@@ -37,8 +37,8 @@
         </div>
       </NGridItem>
     </NGrid>
+    <div class="main-header">Deployed Application——Stable diffusion</div>
     <template v-if="modelList.length !== 0">
-      <div class="main-header">Deployed Application——Stable diffusion</div>
       <div class="deployed-bgcolor">
         <NGrid x-gap="24" y-gap="24" cols="1356:4 1037:3 718:2 399:1" item-responsive>
           <template v-for="item in modelList">
@@ -49,7 +49,11 @@
         </NGrid>
       </div>
     </template>
-    <template v-else> </template>
+    <template v-else>
+      <div class="deployed-bgcolor">
+        <div class="deployed-no-data">No model</div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -174,22 +178,25 @@ export default defineComponent({
           });
           const modelsData = resp.data;
           if (modelsData._result !== 0 || modelsData.data === '') return;
-          modelList.value = JSON.parse(modelsData.data) || [];
+          const models = JSON.parse(modelsData.data);
+          if (typeof models !== 'object' || !models.length) {
+            modelList.value = [];
+          } else {
+            const comparator = (a: any, b: any) => {
+              const aSha256 = Boolean(a.sha256);
+              const bSha256 = Boolean(b.sha256);
 
-          const comparator = (a: any, b: any) => {
-            const aSha256 = Boolean(a.sha256);
-            const bSha256 = Boolean(b.sha256);
-
-            if (aSha256 && !bSha256) {
-              return -1;
-            } else if (!aSha256 && bSha256) {
-              return 1;
-            } else {
-              return 0;
-            }
-          };
-
-          modelList.value.sort(comparator);
+              if (aSha256 && !bSha256) {
+                return -1;
+              } else if (!aSha256 && bSha256) {
+                return 1;
+              } else {
+                return 0;
+              }
+            };
+            models.sort(comparator);
+            modelList.value = [...models];
+          }
 
           const resp1 = await axios.get('https://client.emchub.ai/emchub/api/client/modelInfo/queryList', {
             params: { pageNo: 1, pageSize: 99 },
@@ -199,7 +206,7 @@ export default defineComponent({
           modelList.value.forEach((modelItem: ModelItem) => {
             if (!modelItem.sha256) return;
             const resp = modelAllList.find((modelItemAllItems: any) => modelItem.sha256 === modelItemAllItems.modelVersions[0].hashCodeSha256);
-            console.log(resp);
+            // console.log(resp);
             if (!resp) return;
             const previewPicturesUrl = JSON.parse(resp.modelVersions[0].previewPicturesUrl)[0] || [];
             modelItem.cover = previewPicturesUrl.url;
@@ -207,7 +214,7 @@ export default defineComponent({
             modelItem.model_sn = resp.modelSn;
             item.info = modelItem.model_name;
           });
-          console.log(modelList.value);
+          // console.log(modelList.value);
         }
       });
     };
@@ -237,7 +244,6 @@ export default defineComponent({
 <style scoped>
 .page {
   width: 100%;
-  min-height: 101vh;
 }
 .main-header {
   margin-bottom: 24px;
@@ -314,6 +320,13 @@ export default defineComponent({
   border-left: 4px solid #14acff;
   box-sizing: border-box;
   overflow: hidden;
+}
+.deployed-no-data {
+  width: 100%;
+  min-height: 400px;
+  line-height: 400px;
+  text-align: center;
+  font-size: 24px;
 }
 
 .mode-item {
