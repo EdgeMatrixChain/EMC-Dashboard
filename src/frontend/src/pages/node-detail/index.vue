@@ -38,22 +38,24 @@
       </NGridItem>
     </NGrid>
     <div class="main-header">Deployed Application——Stable diffusion</div>
-    <template v-if="modelList.length !== 0">
-      <div class="deployed-bgcolor">
-        <NGrid x-gap="24" y-gap="24" cols="1356:4 1037:3 718:2 399:1" item-responsive>
-          <template v-for="item in modelList">
-            <NGridItem>
-              <ModelsItem class="mode-item" :item="item" />
-            </NGridItem>
-          </template>
-        </NGrid>
-      </div>
-    </template>
-    <template v-else>
-      <div class="deployed-bgcolor">
-        <div class="deployed-no-data">No model</div>
-      </div>
-    </template>
+    <NSpin :show="isLoading">
+      <template v-if="modelList.length !== 0">
+        <div class="deployed-bgcolor">
+          <NGrid x-gap="24" y-gap="24" cols="1356:4 1037:3 718:2 399:1" item-responsive>
+            <template v-for="item in modelList">
+              <NGridItem>
+                <ModelsItem class="mode-item" :item="item" />
+              </NGridItem>
+            </template>
+          </NGrid>
+        </div>
+      </template>
+      <template v-else>
+        <div class="deployed-bgcolor">
+          <div class="deployed-no-data">No model</div>
+        </div>
+      </template>
+    </NSpin>
   </div>
 </template>
 
@@ -61,7 +63,7 @@
 import { ref, defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Utils } from '@/tools/utils';
-import { NDatePicker, NEllipsis, NGrid, NGridItem } from 'naive-ui';
+import { NDatePicker, NEllipsis, NGrid, NGridItem, NSpin } from 'naive-ui';
 import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
 import axios from 'axios';
@@ -92,6 +94,7 @@ export default defineComponent({
     NEllipsis,
     NGrid,
     NGridItem,
+    NSpin,
   },
   setup() {
     const router = useRouter();
@@ -114,6 +117,8 @@ export default defineComponent({
       { name: 'Memory', key: 'memory', icon: iconMemory, info: '--' },
       { name: 'Model Name', key: 'modelName', icon: iconModel, info: '--' },
     ]);
+
+    const isLoading = ref(false);
 
     onMounted(() => {
       init(nodeId);
@@ -173,12 +178,15 @@ export default defineComponent({
           const formatMemory = JSON.parse(data.memoryInfo);
           item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
         } else if (item.key === 'modelName') {
+          isLoading.value = true;
           const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
             params: { nodeid: nodeId },
           });
+          isLoading.value = false;
           const modelsData = resp.data;
           if (modelsData._result !== 0 || modelsData.data === '') return;
           const models = JSON.parse(modelsData.data);
+
           if (typeof models !== 'object' || !models.length) {
             modelList.value = [];
           } else {
@@ -233,6 +241,7 @@ export default defineComponent({
     };
 
     return {
+      isLoading,
       nodeList,
       infoList,
       modelList,
