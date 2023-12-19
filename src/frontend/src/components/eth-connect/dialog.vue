@@ -10,8 +10,8 @@
         <NSpace vertical align="center" :wrap-item="false" :size="[0, 16]">
           <NText class="text-[28px] leading-[28px] text-white">Connect wallet</NText>
           <NText class="text-[#C1C1C1] mb-3">Select a wallet you want to connect to EMC</NText>
-          <NSpace class="wallet-border w-full" align="center" justify="center" :wrap-item="false">
-            <NSpace class="wallet-content w-full h-full py-[14px] rounded-lg bg-[#13262F] cursor-pointer" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
+          <NSpace class="wallet-border" align="center" justify="center" :wrap-item="false">
+            <NSpace class="wallet-content" :wrap-item="false" justify="center" align="center" :size="[20, 0]" @click="onPressConnectETH">
               <img class="w-11 h-11" src="@/assets/wallet_meta_mask.png" alt="MetaMask" />
               <NText class="text-[18px] leading-[18px] text-white">MetaMask</NText>
             </NSpace>
@@ -55,28 +55,33 @@ export default defineComponent({
 <style scoped>
 .wallet-border {
   position: relative;
+  width: 100%;
   height: 72px;
   border-radius: 8px;
   background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1);
-  background-size: 400%;
+  background-size: 500%;
   animation: border 12s linear infinite;
   z-index: 1;
-  box-sizing: border-box;
-  border: 2px solid;
+  border-width: 2px;
+  border-style: solid;
   border-color: #282250;
 }
 .wallet-content {
-  border-radius: 5px;
-  padding: 10px;
+  width: 100%;
+  height: 70px;
+  border-radius: 6px;
+  background-color: #13262f;
+  cursor: pointer;
 }
 
 .wallet-border:hover {
   border-color: transparent;
+  border-radius: 8px;
 }
 
 @keyframes border {
   100% {
-    background-position: -400% 0;
+    background-position: -500% 0;
   }
 }
 </style>

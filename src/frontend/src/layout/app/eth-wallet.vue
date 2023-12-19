@@ -158,9 +158,8 @@ export default defineComponent({
   bottom: 0;
   left: 0;
   right: 0;
-  border-radius: 0px 0px 4px 4px;
+  border-radius: 0px 0px 8px 8px;
   border: 1px solid #716381;
-
   background-color: rgba(24, 25, 39, 0.1);
   backdrop-filter: blur(10px);
   z-index: 3;

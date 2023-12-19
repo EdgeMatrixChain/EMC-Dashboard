@@ -253,7 +253,14 @@
               </div>
             </div>
 
-            <div v-if="useETHUser.account0" class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[30px] justify-between lg:justify-center flex">
+            <div v-if="useETHUser.account0" class="flex flex-col justify-center w-[400px] mt-8 mx-auto text-center">
+              <div class="w-full h-10 leading-10 px-[16px] mb-3 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden" @click="onPressEnterAddress">
+                <img class="inline-block" src="@/assets/icon_editor.svg" width="16" height="16" /> {{ transferAddress }}
+              </div>
+              <p class="text-[#B6B5BE] text-[12px] leading-[12px] font-normal">ARB EMC will be transfered to the address above</p>
+              <EnterAddress v-model:visible="isVisibleEnter" v-model:address="transferAddress" />
+            </div>
+            <div v-if="useETHUser.account0" class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[32px] justify-between lg:justify-center flex">
               <div
                 :class="stakingLoading ? 'opacity-60 cursor-pointer' : 'opacity-100'"
                 class="btn-bg2 cursor-pointer lg:mr-[73px] duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
@@ -366,6 +373,7 @@ import Star from './components/star.vue';
 import Ask from './components/ask.vue';
 // import Header from './components/header.vue';
 import Header from '@/layout/app/header.vue';
+import EnterAddress from './components/enter-address.vue';
 
 import Banner from './components/banner.vue';
 import { useETHUserStore } from '@/stores/eth-user';
@@ -490,6 +498,7 @@ const closeStakingSuccess = () => (stakingSuccess.value = false);
 const releasableSuccess = ref(false);
 const closeReleasableSuccess = () => (releasableSuccess.value = false);
 
+const transferAddress = ref('');
 // 精度
 const decimals = ref<number>();
 let emcApi: null | EMCApi = null;
@@ -553,6 +562,7 @@ const balanceInit = () => {
     .catch((err) => {
       console.error(err);
     });
+  transferAddress.value = account0.value;
 };
 
 // 质押
@@ -572,6 +582,12 @@ const staking = async () => {
   }
   if (!EMC.value) {
     message.warning('Please enter the EMC quantity');
+    return;
+  }
+  console.log(transferAddress.value);
+
+  if (!ethers.isAddress(transferAddress.value)) {
+    message.warning('Please enter the valid address');
     return;
   }
   stakingLoading.value = true;
@@ -595,7 +611,7 @@ const staking = async () => {
     try {
       // 确认交易
       const pay = await emcApi!.createVestingSchedule({
-        account: account0.value,
+        account: transferAddress.value || account0.value,
         start: formData.start,
         cycleUnit: formData.cycleUnit as any,
         amount: formData.amount,
@@ -728,6 +744,17 @@ const calcEarning = (amount: number, apr: number, day: number) => {
   return (((amount * apr) / 100 / 360) * day).toFixed(4);
 };
 
+const isVisibleEnter = ref(false);
+const onPressEnterAddress = () => {
+  isVisibleEnter.value = true;
+};
+
+// const onEnterAddress = (event: string) => {
+//   isVisibleEnter.value = false;
+//   transferAddress.value = event;
+//   console.log(event);
+// };
+
 // 实际收益
 const rewardEarnings = ref<string>('0');
 watch(
@@ -753,6 +780,17 @@ watch(
     APR.value = (apy * Math.pow(magnification, phase.value - 1)).toFixed(2);
 
     rewardEarnings.value = (((EMC.value * currentDay.value.nAPR) / 100 / 360) * currentDay.value.day).toFixed(4);
+  },
+  { immediate: true }
+);
+watch(
+  () => useETHUser.account0,
+  (val) => {
+    if (val) {
+      account0.value = val;
+      tradingListInit();
+      balanceInit();
+    }
   },
   { immediate: true }
 );
