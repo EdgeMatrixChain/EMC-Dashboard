@@ -254,8 +254,11 @@
             </div>
 
             <div v-if="useETHUser.account0" class="flex flex-col justify-center w-[400px] mt-8 mx-auto text-center">
-              <div class="w-full h-10 leading-10 px-[16px] mb-3 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden" @click="onPressEnterAddress">
-                <img class="inline-block" src="@/assets/icon_editor.svg" width="16" height="16" /> {{ transferAddress }}
+              <div class="flex items-center mb-3">
+                <img class="inline-block" src="@/assets/icon_editor.svg" width="20" height="20" />
+                <div class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden" @click="onPressEnterAddress">
+                  {{ transferAddress }}
+                </div>
               </div>
               <p class="text-[#B6B5BE] text-[12px] leading-[12px] font-normal">ARB EMC will be transfered to the address above</p>
               <EnterAddress v-model:visible="isVisibleEnter" v-model:address="transferAddress" />
@@ -443,7 +446,7 @@ const currentDay = ref<dayItem>(daysList[0]);
 
 // 0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea 测试用
 // 0x0B41968E3B98feFFF433cF780245D0A16C0a69fE 正式网
-const emcContract = '0x0B41968E3B98feFFF433cF780245D0A16C0a69fE';
+const emcContract = '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
 // 周期

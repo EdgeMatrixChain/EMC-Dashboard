@@ -37,30 +37,23 @@ export default defineComponent({
       (visible) => {
         if (visible) {
           inputValue.value = props.address as string;
+          if (props.address === useETHUser.account0) {
+            disabled.value = true;
+          }
         }
       },
       { immediate: true }
     );
-    // watch(
-    //   () => inputValue.value,
-    //   (value) => {
-    //     if (value === useETHUser.account0) {
-    //       disabled.value = true;
-    //     } else {
-    //       disabled.value = false;
-    //     }
-    //   },
-    //   { immediate: true }
-    // );
-    // watch(
-    //   () => props.address,
-    //   (value) => {
-    //     if (value !== useETHUser.account0) {
-    //       disabled.value = false;
-    //     }
-    //   },
-    //   { immediate: true }
-    // );
+    watch(
+      () => inputValue.value,
+      (value) => {
+        if (value === useETHUser.account0) {
+          disabled.value = true;
+        } else {
+          disabled.value = false;
+        }
+      }
+    );
     return {
       disabled,
       inputValue,
