@@ -260,7 +260,7 @@
                   {{ transferAddress }}
                 </div>
               </div>
-              <p class="text-[#B6B5BE] text-[12px] leading-[12px] font-normal">ARB EMC will be transfered to the address above</p>
+              <p class="text-[#B6B5BE] text-[12px] leading-[16px] font-normal">After the staking ends, only the address owner can withdraw all EMC and other earnings. Please ensure all the information is correct.</p>
               <EnterAddress v-model:visible="isVisibleEnter" v-model:address="transferAddress" />
             </div>
             <div v-if="useETHUser.account0" class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[32px] justify-between lg:justify-center flex">
