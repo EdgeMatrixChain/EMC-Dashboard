@@ -253,10 +253,10 @@
               </div>
             </div>
 
-            <div v-if="useETHUser.account0" class="flex flex-col justify-center w-[400px] mt-8 mx-auto text-center">
-              <div class="flex items-center mb-3">
+            <div v-if="useETHUser.account0" class="flex flex-col justify-center w-[420px] mt-8 mx-auto text-center">
+              <div class="flex items-center mb-3 cursor-pointer" @click="onPressEnterAddress">
                 <img class="inline-block" src="@/assets/icon_editor.svg" width="20" height="20" />
-                <div class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden" @click="onPressEnterAddress">
+                <div class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden">
                   {{ transferAddress }}
                 </div>
               </div>

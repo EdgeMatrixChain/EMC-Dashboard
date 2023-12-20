@@ -4,7 +4,9 @@
       <NSpace class="w-[398px] pt-[40px] pb-[18px] mx-auto" vertical :wrap-item="false" align="center" :size="[0, 32]">
         <NSpace :wrap-item="false" align="center" :size="[0, 12]">
           <input class="w-full h-10 leading-10 px-[16px] rounded-[4px] text-center bg-[#323557] text-white/80 text-[14px] font-normal outline-none border-none" autofocus v-model="inputValue" type="text" />
-          <NCheckbox class="checkbox" v-model:checked="disabled" style="margin-right: 12px"> <span style="color: #d43232">Tokens will be transferred to this address. This action can not be undone. </span></NCheckbox>
+          <NCheckbox class="checkbox" v-model:checked="disabled" style="margin-right: 12px">
+            <span style="color: #d43232">After the staking ends, only the address owner can withdraw all EMC and other earnings. Please ensure all the information is correct.</span></NCheckbox
+          >
         </NSpace>
         <NButton class="rounded-lg text-white bg-[#7F32FF]" :disabled="!disabled" text-color="#fff" size="large" color="#7F32FF" bordered strong @click="onPressConfrim"> Confirm </NButton>
       </NSpace>
