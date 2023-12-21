@@ -8,7 +8,7 @@
               <NForm ref="formRef" :model="formData" :show-feedback="false">
                 <NGrid x-gap="16" y-gap="16" cols="24">
                   <NFormItemGi span="24" path="start" label="From Date">
-                    <NDatePicker v-model:value="formData.start" type="date" style="width: 100%" />
+                    <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler" style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24" path="cycles" label="Cycles">
                     <NInputNumber v-model:value="formData.cycles" min="1" style="width: 100%" />
@@ -159,23 +159,30 @@ export default defineComponent({
     const infoLoading = ref(false);
     const sendLoading = ref(false);
     const apiManager = ApiManager.getInstance();
+    const limitStart = new Date().getTime() + 365 * 86400000;
     let stakeLockApi: StakeLockApi | null = null;
     let erc20Api: ERC20Api | null = null;
 
     const cycleUnitOptions = ref<SelectOption[]>([
-      { label: 'Days1', value: 0 },
-      { label: 'Days30', value: 1 },
-      { label: 'Days90', value: 2 },
-      { label: 'Days180', value: 3 },
-      { label: 'Days360', value: 4 },
+      // { label: 'Days1', value: 0 },
+      // { label: 'Days30', value: 1 },
+      // { label: 'Days90', value: 2 },
+      // { label: 'Days180', value: 3 },
+      // { label: 'Days360', value: 4 },
+      { label: '{0}', value: 0 },
+      { label: '{1}', value: 1 },
+      { label: '{2}', value: 2 },
+      { label: '{3}', value: 3 },
+      { label: '{4}', value: 4 },
     ]);
-
-    const formData = ref<FormData>({
-      start: moment().add(1, 'days').valueOf(), //start timestamp second
+    const defaultFormData = () => ({
+      start: limitStart, //start timestamp second
       cycles: 1, //vesting cycle count
       cycleUnit: 0,
       amount: '', //vesting amount
     });
+
+    const formData = ref<FormData>(defaultFormData());
 
     const result = ref('');
 
@@ -230,15 +237,23 @@ export default defineComponent({
     const createVesting = async (params: any) => {
       const { account, start, cycles, cycleUnit } = params;
       const amount = ethers.parseUnits(params.amount, decimals.value);
-      const resp2 = await erc20Api!.approve({ amount: amount, spender: stakeLockContract.value });
-      if (resp2._result !== 0) {
-        message.error(`Approve error: ${resp2._desc}`);
-        return resp2;
+      const resp = await erc20Api!.allowance({ account: ethUserStore.account0, spender: stakeLockContract.value });
+      const allowance = resp.data as bigint; //bigint;
+      const diffAllowance = amount - allowance;
+      if (diffAllowance > 0n) {
+        const resp2 = await erc20Api!.approve({ amount: diffAllowance, spender: stakeLockContract.value });
+        if (resp2._result !== 0) {
+          message.error(`Approve error: ${resp2._desc}`);
+          return resp2;
+        }
       }
-      const resp3 = await stakeLockApi!.createVestingSchedule({ account, start, cycles, cycleUnit, amount });
-      if (resp3._result !== 0) {
-        message.error(`Staking error: ${resp3._desc}`);
-      }
+      const resp3 = await stakeLockApi!.createVestingSchedule({
+        account,
+        start: BigInt(start),
+        cycles: BigInt(cycles),
+        cycleUnit,
+        amount,
+      });
       return resp3;
     };
 
@@ -268,11 +283,17 @@ export default defineComponent({
       lockAmountStr: computed(() => ethers.formatUnits(lockAmount.value, decimals.value)),
       releasableAmountStr: computed(() => ethers.formatUnits(releasableAmount.value, decimals.value)),
       releasableAmountRewardStr: computed(() => ethers.formatUnits(releasableAmountReward.value, decimals.value)),
+      dateDisabledHandler(ts: number) {
+        return ts < limitStart;
+      },
       onPressRefreshInfo() {
         init();
       },
       async onPressSend() {
-        const limitStart = new Date().getTime() + 365 * 86400000;
+        if (!ethUserStore.account0) {
+          message.error('Please connect wallet first');
+          return;
+        }
         if (formData.value.start < limitStart) {
           message.error("The 'From Date' must be after 365 days");
           return;
@@ -281,16 +302,21 @@ export default defineComponent({
         const cycles = formData.value.cycles;
         const cycleUnit = formData.value.cycleUnit;
         const amount = formData.value.amount;
-        if (!/^\d+$/.test(amount)) {
-          message.error("The 'Amount' must be number");
+        if (!/^[0-9]+([\.][0-9]{1,18})?$/.test(amount)) {
+          message.error("Invalid 'Amount'");
           return;
         }
         result.value = '';
         sendLoading.value = true;
         const resp = await createVesting({ account: ethUserStore.account0, start, cycles, cycleUnit, amount });
         sendLoading.value = false;
-        // result.value = Utils.stringify(resp);
         result.value = JSON.stringify(resp);
+        if (resp._result === 0) {
+          formData.value = defaultFormData();
+          message.success('Successful');
+        } else {
+          message.success('Failed');
+        }
       },
     };
   },

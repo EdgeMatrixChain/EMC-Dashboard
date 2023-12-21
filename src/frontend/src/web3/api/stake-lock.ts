@@ -1,17 +1,17 @@
-import ABI_RWAEMC from '@/web3/abi/emc';
+import ABI from '@/web3/abi/stake-lock';
 import { Api } from './api';
 
 type StakeOption = {
   account: string;
-  start: number;
-  cycles: number;
+  start: bigint;
+  cycles: bigint;
   cycleUnit: 0 | 1 | 2 | 3;
-  amount: BigInt;
+  amount: bigint;
 };
 
 export class StakeLockApi extends Api {
   getAbi() {
-    return ABI_RWAEMC;
+    return ABI;
   }
 
   async getLockedAmount({ account }: any) {
