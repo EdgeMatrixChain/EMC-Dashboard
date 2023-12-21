@@ -58,9 +58,9 @@ export default defineComponent({
   width: 100%;
   height: 72px;
   border-radius: 8px;
-  background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1);
+  /* background-image: linear-gradient(to right, #4142f1, #0adac3, #d356f3, #f47e63, #4142f1); */
   background-size: 500%;
-  animation: border 12s linear infinite;
+  /* animation: border 12s linear infinite; */
   z-index: 1;
   border-width: 2px;
   border-style: solid;
@@ -68,20 +68,20 @@ export default defineComponent({
 }
 .wallet-content {
   width: 100%;
-  height: 70px;
+  height: 68px;
   border-radius: 6px;
   background-color: #13262f;
   cursor: pointer;
 }
 
-.wallet-border:hover {
+/* .wallet-border:hover {
   border-color: transparent;
   border-radius: 8px;
-}
+} */
 
-@keyframes border {
+/* @keyframes border {
   100% {
     background-position: -500% 0;
   }
-}
+} */
 </style>

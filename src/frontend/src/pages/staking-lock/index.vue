@@ -91,9 +91,9 @@ import {
   NSpace,
   NCard,
   NText,
-  NForm,
   NGrid,
   NGridItem,
+  NForm,
   NFormItemGi,
   NInput,
   NInputNumber,
@@ -201,6 +201,7 @@ export default defineComponent({
         releasableAmount.value = 0n;
         return;
       }
+
       const [resp0, resp1, resp2, resp3, resp4] = await Promise.all([
         erc20Api!.decimals(),
         erc20Api!.balanceOf({ account: ethUserStore.account0 }),
@@ -208,17 +209,21 @@ export default defineComponent({
         stakeLockApi!.getLockedAmount({ account: ethUserStore.account0 }),
         stakeLockApi!.getReleasableAmount({ account: ethUserStore.account0 }),
       ]);
+
       const _decimals = resp0.data;
       const _balance = resp1.data;
       const _allowance = resp2.data;
       const _lockAmount = resp3.data;
       const _releasableAmount = resp4.data || [];
+
       decimals.value = Number(_decimals);
+
       allowance.value = _allowance;
       balance.value = _balance;
       lockAmount.value = _lockAmount;
-      releasableAmount.value = _releasableAmount[0];
-      releasableAmountReward.value = _releasableAmount[1];
+
+      releasableAmount.value = _releasableAmount[0] || 0n;
+      releasableAmountReward.value = _releasableAmount[1] || 0n;
       //Utils.stringify(_releasableAmount);
     };
 
@@ -284,7 +289,8 @@ export default defineComponent({
         sendLoading.value = true;
         const resp = await createVesting({ account: ethUserStore.account0, start, cycles, cycleUnit, amount });
         sendLoading.value = false;
-        result.value = Utils.stringify(resp);
+        // result.value = Utils.stringify(resp);
+        result.value = JSON.stringify(resp);
       },
     };
   },

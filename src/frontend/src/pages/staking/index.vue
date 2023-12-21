@@ -172,7 +172,9 @@
           </div>
 
           <div class="flex mt-[10px] lg:mt-0 flex-col justify-center lg:pr-[80px] relative">
-            <div class="flex flex-col w-[calc(100%-30px)] lg:w-[calc(100%-80px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20">
+            <div
+              class="flex flex-col w-[calc(100%-30px)] lg:w-[calc(100%-80px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20"
+            >
               <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                 <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
                 <p class="text-[15px] lg:text-[18px] text-white font-medium leading-[18px] ml-auto">
@@ -249,7 +251,9 @@
               </div>
               <div class="flex mt-[20px] w-full justify-between">
                 <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
-                <p class="text-white/70 text-[16px] leading-[16px] font-medium">{{ typeof releasable === 'undefined' || typeof rewards === 'undefined' ? '---' : releasable + rewards }} EMC</p>
+                <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                  {{ typeof releasable === 'undefined' || typeof rewards === 'undefined' ? '---' : releasable + rewards }} EMC
+                </p>
               </div>
             </div>
 
@@ -260,7 +264,9 @@
                   {{ transferAddress }}
                 </div>
               </div>
-              <p class="text-[#B6B5BE] text-[12px] leading-[16px] font-normal">After the staking ends, only the address owner can withdraw all EMC and other earnings. Please ensure all the information is correct.</p>
+              <p class="text-[#B6B5BE] text-[12px] leading-[16px] font-normal">
+                After the staking ends, only the address owner can withdraw all EMC and other earnings. Please ensure all the information is correct.
+              </p>
               <EnterAddress v-model:visible="isVisibleEnter" v-model:address="transferAddress" />
             </div>
             <div v-if="useETHUser.account0" class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[32px] justify-between lg:justify-center flex">
@@ -272,15 +278,34 @@
                 <img v-if="stakingLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg" alt="" />
                 Staking Now
               </div>
-              <div class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]" @click="onWithdraw">Withdraw</div>
+              <div
+                class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
+                @click="onWithdraw"
+              >
+                Withdraw
+              </div>
             </div>
-            <div v-else @click="onConnect" class="w-[calc(100%-30px)] lg:w-[417px] mx-auto h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] lg:ml-auto mt-[30px] justify-between flex">
-              <p :class="initLoading ? 'opacity-60 duration-300' : ''" class="w-full h-full flex justify-center items-center text-[16px] font-medium text-[#fff]">Wallet Connect</p>
+            <div
+              v-else
+              @click="onConnect"
+              class="w-[calc(100%-30px)] lg:w-[417px] mx-auto h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] lg:ml-auto mt-[30px] justify-between flex"
+            >
+              <p
+                :class="initLoading ? 'opacity-60 duration-300' : ''"
+                class="w-full h-full flex justify-center items-center text-[16px] font-medium text-[#fff]"
+              >
+                Wallet Connect
+              </p>
             </div>
           </div>
 
-          <div v-if="tradingList.length > 0" class="border-[#fff]/20 border-t-[2px] lg:mt-[64px] mt-[20px] pt-[20px] lg:pt-[32px] flex lg:mx-[40px] mx-[15px] lg:w-[calc(100%-80px)] w-[calc(100%-30px)]">
-            <div class="relative flex-col rounded-[8px] w-full duration-300 cursor-pointer border-[2px] border-[#fff]/20 flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]">
+          <div
+            v-if="tradingList.length > 0"
+            class="border-[#fff]/20 border-t-[2px] lg:mt-[64px] mt-[20px] pt-[20px] lg:pt-[32px] flex lg:mx-[40px] mx-[15px] lg:w-[calc(100%-80px)] w-[calc(100%-30px)]"
+          >
+            <div
+              class="relative flex-col rounded-[8px] w-full duration-300 cursor-pointer border-[2px] border-[#fff]/20 flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
+            >
               <div class="flex px-[10px] lg:px-[30px] border-b border-[#fff]/10 h-[50px] items-center w-full">
                 <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">Start Time</p>
                 <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">End Time</p>
@@ -345,7 +370,9 @@
             </div>
             <div class="flex mt-[20px] w-full justify-between">
               <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
-              <p class="text-white/70 text-[16px] leading-[16px] font-medium">{{ typeof releasable === 'undefined' || typeof rewards === 'undefined' ? '---' : releasable + rewards }} EMC</p>
+              <p class="text-white/70 text-[16px] leading-[16px] font-medium">
+                {{ typeof releasable === 'undefined' || typeof rewards === 'undefined' ? '---' : releasable + rewards }} EMC
+              </p>
             </div>
             <div
               @click="onDecompression"
@@ -530,6 +557,7 @@ const onConnect = async () => {
 
 // 钱包初始化
 const balanceInit = () => {
+  if (!erc20Api) return;
   // 获取钱包余额
   erc20Api!
     .balanceOf({ account: account0.value })

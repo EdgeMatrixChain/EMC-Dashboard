@@ -17,7 +17,14 @@
           </template>
         </NSpace>
       </template>
-      <NSelect style="min-width: 134px" v-model:value="selectValue" :options="options" :render-label="renderLabel" @update:value="handleUpdateValue" :show-checkmark="false" />
+      <NSelect
+        style="min-width: 134px"
+        v-model:value="selectValue"
+        :options="options"
+        :render-label="renderLabel"
+        @update:value="handleUpdateValue"
+        :show-checkmark="false"
+      />
       <template v-if="chainName === 'ICP'">
         <template v-if="principal">
           <div class="header-user" @click="onPressUserICP">
@@ -99,7 +106,21 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent, watch, h, onMounted, computed } from 'vue';
-import { NAvatar, NText, NSpin, NSpace, NCarousel, NSelect, SelectOption, SelectRenderTag, SelectRenderLabel, useMessage, NDropdown, NButton, NIcon } from 'naive-ui';
+import {
+  NAvatar,
+  NText,
+  NSpin,
+  NSpace,
+  NCarousel,
+  NSelect,
+  SelectOption,
+  SelectRenderTag,
+  SelectRenderLabel,
+  useMessage,
+  NDropdown,
+  NButton,
+  NIcon,
+} from 'naive-ui';
 import { useRoute, useRouter, RouterLink, onBeforeRouteUpdate } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
@@ -131,7 +152,23 @@ const tabConfigs: TabItem[] = [
 const initTabKey = -1;
 
 export default defineComponent({
-  components: { RouterLink, NSpin, NSpace, NCarousel, NSelect, ETHWallet, ICPWallet, NAvatar, NText, ICPConnectDialog, ETHConnectDialog, NDropdown, NButton, NIcon, IconMenu },
+  components: {
+    RouterLink,
+    NSpin,
+    NSpace,
+    NCarousel,
+    NSelect,
+    ETHWallet,
+    ICPWallet,
+    NAvatar,
+    NText,
+    ICPConnectDialog,
+    ETHConnectDialog,
+    NDropdown,
+    NButton,
+    NIcon,
+    IconMenu,
+  },
   emits: ['isLoading'],
   setup(props, context) {
     const message = useMessage();
@@ -146,8 +183,8 @@ export default defineComponent({
     const showWalletETH = ref(false);
     const showConnect = ref(false);
     const showConnectETH = ref(false);
-    const chainName = ref('ICP');
-    const selectValue = ref('ICP');
+    const chainName = ref('Arbitrum');
+    const selectValue = ref('Arbitrum');
     const walletBalance = ref({
       emcBalance: '',
       icpBalance: '',
@@ -217,10 +254,6 @@ export default defineComponent({
         (path, oldVal) => {
           const item = tabs.value.find((item) => item.key === path);
           currentTabKey.value = item?.id || initTabKey;
-          if (path === '/staking') {
-            selectValue.value = 'Arbitrum';
-            chainName.value = 'Arbitrum';
-          }
         },
         { immediate: true }
       );
