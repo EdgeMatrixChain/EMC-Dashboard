@@ -836,7 +836,8 @@ onMounted(async () => {
 
 const totalStaked = computed(() => {
   if (typeof permanentTotal.value !== 'undefined' && typeof permanentTotal.value !== 'undefined') {
-    return Number(erc20Balance.value) - Number(permanentTotal.value);
+    const result = Number(erc20Balance.value) - Number(permanentTotal.value);
+    return (parseInt((result * 10000).toString()) / 10000).toFixed(4);
   }
 });
 </script>

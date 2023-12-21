@@ -13,13 +13,13 @@
         <div
           class="flex flex-col items-center justify-center relative pb-[32px] mb-[32px] md:pb-[0] md:mb-[0] md:pr-[100px] after:bg-white/20 after:absolute after:bottom-0 md:after:bottom-auto md:after:right-[50px] after:content-[''] after:flex md:after:w-[1px] after:w-[40px] md:after:h-[40px] after:h-[1px]"
         >
-          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.totalStaked || '-----' }}</p>
+          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.totalStaked || '0' }}</p>
           <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL EMC STAKED</em>
         </div>
         <div
           class="flex flex-col items-center justify-center relative pb-[32px] mb-[32px] md:pb-[0] md:mb-[0] md:pr-[100px] after:bg-white/20 after:absolute after:bottom-0 md:after:bottom-auto md:after:right-[50px] after:content-[''] after:flex md:after:w-[1px] after:w-[40px] md:after:h-[40px] after:h-[1px]"
         >
-          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.earnings || '-----' }}</p>
+          <p class="font-medium text-[32px] text-[#fff] mb-[30px] leading-[32px]">{{ props.earnings || '0' }}</p>
           <em class="not-italic text-white/70 text-[16px] font-medium leading-[16px]">TOTAL EARNING</em>
         </div>
         <!-- <div
@@ -43,7 +43,7 @@ import Bg from './bg.vue';
 
 const props = defineProps({
   earnings: Number,
-  totalStaked: Number,
+  totalStaked: String,
 });
 </script>
 

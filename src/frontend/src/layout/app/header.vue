@@ -100,7 +100,7 @@
 <script lang="ts">
 import { ref, defineComponent, watch, h, onMounted, computed } from 'vue';
 import { NAvatar, NText, NSpin, NSpace, NCarousel, NSelect, SelectOption, SelectRenderTag, SelectRenderLabel, useMessage, NDropdown, NButton, NIcon } from 'naive-ui';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { useRoute, useRouter, RouterLink, onBeforeRouteUpdate } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
 import { useETHUserStore } from '@/stores/eth-user';
@@ -147,6 +147,7 @@ export default defineComponent({
     const showConnect = ref(false);
     const showConnectETH = ref(false);
     const chainName = ref('ICP');
+    const selectValue = ref('ICP');
     const walletBalance = ref({
       emcBalance: '',
       icpBalance: '',
@@ -216,6 +217,10 @@ export default defineComponent({
         (path, oldVal) => {
           const item = tabs.value.find((item) => item.key === path);
           currentTabKey.value = item?.id || initTabKey;
+          if (path === '/staking') {
+            selectValue.value = 'Arbitrum';
+            chainName.value = 'Arbitrum';
+          }
         },
         { immediate: true }
       );
@@ -235,6 +240,7 @@ export default defineComponent({
         }
       }
     );
+
     return {
       tabs,
       currentTabKey,
@@ -281,7 +287,7 @@ export default defineComponent({
       handleUpdateValue(value: string, option: SelectOption) {
         chainName.value = value;
       },
-      selectValue: ref('ICP'),
+      selectValue,
       options,
       renderLabel,
       onSelect(path: string) {
