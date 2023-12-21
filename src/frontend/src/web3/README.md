@@ -31,7 +31,7 @@ const handleStake = async ({ start, cycles, cycleUnit, amount }: any) => {
   return resp3;
 };
 onMounted(async () => {
-  const emcContract = "0x17EA72D614C47Dc4ee5d71044076500272dfBEe3";
+  const emcContract = "";
   emcApi = apiManager.create(EMCApi, { address: emcContract });
   const { data: erc20ContractAddress } = await emcApi.token();
   erc20Api = apiManager.create(ERC20Api, { address: erc20ContractAddress });

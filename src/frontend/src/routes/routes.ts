@@ -41,10 +41,15 @@ export const routes = [
         component: () => import('@/pages/dip20/index.vue'),
       },
       {
-        name: 'test',
-        path: 'test',
-        component: () => import('@/pages/test/index.vue'),
+        name: 'staking-lock',
+        path: 'staking-lock',
+        component: () => import('@/pages/staking-lock/index.vue'),
       },
+      // {
+      //   name: 'test',
+      //   path: 'test',
+      //   component: () => import('@/pages/test/index.vue'),
+      // },
     ],
   },
   {
