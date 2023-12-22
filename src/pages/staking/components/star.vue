@@ -1,173 +1,169 @@
 <template>
-    <canvas class="canvas"></canvas>
+  <canvas class="canvas"></canvas>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { nextTick, onMounted } from 'vue';
 
 onMounted(() => {
-    nextTick(() => {
-        const STAR_COLOR = '#fff';
-        const STAR_SIZE = 3;
-        const STAR_MIN_SCALE = 0.2;
-        const OVERFLOW_THRESHOLD = 50;
-        const STAR_COUNT = (window.innerWidth + window.innerHeight) / 20;
+  nextTick(() => {
+    const STAR_COLOR = '#fff';
+    const STAR_SIZE = 3;
+    const STAR_MIN_SCALE = 0.2;
+    const OVERFLOW_THRESHOLD = 50;
+    const STAR_COUNT = (window.innerWidth + window.innerHeight) / 20;
 
-        const canvas = document.querySelector('canvas'),
-            context = canvas.getContext('2d');
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        let scale = 1,
-            width,
-            height;
+    let scale = 1,
+      width: number,
+      height: number;
 
-        let stars = [];
+    let stars: any = [];
 
-        let pointerX, pointerY;
+    let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.0005 };
 
-        let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.0005 };
+    generate();
+    resize();
+    step();
 
-        let touchInput = false;
+    window.onresize = resize;
 
-        generate();
-        resize();
-        step();
+    function generate() {
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+          x: 0,
+          y: 0,
+          z: STAR_MIN_SCALE + Math.random() * (1 - STAR_MIN_SCALE),
+        });
+      }
+    }
 
-        window.onresize = resize;
+    function placeStar(star: any) {
+      star.x = Math.random() * width;
+      star.y = Math.random() * height;
+    }
 
-        function generate() {
-            for (let i = 0; i < STAR_COUNT; i++) {
-                stars.push({
-                    x: 0,
-                    y: 0,
-                    z: STAR_MIN_SCALE + Math.random() * (1 - STAR_MIN_SCALE),
-                });
-            }
+    function recycleStar(star: any) {
+      let direction = 'z';
+
+      let vx = Math.abs(velocity.x),
+        vy = Math.abs(velocity.y);
+
+      if (vx > 1 || vy > 1) {
+        let axis;
+
+        if (vx > vy) {
+          axis = Math.random() < vx / (vx + vy) ? 'h' : 'v';
+        } else {
+          axis = Math.random() < vy / (vx + vy) ? 'v' : 'h';
         }
 
-        function placeStar(star) {
-            star.x = Math.random() * width;
-            star.y = Math.random() * height;
+        if (axis === 'h') {
+          direction = velocity.x > 0 ? 'l' : 'r';
+        } else {
+          direction = velocity.y > 0 ? 't' : 'b';
         }
+      }
 
-        function recycleStar(star) {
-            let direction = 'z';
+      star.z = STAR_MIN_SCALE + Math.random() * (1 - STAR_MIN_SCALE);
 
-            let vx = Math.abs(velocity.x),
-                vy = Math.abs(velocity.y);
+      if (direction === 'z') {
+        star.z = 0.1;
+        star.x = Math.random() * width;
+        star.y = Math.random() * height;
+      } else if (direction === 'l') {
+        star.x = -OVERFLOW_THRESHOLD;
+        star.y = height * Math.random();
+      } else if (direction === 'r') {
+        star.x = width + OVERFLOW_THRESHOLD;
+        star.y = height * Math.random();
+      } else if (direction === 't') {
+        star.x = width * Math.random();
+        star.y = -OVERFLOW_THRESHOLD;
+      } else if (direction === 'b') {
+        star.x = width * Math.random();
+        star.y = height + OVERFLOW_THRESHOLD;
+      }
+    }
 
-            if (vx > 1 || vy > 1) {
-                let axis;
+    function resize() {
+      scale = window.devicePixelRatio || 1;
 
-                if (vx > vy) {
-                    axis = Math.random() < vx / (vx + vy) ? 'h' : 'v';
-                } else {
-                    axis = Math.random() < vy / (vx + vy) ? 'v' : 'h';
-                }
+      width = window.innerWidth * scale;
+      height = window.innerHeight * scale;
 
-                if (axis === 'h') {
-                    direction = velocity.x > 0 ? 'l' : 'r';
-                } else {
-                    direction = velocity.y > 0 ? 't' : 'b';
-                }
-            }
+      canvas.width = width;
+      canvas.height = height;
 
-            star.z = STAR_MIN_SCALE + Math.random() * (1 - STAR_MIN_SCALE);
+      stars.forEach(placeStar);
+    }
 
-            if (direction === 'z') {
-                star.z = 0.1;
-                star.x = Math.random() * width;
-                star.y = Math.random() * height;
-            } else if (direction === 'l') {
-                star.x = -OVERFLOW_THRESHOLD;
-                star.y = height * Math.random();
-            } else if (direction === 'r') {
-                star.x = width + OVERFLOW_THRESHOLD;
-                star.y = height * Math.random();
-            } else if (direction === 't') {
-                star.x = width * Math.random();
-                star.y = -OVERFLOW_THRESHOLD;
-            } else if (direction === 'b') {
-                star.x = width * Math.random();
-                star.y = height + OVERFLOW_THRESHOLD;
-            }
+    function step() {
+      context.clearRect(0, 0, width, height);
+
+      update();
+      render();
+
+      requestAnimationFrame(step);
+    }
+
+    function update() {
+      velocity.tx *= 0.96;
+      velocity.ty *= 0.96;
+
+      velocity.x += (velocity.tx - velocity.x) * 0.8;
+      velocity.y += (velocity.ty - velocity.y) * 0.8;
+
+      stars.forEach((star: any) => {
+        star.x += velocity.x * star.z;
+        star.y += velocity.y * star.z;
+
+        star.x += (star.x - width / 2) * velocity.z * star.z;
+        star.y += (star.y - height / 2) * velocity.z * star.z;
+        star.z += velocity.z;
+
+        if (star.x < -OVERFLOW_THRESHOLD || star.x > width + OVERFLOW_THRESHOLD || star.y < -OVERFLOW_THRESHOLD || star.y > height + OVERFLOW_THRESHOLD) {
+          recycleStar(star);
         }
+      });
+    }
 
-        function resize() {
-            scale = window.devicePixelRatio || 1;
+    function render() {
+      stars.forEach((star: any) => {
+        context.beginPath();
+        context.lineCap = 'round';
+        context.lineWidth = STAR_SIZE * star.z * scale;
+        context.globalAlpha = 0.5 + 0.5 * Math.random();
+        context.strokeStyle = STAR_COLOR;
 
-            width = window.innerWidth * scale;
-            height = window.innerHeight * scale;
+        context.beginPath();
+        context.moveTo(star.x, star.y);
 
-            canvas.width = width;
-            canvas.height = height;
+        var tailX = velocity.x * 2,
+          tailY = velocity.y * 2;
 
-            stars.forEach(placeStar);
-        }
+        if (Math.abs(tailX) < 0.1) tailX = 0.5;
+        if (Math.abs(tailY) < 0.1) tailY = 0.5;
 
-        function step() {
-            context.clearRect(0, 0, width, height);
+        context.lineTo(star.x + tailX, star.y + tailY);
 
-            update();
-            render();
-
-            requestAnimationFrame(step);
-        }
-
-        function update() {
-            velocity.tx *= 0.96;
-            velocity.ty *= 0.96;
-
-            velocity.x += (velocity.tx - velocity.x) * 0.8;
-            velocity.y += (velocity.ty - velocity.y) * 0.8;
-
-            stars.forEach((star) => {
-                star.x += velocity.x * star.z;
-                star.y += velocity.y * star.z;
-
-                star.x += (star.x - width / 2) * velocity.z * star.z;
-                star.y += (star.y - height / 2) * velocity.z * star.z;
-                star.z += velocity.z;
-
-                if (star.x < -OVERFLOW_THRESHOLD || star.x > width + OVERFLOW_THRESHOLD || star.y < -OVERFLOW_THRESHOLD || star.y > height + OVERFLOW_THRESHOLD) {
-                    recycleStar(star);
-                }
-            });
-        }
-
-        function render() {
-            stars.forEach((star) => {
-                context.beginPath();
-                context.lineCap = 'round';
-                context.lineWidth = STAR_SIZE * star.z * scale;
-                context.globalAlpha = 0.5 + 0.5 * Math.random();
-                context.strokeStyle = STAR_COLOR;
-
-                context.beginPath();
-                context.moveTo(star.x, star.y);
-
-                var tailX = velocity.x * 2,
-                    tailY = velocity.y * 2;
-
-                if (Math.abs(tailX) < 0.1) tailX = 0.5;
-                if (Math.abs(tailY) < 0.1) tailY = 0.5;
-
-                context.lineTo(star.x + tailX, star.y + tailY);
-
-                context.stroke();
-            });
-        }
-    });
+        context.stroke();
+      });
+    }
+  });
 });
 </script>
 
 <style scoped>
 .canvas {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 </style>

@@ -1,7 +1,75 @@
 <template>
   <div class="page">
-    <NSpace vertical :wrap-item="false" :size="[16, 16]" style="max-width: 1000px">
-      <NGrid x-gap="12" y-gap="12" :cols="24" item-responsive>
+    <NSpace vertical :wrap-item="false" align="center" :size="[16, 16]">
+      <NGrid x-gap="12" y-gap="12" :cols="24" item-responsive style="max-width: 1000px">
+        <NGridItem span="24 1000:12">
+          <NCard style="margin-bottom: 12px">
+            <NDescriptions label-placement="top" :column="1">
+              <template #header>
+                <NSpace justify="space-between" :wrap-item="false">
+                  <NText>Contracts</NText>
+                </NSpace>
+              </template>
+              <NDescriptionsItem>
+                <template #label> Staking Lock Contract (ReleaseVesing) </template>
+                <NButton text tag="a" type="primary" @click="onPressExplorer(stakeLockContract)">
+                  {{ stakeLockContract }}
+                </NButton>
+              </NDescriptionsItem>
+              <NDescriptionsItem>
+                <template #label> ERC20 Contract </template>
+                <NButton text tag="a" type="primary" @click="onPressExplorer(erc20Contract)">
+                  {{ erc20Contract }}
+                </NButton>
+              </NDescriptionsItem>
+            </NDescriptions>
+          </NCard>
+          <NCard>
+            <NSpin :show="infoLoading">
+              <NDescriptions label-placement="top" :column="1">
+                <template #header>
+                  <NSpace justify="space-between" :wrap-item="false">
+                    <NText>Information</NText>
+                    <NButton quaternary circle :disabled="infoLoading" @click="onPressRefreshInfo">
+                      <template #icon>
+                        <NIcon><IconRefresh /></NIcon>
+                      </template>
+                    </NButton>
+                  </NSpace>
+                </template>
+                <template v-if="!isSign">
+                  <NDescriptionsItem>Please connect wallet first. </NDescriptionsItem>
+                </template>
+                <template v-else>
+                  <NDescriptionsItem>
+                    <template #label> Chain ID </template>
+                    {{ chainId }}
+                  </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <template #label> EMC Balance </template>
+                    {{ balanceStr }}
+                  </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <template #label> EMC Allowance </template>
+                    {{ allowanceStr }}
+                  </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <template #label> Lock Amount </template>
+                    {{ lockAmountStr }}
+                  </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <template #label> Releasable Amount </template>
+                    {{ releasableAmountStr }}
+                  </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <template #label> Releasable Reward Amount </template>
+                    {{ releasableAmountRewardStr }}
+                  </NDescriptionsItem>
+                </template>
+              </NDescriptions>
+            </NSpin>
+          </NCard>
+        </NGridItem>
         <NGridItem span="24 1000:12">
           <NCard title="Staking (Team)">
             <NSpace vertical :wrap-item="false" :size="[16, 16]">
@@ -23,7 +91,9 @@
                     <NInput v-model:value="formData.amount" min="0" :precision="0" style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24">
-                    <NButton type="primary" strong :loading="sendLoading" style="width: 100%" @click="onPressSend">Send</NButton>
+                    <NButton type="primary" strong :loading="sendLoading" style="width: 100%; background-color: var(--n-color)" @click="onPressSend"
+                      >Staking</NButton
+                    >
                   </NFormItemGi>
                 </NGrid>
               </NForm>
@@ -31,56 +101,6 @@
                 <NCard title="Response">{{ result }}</NCard>
               </template>
             </NSpace>
-          </NCard>
-        </NGridItem>
-        <NGridItem span="24 1000:12">
-          <NCard>
-            <NSpin :show="infoLoading">
-              <NDescriptions label-placement="top" :column="1">
-                <template #header>
-                  <NSpace justify="space-between" :wrap-item="false">
-                    <NText>Information</NText>
-                    <NButton quaternary circle :disabled="infoLoading" @click="onPressRefreshInfo">
-                      <template #icon>
-                        <NIcon><IconRefresh /></NIcon>
-                      </template>
-                    </NButton>
-                  </NSpace>
-                </template>
-                <NDescriptionsItem>
-                  <template #label> Chain ID </template>
-                  {{ chainId }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> Staking Lock Contract (ReleaseVesing) </template>
-                  {{ stakeLockContract }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> ERC20 Contract </template>
-                  {{ erc20Contract }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> EMC Balance </template>
-                  {{ balanceStr }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> EMC Allowance </template>
-                  {{ allowanceStr }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> Lock Amount </template>
-                  {{ lockAmountStr }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> Releasable Amount </template>
-                  {{ releasableAmountStr }}
-                </NDescriptionsItem>
-                <NDescriptionsItem>
-                  <template #label> Releasable Reward Amount </template>
-                  {{ releasableAmountRewardStr }}
-                </NDescriptionsItem>
-              </NDescriptions>
-            </NSpin>
           </NCard>
         </NGridItem>
       </NGrid>
@@ -113,6 +133,7 @@ import {
 import { RefreshSharp as IconRefresh } from '@vicons/ionicons5';
 import { useRoute } from 'vue-router';
 import { useETHUserStore } from '@/stores/eth-user';
+import { getNetworkConfig } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { StakeLockApi } from '@/web3/api/stake-lock';
 import { ERC20Api } from '@/web3/api/erc20';
@@ -275,6 +296,7 @@ export default defineComponent({
       //info
       infoLoading,
       sendLoading,
+      isSign: computed(() => ethUserStore.account0),
       chainId: computed(() => ethUserStore.chainId),
       stakeLockContract,
       erc20Contract,
@@ -292,6 +314,9 @@ export default defineComponent({
       },
       onPressRefreshInfo() {
         init();
+      },
+      onPressExplorer(contract: string) {
+        window.open(`https://arbiscan.io/address/${contract}`);
       },
       async onPressSend() {
         if (!ethUserStore.account0) {
@@ -321,7 +346,9 @@ export default defineComponent({
         sendLoading.value = false;
         result.value = JSON.stringify(resp);
         if (resp._result === 0) {
+          const originAccount = formData.value.account;
           formData.value = defaultFormData();
+          formData.value.account = originAccount;
           message.success('Successful');
         } else {
           message.success('Failed');

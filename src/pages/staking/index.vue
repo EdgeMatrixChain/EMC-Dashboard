@@ -875,12 +875,12 @@ const totalStaked = computed(() => {
   background: none;
 }
 
-.withdraw-modal /deep/ .n-card__content {
+.withdraw-modal :deep( .n-card__content) {
   padding: 0;
 }
 
 @media screen and (max-width: 767px) {
-  .number-input /deep/ .n-input input {
+  .number-input :deep(.n-input input) {
     width: 87px !important;
   }
 }

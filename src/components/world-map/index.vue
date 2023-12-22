@@ -10,7 +10,7 @@
 <script lang="ts">
 import { onMounted, defineComponent, ref } from 'vue';
 import * as echarts from 'echarts';
-import world from './map/js/world.js';
+import world from './map/js/world';
 import { Http } from '@/tools/http';
 
 // import 'echarts/map/js/china.js';
@@ -38,8 +38,8 @@ export default defineComponent({
       });
 
       if (typeof myEcharts !== null) {
-        echarts.registerMap('world', world);
-        
+        echarts.registerMap('world', world as any);
+
         let myEchart = echarts.init(myEcharts);
 
         let option = {

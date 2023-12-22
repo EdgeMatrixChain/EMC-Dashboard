@@ -3,31 +3,26 @@
 @tailwind utilities;
 
 @layer utilities {
-    .shadow-all {
-        box-shadow: 0px 3px 5px 1px rgba(153, 153, 153, 0.35);
-    }
+  .shadow-all {
+    box-shadow: 0px 3px 5px 1px rgba(153, 153, 153, 0.35);
+  }
 
-    .btn-bg {
-        background: linear-gradient(94deg, #09b4f7 0%, #622aff 100%);
-    }
+  .btn-bg {
+    background: linear-gradient(94deg, #09b4f7 0%, #622aff 100%);
+  }
 
-    .btn-bg2 {
-        background: linear-gradient(93deg,
-                #0faef9 0.65%,
-                #e48cff 55.13%,
-                #7d33ff 99.51%);
-    }
+  .btn-bg2 {
+    background: linear-gradient(93deg, #0faef9 0.65%, #e48cff 55.13%, #7d33ff 99.51%);
+  }
 
-    .page-one-bg {
-        border-radius: 647px;
-        background: linear-gradient(135deg,
-                rgba(138, 24, 228, 0.21) 0%,
-                rgba(255, 116, 38, 0.21) 100%);
-        filter: blur(75px);
-        flex-shrink: 0;
-    }
+  .page-one-bg {
+    border-radius: 647px;
+    background: linear-gradient(135deg, rgba(138, 24, 228, 0.21) 0%, rgba(255, 116, 38, 0.21) 100%);
+    filter: blur(75px);
+    flex-shrink: 0;
+  }
 
-    .border-linear {
-        background: linear-gradient(94deg, rgba(12, 176, 248, 1) 0%, rgba(152, 49, 255, 1) 100%);
-    }
+  .border-linear {
+    background: linear-gradient(94deg, rgba(12, 176, 248, 1) 0%, rgba(152, 49, 255, 1) 100%);
+  }
 }
