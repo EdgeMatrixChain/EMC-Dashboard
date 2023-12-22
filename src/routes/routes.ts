@@ -5,6 +5,11 @@ export const routes = [
     component: () => import('@/pages/auth/index.vue'),
   },
   {
+    name: 'staking',
+    path: '/staking',
+    component: () => import('@/pages/staking/index.vue'),
+  },
+  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),
@@ -24,11 +29,6 @@ export const routes = [
         meta: {
           keepAlive: true,
         },
-      },
-      {
-        name: 'market',
-        path: 'market',
-        component: () => import('@/pages/market/index.vue'),
       },
       {
         name: 'node-detail',
@@ -51,10 +51,5 @@ export const routes = [
       //   component: () => import('@/pages/test/index.vue'),
       // },
     ],
-  },
-  {
-    name: 'staking',
-    path: '/staking',
-    component: () => import('@/pages/staking/index.vue'),
   },
 ];

@@ -5,12 +5,8 @@ declare module '*.vue' {
 }
 
 declare module 'copy-to-clipboard';
-
 declare module '*.png';
 declare module '*.svg';
-
-//webpack define plugin
-declare var __PUBLIC_PATH__: string;
 
 interface Window {
   ic: any;

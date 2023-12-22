@@ -10,14 +10,14 @@
 <script lang="ts">
 import { onMounted, defineComponent, ref } from 'vue';
 import * as echarts from 'echarts';
-import './map/js/world.js';
+import world from './map/js/world.js';
 import { Http } from '@/tools/http';
 
 // import 'echarts/map/js/china.js';
-const http = Http.getInstance();
 
 export default defineComponent({
   setup() {
+    const http = Http.getInstance();
     const isWhell = ref(false);
 
     onMounted(async () => {
@@ -38,6 +38,8 @@ export default defineComponent({
       });
 
       if (typeof myEcharts !== null) {
+        echarts.registerMap('world', world);
+        
         let myEchart = echarts.init(myEcharts);
 
         let option = {

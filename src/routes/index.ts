@@ -3,10 +3,9 @@ import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router
 import { routes } from './routes';
 
 export default function createAppRouter(routes: any) {
-  console.info(`create app router base url is ${__PUBLIC_PATH__}`);
 
   const router = createRouter({
-    history: createWebHashHistory(process.env.BASE_URL),
+    history: createWebHashHistory(import.meta.url),
     routes,
   });
 

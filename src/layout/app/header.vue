@@ -131,7 +131,8 @@ import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import ETHConnectDialog from '@/components/eth-connect/dialog.vue';
 import { MenuSharp as IconMenu } from '@vicons/ionicons5';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-
+import IconArbitrum from '@/assets/icon_arbitrum.svg';
+import IconWalletIcp from '@/assets/wallet_icp.png';
 type tabkey = number;
 
 type TabItem = {
@@ -221,14 +222,14 @@ export default defineComponent({
         [
           option.value === 'Arbitrum'
             ? h('img', {
-                src: require('@/assets/icon_arbitrum.svg'),
+                src: IconArbitrum,
                 style: {
                   width: '28px',
                   height: '28px',
                 },
               })
             : h('img', {
-                src: require('@/assets/wallet_icp.png'),
+                src: IconWalletIcp,
                 style: {
                   width: '28px',
                   height: '28px',
