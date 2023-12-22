@@ -7,6 +7,9 @@
             <NSpace vertical :wrap-item="false" :size="[16, 16]">
               <NForm ref="formRef" :model="formData" :show-feedback="false">
                 <NGrid x-gap="16" y-gap="16" cols="24">
+                  <NFormItemGi span="24" path="account" label="Account">
+                    <NInput v-model:value="formData.account" style="width: 100%" />
+                  </NFormItemGi>
                   <NFormItemGi span="24" path="start" label="From Date">
                     <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler" style="width: 100%" />
                   </NFormItemGi>
@@ -109,14 +112,13 @@ import {
 } from 'naive-ui';
 import { RefreshSharp as IconRefresh } from '@vicons/ionicons5';
 import { useRoute } from 'vue-router';
-import moment from 'moment';
-import { Utils } from '@/tools/utils';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { StakeLockApi } from '@/web3/api/stake-lock';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
 type FormData = {
+  account: string;
   start: number;
   cycles: number;
   cycleUnit: number;
@@ -164,18 +166,15 @@ export default defineComponent({
     let erc20Api: ERC20Api | null = null;
 
     const cycleUnitOptions = ref<SelectOption[]>([
-      // { label: 'Days1', value: 0 },
-      // { label: 'Days30', value: 1 },
-      // { label: 'Days90', value: 2 },
-      // { label: 'Days180', value: 3 },
-      // { label: 'Days360', value: 4 },
-      { label: '{0}', value: 0 },
-      { label: '{1}', value: 1 },
-      { label: '{2}', value: 2 },
-      { label: '{3}', value: 3 },
-      { label: '{4}', value: 4 },
+      { label: 'Days30', value: 0 },
+      { label: 'Days90', value: 1 },
+      { label: 'Days180', value: 2 },
+      { label: 'Days360', value: 3 },
+      { label: 'Days720', value: 4 },
+      { label: 'Days1080', value: 5 },
     ]);
     const defaultFormData = () => ({
+      account: '',
       start: limitStart, //start timestamp second
       cycles: 1, //vesting cycle count
       cycleUnit: 0,
@@ -231,6 +230,11 @@ export default defineComponent({
 
       releasableAmount.value = _releasableAmount[0] || 0n;
       releasableAmountReward.value = _releasableAmount[1] || 0n;
+
+      if (!formData.value.account) {
+        formData.value.account = ethUserStore.account0;
+      }
+
       //Utils.stringify(_releasableAmount);
     };
 
@@ -298,6 +302,11 @@ export default defineComponent({
           message.error("The 'From Date' must be after 365 days");
           return;
         }
+        const account = formData.value.account;
+        if (!ethers.isAddress(account)) {
+          message.error('Invalid account');
+          return;
+        }
         const start = Math.floor(formData.value.start / 1000);
         const cycles = formData.value.cycles;
         const cycleUnit = formData.value.cycleUnit;
@@ -308,7 +317,7 @@ export default defineComponent({
         }
         result.value = '';
         sendLoading.value = true;
-        const resp = await createVesting({ account: ethUserStore.account0, start, cycles, cycleUnit, amount });
+        const resp = await createVesting({ account, start, cycles, cycleUnit, amount });
         sendLoading.value = false;
         result.value = JSON.stringify(resp);
         if (resp._result === 0) {
