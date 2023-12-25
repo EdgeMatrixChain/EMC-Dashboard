@@ -8,7 +8,7 @@
           </NSpace>
         </template>
         <template v-else>
-          <Buy :sell-contract="insideSellContract" :token-contract="tokenContract" :fund-contract="fundContract" />
+          <Buy :sell-contract="publicSellContract" :token-contract="tokenContract" :fund-contract="fundContract" />
         </template>
       </NCard>
     </NSpace>
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch, nextTick, computed } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import {
   NSpace,
   NCard,
@@ -49,7 +49,7 @@ import Buy from './buy/index.vue';
 
 
 export default defineComponent({
-  name: 'staking',
+  name: 'public-sell',
   components: {
     NSpace,
     NCard,
@@ -75,29 +75,22 @@ export default defineComponent({
     const route = useRoute();
     const ethUserStore = useETHUserStore();
     const ready = ref(false);
-    const insideSellContract = ref('');
+    const publicSellContract = ref('');
     const fundContract = ref('');
     const tokenContract = ref('');
     const stakeLockContract = ref('');
     const apiManager = ApiManager.getInstance();
     let publicSellApi: PublicSellApi | null = null;
-    let fundApi: ERC20Api | null = null;
-    let tokenApi: ERC20Api | null = null;
     let stakeLockApi: StakeLockApi | null = null;
 
-    const defaultFormData = () => ({
-      account: '',
-      amount: '', //buy amount
-    });
-
     onMounted(() => {
-      insideSellContract.value = (route.params?.contract as string) || '0x0B41968E3B98feFFF433cF780245D0A16C0a69fE';
+      publicSellContract.value = (route.params?.contract as string) || '0x0B41968E3B98feFFF433cF780245D0A16C0a69fE';
       init();
     });
 
     const init = async () => {
       ready.value = false;
-      publicSellApi = apiManager.create(PublicSellApi, { address: insideSellContract.value });
+      publicSellApi = apiManager.create(PublicSellApi, { address: publicSellContract.value });
       const [{ data: _fundContract }, { data: _tokenContract }, { data: _stakeLockContract }] = await Promise.all([
         publicSellApi.fundToken(),
         publicSellApi.token(),
@@ -114,7 +107,7 @@ export default defineComponent({
       ready,
       isSign: computed(() => ethUserStore.account0),
       chainId: computed(() => ethUserStore.chainId),
-      insideSellContract,
+      publicSellContract,
       fundContract,
       tokenContract,
     };

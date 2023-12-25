@@ -62,14 +62,7 @@ export class Web3Service {
     return { _result: 0, accounts };
   }
 
-  async addToken(config: {
-    type?: 'ERC20' | 'ERC721' | 'ERC1155';
-    address: string;
-    symbol: string;
-    decimals: number;
-    image?: string;
-    tokenId?: string;
-  }) {
+  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string; tokenId?: string }) {
     const { type, address, symbol, decimals, image, tokenId } = config;
     if (!this.provider) {
       return { _result: 2, _desc: 'Please connect wallet first' };
@@ -110,9 +103,7 @@ export class Web3Service {
 
   async switchNetwork(chainId: number): Promise<Resp> {
     const chainIdHex = `0x${chainId.toString(16)}`;
-    const [err, resp] = await Web3Utils.to(
-      this.provider!.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }])
-    );
+    const [err, resp] = await Web3Utils.to(this.provider!.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }]));
     if (!err) {
       return { _result: 0, data: resp };
     }
@@ -161,6 +152,18 @@ export class Web3Service {
     const totalGasCost = gasEstimate * gasPrice;
     console.log('Total gas cost:', formatEther(totalGasCost));
     return totalGasCost;
+  }
+
+  async signMessage(message: string) {
+    const signer = await this.getSigner();
+    if (!signer) {
+      return { _result: 1, _desc: `Not found signer` };
+    }
+    const [err, signature] = await Web3Utils.to(signer.signMessage(message));
+    if (err) {
+      return { _result: 1, _desc: `Sign message failed` };
+    }
+    return { _result: 0, data: { signature } };
   }
 
   async call(option: CallOption): Promise<Resp> {

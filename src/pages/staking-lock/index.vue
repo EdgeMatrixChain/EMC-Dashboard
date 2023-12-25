@@ -32,7 +32,9 @@
                     <NText>Information</NText>
                     <NButton quaternary circle :disabled="infoLoading" @click="onPressRefreshInfo">
                       <template #icon>
-                        <NIcon><IconRefresh /></NIcon>
+                        <NIcon>
+                          <IconRefresh />
+                        </NIcon>
                       </template>
                     </NButton>
                   </NSpace>
@@ -79,21 +81,21 @@
                     <NInput v-model:value="formData.account" style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24" path="start" label="From Date">
-                    <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler" style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24" path="cycles" label="Cycles">
-                    <NInputNumber v-model:value="formData.cycles" min="1" style="width: 100%" />
+                    <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler"
+                      style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24" path="cycleUnit" label="Cycle Unit">
                     <NSelect v-model:value="formData.cycleUnit" :options="cycleUnitOptions" style="width: 100%" />
+                  </NFormItemGi>
+                  <NFormItemGi span="24" path="cycles" label="Cycles">
+                    <NInputNumber v-model:value="formData.cycles" min="1" style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24" path="amount" label="Amount">
                     <NInput v-model:value="formData.amount" min="0" :precision="0" style="width: 100%" />
                   </NFormItemGi>
                   <NFormItemGi span="24">
-                    <NButton type="primary" strong :loading="sendLoading" style="width: 100%; background-color: var(--n-color)" @click="onPressSend"
-                      >Staking</NButton
-                    >
+                    <NButton type="primary" strong :loading="sendLoading"
+                      style="width: 100%; background-color: var(--n-color)" @click="onPressSend">Staking</NButton>
                   </NFormItemGi>
                 </NGrid>
               </NForm>
@@ -182,7 +184,7 @@ export default defineComponent({
     const infoLoading = ref(false);
     const sendLoading = ref(false);
     const apiManager = ApiManager.getInstance();
-    const limitStart = new Date().getTime() + 365 * 86400000;
+    let limitStart = new Date().getTime() + 365 * 86400000;
     let stakeLockApi: StakeLockApi | null = null;
     let erc20Api: ERC20Api | null = null;
 
@@ -196,7 +198,7 @@ export default defineComponent({
     ]);
     const defaultFormData = () => ({
       account: '',
-      start: limitStart, //start timestamp second
+      start: new Date().getTime(), //start timestamp second
       cycles: 1, //vesting cycle count
       cycleUnit: 0,
       amount: '', //vesting amount
@@ -207,7 +209,17 @@ export default defineComponent({
     const result = ref('');
 
     onMounted(() => {
-      stakeLockContract.value = (route.params?.contract as string) || '0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B';
+      const queryContract = (route.query?.contract as string);
+      const defaultContract = '0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B';
+      console.info(queryContract);
+      if (!queryContract || queryContract.toLocaleLowerCase() === defaultContract.toLocaleLowerCase()) {
+        stakeLockContract.value = defaultContract;
+        limitStart = new Date().getTime() + 365 * 86400000;
+      } else {
+        stakeLockContract.value = queryContract;
+        limitStart = new Date().getTime();
+      }
+      formData.value.start = limitStart + 86400000;
       init();
     });
 

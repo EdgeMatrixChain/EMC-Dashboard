@@ -44,8 +44,9 @@ export class PublicSellApi extends Api {
       data: [amount, account],
     });
   }
-
+  
   async buyTokensWithSignature({ account, amount, signature }: { account: string; amount: bigint; signature: string }) {
+    console.info([amount, account, signature]);
     return super.call({
       method: 'buyTokensWithSignature',
       data: [amount, account, signature],

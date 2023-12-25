@@ -6,24 +6,16 @@
         <NSpace :wrap-item="false" justify="space-between">
           <NText depth="3" strong style="font-size: 16px">Reciver Address</NText>
         </NSpace>
-        <NInput
-          v-model:value="inputReciver"
-          placeholder="Address"
-          size="large"
-          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px"
-        >
+        <NInput v-model:value="inputReciver" placeholder="Address" size="large"
+          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
         </NInput>
       </NSpace>
       <NSpace vertical :wrap-item="false" :size="[0, 4]">
         <NSpace :wrap-item="false" justify="space-between">
           <NText depth="3" strong style="font-size: 16px">You want buy</NText>
         </NSpace>
-        <NInput
-          v-model:value="inputTokenAmount"
-          placeholder="Token amount"
-          size="large"
-          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px"
-        >
+        <NInput v-model:value="inputTokenAmount" placeholder="Token amount" size="large"
+          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
           <template #suffix>
             <NSpace :size="[16, 0]" :wrap-item="false" align="center">
               <NText style="color: #02a9c8; cursor: pointer" @click="onPressFundBuyableMax"> Max </NText>
@@ -63,12 +55,13 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch, computed, nextTick } from 'vue';
 import { NSpace, NText, NInput, NButton, NSpin, NIcon, useMessage } from 'naive-ui';
+import { ethers } from 'ethers';
 import { useETHUserStore } from '@/stores/eth-user';
+import { Web3Service } from '@/web3';
 import { ApiManager } from '@/web3/api';
 import { PublicSellApi } from '@/web3/api/public-sell';
 import { ERC20Api } from '@/web3/api/erc20';
-import { ethers } from 'ethers';
-
+import { Http } from '@/tools/http';
 class Calculator {
   unitPrice: number = 0;
   init({ unitPrice }: { unitPrice: number }) {
@@ -101,7 +94,9 @@ export default defineComponent({
   setup(props, ctx) {
     const message = useMessage();
     const ethUserStore = useETHUserStore();
+    const http = Http.getInstance();
     const apiManager = ApiManager.getInstance();
+    const w3s = Web3Service.getInstance();
 
     let publicSellApi: PublicSellApi | null = null;
     let fundApi: ERC20Api | null = null;
@@ -189,6 +184,91 @@ export default defineComponent({
       }
     };
 
+    const inWhiteList = async (publicKey: string) => {
+      const resp = await http.postJSON({
+        url: 'https://api.edgematrix.pro/api/v1/publicsell/validate',
+        data: { publicKey },
+        noAutoHint: true
+      });
+      return resp._result === 0;
+    }
+
+    const preBuy = async (publicKey: string) => {
+      const signatureRaw = 'Public sell whitelist verify';
+      const resp1 = await w3s.signMessage(signatureRaw);
+      if (resp1._result !== 0) {
+        return resp1;
+      }
+      const signature = resp1.data!.signature;
+      const resp = await http.postJSON({
+        url: 'https://api.edgematrix.pro/api/v1/publicsell/prebuy',
+        data: { publicKey, signatureRaw, signature },
+        noAutoHint: true
+      });
+      return resp;
+    }
+
+    const buy = async (params: { account: string, amount: string, isWhiteMode: boolean }) => {
+      const account = params.account;
+      const amountStr = params.amount;
+      const resp = await fundApi!.allowance({ account: account, spender: publicSellApi!.contract })
+      if (resp._result !== 0) {
+        return { _result: 1, _desc: 'Allowance failed' };
+      }
+      const allowanceAmount = resp.data;
+      const approveAmount = calculator.calc(amountStr);
+      const diffApproveAmount = approveAmount - allowanceAmount;
+      if (approveAmount - allowanceAmount > 0) {
+        const resp1 = await fundApi!.approve({ amount: diffApproveAmount, spender: publicSellApi!.contract });
+        if (resp1._result !== 0) {
+          return { _result: 1, _desc: 'Approve failed' };
+        }
+      }
+      const amount = ethers.parseUnits(amountStr, tokenDecimal.value);
+      if (params.isWhiteMode) {
+        const resp = await preBuy(account);
+        if (resp._result !== 0) {
+          return resp;
+        }
+        const signature = resp.data.signature;
+        return publicSellApi!.buyTokensWithSignature({ account, amount, signature });
+      } else {
+        return publicSellApi!.buyTokens({ account, amount });
+      }
+    };
+
+    const validateBuy = async ({ account, amount, isWhiteMode }: { account: string, amount: string, isWhiteMode: boolean }) => {
+      if (!ethers.isAddress(account)) {
+        return { _result: -1, _desc: 'Invalid reciver' };
+      }
+      if (!Number(amount)) {
+        return { _result: -1, _desc: 'Invalid amount' };
+      }
+      if (isWhiteMode) {
+        const isWhiteList = await inWhiteList(account);
+        if (isWhiteList) {
+          return { _result: 0, _desc: '' };
+        } else {
+          return { _result: -1, _desc: 'Whitelist validation failed' };
+        }
+      } else {
+        return { _result: 0, _desc: '' };
+      }
+    }
+
+    const handleBuy = async ({ account, amount }: { account: string, amount: string }) => {
+      const resp1 = await publicSellApi!.onWhitelistMode();
+      if (resp1._result !== 0) {
+        return { _result: 1, _desc: 'Query mode error' };
+      }
+      const isWhiteMode = resp1.data;
+      const resp2 = await validateBuy({ account, amount, isWhiteMode });
+      if (resp2._result !== 0) {
+        return resp2;
+      }
+      return buy({ account, amount, isWhiteMode });
+    }
+
     onMounted(() => {
       init();
     });
@@ -221,56 +301,21 @@ export default defineComponent({
         inputTokenAmount.value = ethers.formatUnits(tokenBuyableMax.value, tokenDecimal.value);
       },
       async onPressConfirm() {
-        if (!ethers.isAddress(inputReciver.value)) {
-          message.error('Invalid reciver');
-          return;
-        }
-        if (inputTokenAmount.value === '' || inputTokenAmount.value === '0.0') {
-          message.error('Invalid amount');
-          return;
-        }
-        const { data: isWhiteMode } = await publicSellApi!.onWhitelistMode();
-        if (isWhiteMode) {
-          //查询receiver是否在白名单里
-          //
-        } else {
-        }
-
-        // if (白名单模式) {
-        //   if (处于白名单列表) {
-        //     白名单购买;
-        //   } else {
-        //     提示无权购买;
-        //   }
-        // } else {
-        //   普通购买;
-        // }
-
-        const approveAmount = calculator.calc(inputTokenAmount.value);
+        const account = inputReciver.value;
+        const amount = inputTokenAmount.value;
         buyLoading.value = true;
         ctx.emit('loading', buyLoading.value);
-        const resp = await fundApi!.approve({ amount: approveAmount, spender: publicSellApi!.contract });
-        if (resp._result !== 0) {
-          console.info(resp);
-          message.error('Transaction Failed');
-          buyLoading.value = false;
-          ctx.emit('loading', buyLoading.value);
-        }
-        const amount = ethers.parseUnits(inputTokenAmount.value, tokenDecimal.value);
-        const resp2 = await publicSellApi!.buyTokens({ amount: amount });
+        const resp = await handleBuy({ account, amount });
         buyLoading.value = false;
         ctx.emit('loading', buyLoading.value);
-        if (resp2._result !== 0) {
-          console.info(resp2);
-          message.error('Buy failure');
-          return;
+        if (resp._result !== 0) {
+          return message.error(resp._desc);
         }
         ctx.emit('success');
-
         init();
       },
     };
   },
 });
 </script>
-<style scoped></style>
+
