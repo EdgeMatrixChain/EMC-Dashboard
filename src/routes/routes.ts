@@ -45,6 +45,11 @@ export const routes = [
         path: 'staking-lock',
         component: () => import('@/pages/staking-lock/index.vue'),
       },
+      {
+        name: 'public-sell',
+        path: 'public-sell',
+        component: () => import('@/pages/public-sell/index.vue'),
+      },
       // {
       //   name: 'test',
       //   path: 'test',

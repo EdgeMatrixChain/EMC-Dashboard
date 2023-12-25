@@ -1,4 +1,4 @@
-import ABI_RWAEMC from '@/web3/abi/emc';
+import ABI from '@/web3/abi/stake';
 import { Api } from './api';
 
 type VestingScheduleOption = {
@@ -9,9 +9,9 @@ type VestingScheduleOption = {
   amount: BigInt;
 };
 
-export class EMCApi extends Api {
+export class StakeApi extends Api {
   getAbi() {
-    return ABI_RWAEMC;
+    return ABI;
   }
 
   async getLockedAmount({ account }: any) {

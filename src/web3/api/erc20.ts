@@ -42,7 +42,7 @@ export class ERC20Api extends Api {
     return super.call({ method: 'balanceOf', data: [account] });
   }
 
-  approve({ amount, spender }: { amount: string | number | BigInt; spender: string }) {
+  approve({ amount, spender }: { amount: string | number | bigint; spender: string }) {
     return super.call({ method: 'approve', data: [spender, amount] });
   }
 }

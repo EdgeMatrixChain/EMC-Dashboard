@@ -1,12 +1,12 @@
 #### Usage
 
 ```typescript
-import { ApiManager } from "@/web3/api";
-import { EMCApi } from "@/web3/api/emc";
-import { ERC20Api } from "@/web3/api/erc20";
+import { ApiManager } from '@/web3/api';
+import { StakeApi } from '@/web3/api/stake';
+import { ERC20Api } from '@/web3/api/erc20';
 
 const apiManager = ApiManager.getInstance();
-let emcApi: null | EMCApi = null;
+let stakeApi: null | StakeApi = null;
 let erc20Api: null | ERC20Api = null;
 
 const handleStake = async ({ start, cycles, cycleUnit, amount }: any) => {
@@ -18,7 +18,7 @@ const handleStake = async ({ start, cycles, cycleUnit, amount }: any) => {
     message.error(`Approve error: ${resp2._desc}`);
     return resp2;
   }
-  const resp3 = await emcApi!.createVestingSchedule({
+  const resp3 = await stakeApi!.createVestingSchedule({
     account,
     start,
     cycles,
@@ -31,11 +31,11 @@ const handleStake = async ({ start, cycles, cycleUnit, amount }: any) => {
   return resp3;
 };
 onMounted(async () => {
-  const emcContract = "";
-  emcApi = apiManager.create(EMCApi, { address: emcContract });
-  const { data: erc20ContractAddress } = await emcApi.token();
+  const emcContract = '';
+  stakeApi = apiManager.create(StakeApi, { address: emcContract });
+  const { data: erc20ContractAddress } = await stakeApi.token();
   erc20Api = apiManager.create(ERC20Api, { address: erc20ContractAddress });
-  await emcApi.getLockedAmount({ account: account0 });
+  await stakeApi.getLockedAmount({ account: account0 });
   await erc20Api.balanceOf({ account: account0 });
 });
 ```

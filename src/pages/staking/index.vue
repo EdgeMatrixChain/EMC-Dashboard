@@ -409,7 +409,7 @@ import Banner from './components/banner.vue';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
-import { EMCApi } from '@/web3/api/emc';
+import { StakeApi } from '@/web3/api/stake';
 import { ceil } from 'lodash';
 import moment from 'moment';
 import { ethers } from 'ethers';
@@ -531,7 +531,7 @@ const closeReleasableSuccess = () => (releasableSuccess.value = false);
 const transferAddress = ref('');
 // 精度
 const decimals = ref<number>();
-let emcApi: null | EMCApi = null;
+let stakeApi: null | StakeApi = null;
 let erc20Api: null | ERC20Api = null;
 
 // 获取实际金额
@@ -544,7 +544,7 @@ const onConnect = async () => {
   if (initLoading.value) {
     return;
   }
-  if (!erc20Api || !emcApi || !decimals.value) {
+  if (!erc20Api || !stakeApi || !decimals.value) {
     return;
   }
   await useETHUser.signIn({ type: 'metamask' });
@@ -570,7 +570,7 @@ const balanceInit = () => {
     });
 
   // 查询当前可以释放多少token，以及释放时可以获得多少奖励
-  emcApi!
+  stakeApi!
     .getReleasableAmount({ account: account0.value })
     .then((res) => {
       console.log(res);
@@ -584,7 +584,7 @@ const balanceInit = () => {
     });
 
   // 查询当前质押锁定了多少token
-  emcApi!
+  stakeApi!
     .getLockedAmount({ account: account0.value })
     .then((res) => {
       locked.value = getAmount(Number(res.data), decimals.value!);
@@ -641,7 +641,7 @@ const staking = async () => {
     }
     try {
       // 确认交易
-      const pay = await emcApi!.createVestingSchedule({
+      const pay = await stakeApi!.createVestingSchedule({
         account: transferAddress.value || account0.value,
         start: formData.start,
         cycleUnit: formData.cycleUnit as any,
@@ -700,7 +700,7 @@ const onDecompression = () => {
   }
   decompressionLoading.value = true;
 
-  emcApi!
+  stakeApi!
     .release({ address: account0.value })
     .then((res) => {
       if (res._result !== 0) {
@@ -828,8 +828,8 @@ watch(
 
 const initLoading = ref(true);
 onMounted(async () => {
-  emcApi = apiManager.create(EMCApi, { address: emcContract });
-  const { data } = await emcApi.token();
+  stakeApi = apiManager.create(StakeApi, { address: emcContract });
+  const { data } = await stakeApi.token();
   console.info(`erc20 contract ${data}`);
   erc20Api = apiManager.create(ERC20Api, { address: data });
   const { data: _decimals } = await erc20Api.decimals();
@@ -845,7 +845,7 @@ onMounted(async () => {
     .catch((err) => {
       console.error(err);
     });
-  await emcApi!
+  await stakeApi!
     .permanentTotal()
     .then((res) => {
       permanentTotal.value = getAmount(Number(res.data), decimals.value!);

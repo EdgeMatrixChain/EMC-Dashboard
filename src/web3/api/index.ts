@@ -1,6 +1,6 @@
 import { Api } from './api';
 import { ERC20Api } from './erc20';
-import { EMCApi } from './emc';
+import { EMCApi } from './stake';
 
 export class ApiManager {
   private apis: { [k: string]: ERC20Api | EMCApi | any };
