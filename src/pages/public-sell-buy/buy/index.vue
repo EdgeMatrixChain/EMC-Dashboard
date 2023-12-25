@@ -28,7 +28,7 @@
       <NSpace align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
         <div>
           <NText depth="3" strong>{{ tokenSymbol }}/{{ fundSymbol }} Rate </NText>
-          <NText strong>1{{ tokenSymbol }} -> {{ unitPrice }}{{ fundSymbol }}</NText>
+          <NText strong>1{{ tokenSymbol }} = {{ unitPrice }}{{ fundSymbol }}</NText>
         </div>
         <NSpace align="center" :wrap-item="false" :size="[8, 0]">
           <img src="@/assets/token/usdt.svg" style="width: 20px; height: 20px" />
@@ -43,10 +43,10 @@
     </NSpace>
     <NSpace vertical :wrap-item="false" :size="[0, 0]" style="margin-top: 30px">
       <template v-if="account0">
-        <NButton class="primary-button" strong size="large" :loading="buyLoading" @click="onPressConfirm"> Buy </NButton>
+        <NButton strong size="large" :loading="buyLoading" @click="onPressConfirm"> Buy </NButton>
       </template>
       <template v-else>
-        <NButton class="primary-button" strong size="large" disabled> Not connected </NButton>
+        <NButton strong size="large" disabled> Not connected </NButton>
       </template>
     </NSpace>
   </NSpin>

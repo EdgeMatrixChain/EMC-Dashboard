@@ -50,6 +50,11 @@ export const routes = [
         path: 'public-sell',
         component: () => import('@/pages/public-sell/index.vue'),
       },
+      {
+        name: 'public-sell-buy',
+        path: 'public-sell-buy',
+        component: () => import('@/pages/public-sell-buy/index.vue'),
+      },
       // {
       //   name: 'test',
       //   path: 'test',
