@@ -1,11 +1,13 @@
-import ABI from '@/web3/abi/public-sell';
+import ABI from '@/web3/abi/public-sale';
 import { Api } from './api';
 
-export class PublicSellApi extends Api {
+export class PublicSaleApi extends Api {
   getAbi() {
     return ABI;
   }
-
+  beneficiary() {
+    return super.call({ method: 'beneficiary' });
+  }
   async onWhitelistMode() {
     return super.call({ method: 'onWhitelistMode' });
   }
@@ -34,22 +36,29 @@ export class PublicSellApi extends Api {
     return super.call({ method: 'token' });
   }
 
-  async tokenPrice() {
+  tokenPrice() {
     return super.call({ method: 'tokenPrice' });
   }
 
-  async buyTokens({ account, amount }: { account: string; amount: bigint }) {
+  buyTokens({ account, amount }: { account: string; amount: bigint }) {
     return super.call({
       method: 'buyTokens',
       data: [amount, account],
     });
   }
-  
-  async buyTokensWithSignature({ account, amount, signature }: { account: string; amount: bigint; signature: string }) {
+
+  buyTokensWithSignature({ account, amount, signature }: { account: string; amount: bigint; signature: string }) {
     console.info([amount, account, signature]);
     return super.call({
       method: 'buyTokensWithSignature',
       data: [amount, account, signature],
+    });
+  }
+
+  claimFund({ amount }: { amount: bigint }) {
+    return super.call({
+      method: 'claimFund',
+      data: [amount],
     });
   }
 }

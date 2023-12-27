@@ -41,19 +41,24 @@ export const routes = [
         component: () => import('@/pages/dip20/index.vue'),
       },
       {
-        name: 'staking-lock',
-        path: 'staking-lock',
-        component: () => import('@/pages/staking-lock/index.vue'),
+        name: 'cliffs',
+        path: 'cliffs',
+        component: () => import('@/pages/cliffs/index.vue'),
       },
       {
-        name: 'public-sell',
-        path: 'public-sell',
-        component: () => import('@/pages/public-sell/index.vue'),
+        name: 'cliffs-team',
+        path: 'cliffs-team',
+        component: () => import('@/pages/cliffs-team/index.vue'),
       },
       {
-        name: 'public-sell-buy',
-        path: 'public-sell-buy',
-        component: () => import('@/pages/public-sell-buy/index.vue'),
+        name: 'public-sale',
+        path: 'public-sale',
+        component: () => import('@/pages/public-sale/index.vue'),
+      },
+      {
+        name: 'public-sale-buy',
+        path: 'public-sale-buy',
+        component: () => import('@/pages/public-sale-buy/index.vue'),
       },
       // {
       //   name: 'test',

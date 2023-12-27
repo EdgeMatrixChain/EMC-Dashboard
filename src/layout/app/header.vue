@@ -1,11 +1,9 @@
 <template>
   <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
-    <NSpace class="header-cell">
+    <NSpace class="header-cell" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
       <RouterLink :to="{ path: '/' }">
         <img class="header-icon" />
       </RouterLink>
-    </NSpace>
-    <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
       <template v-if="!isTablet && !isMobile">
         <NSpace class="header-tabs" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
           <template v-for="item in tabs">
@@ -17,88 +15,46 @@
           </template>
         </NSpace>
       </template>
-      <NSelect
-        style="min-width: 134px"
-        v-model:value="selectValue"
-        :options="options"
-        :render-label="renderLabel"
-        @update:value="handleUpdateValue"
-        :show-checkmark="false"
-      />
-      <template v-if="chainName === 'ICP'">
-        <template v-if="principal">
-          <div class="header-user" @click="onPressUserICP">
-            <template v-if="walletBalance.emcBalance !== '' && walletBalance.icpBalance !== ''">
-              <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
-                <div class="carousel-item">
-                  {{ walletBalance.emcBalance }} EMC
-                  <div class="carousel-item-icon xl:w-7 xl:h-7 w-5 h-5 hidden xl:flex">
-                    <img class="xl:w-4 xl:h-4 w-2 h-2" src="@/assets/icon_wallet.svg" />
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  {{ walletBalance.icpBalance }} ICP
-                  <div class="carousel-item-icon xl:w-7 xl:h-7 w-5 h-5 hidden xl:flex">
-                    <img class="xl:w-4 xl:h-4 w-2 h-2" src="@/assets/icon_swap.svg" />
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <span class="header-user-text">{{ principalFormatted }}</span>
-                </div>
-              </NCarousel>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
-            </template>
-            <ICPWallet v-model:visible="showWalletICP" @disconnect="onDisconnectICP" @update:balance="onUpdateBalance" />
-
-            <!-- <span class="header-user-text">{{ Utils.formatAddress(principal_id, 5) }}</span> -->
-            <!-- <img src="@/assets/icon_drop_down.svg" width="24" height="24" /> -->
-          </div>
-        </template>
-        <template v-else>
-          <div class="header-user" @click="onPressLogin">
-            <span class="header-user-text">Connect Wallet</span>
-          </div>
-        </template>
-      </template>
       <template v-else>
-        <template v-if="ethPrincipal">
-          <div class="header-user" @click="onPressUserETH">
-            <template v-if="EMCBalanceETH !== '-1'">
-              <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
-                <div class="carousel-item">
-                  {{ EMCBalanceETH }} EMC
-                  <div class="carousel-item-icon hidden xl:flex">
-                    <img src="@/assets/icon_wallet.svg" width="16" height="16" />
-                  </div>
-                </div>
-                <div class="carousel-item">
-                  <span class="header-user-text">{{ ethPrincipalFormatted }}</span>
-                </div>
-              </NCarousel>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
-            </template>
-            <ETHWallet v-model:visible="showWalletETH" @disconnect="onDisconnectETH" @update:balance="onUpdateBalanceETH" />
-          </div>
-        </template>
-        <template v-else>
-          <div class="header-user" @click="onPressLoginETH">
-            <span class="header-user-text">Connect Wallet</span>
-          </div>
-        </template>
-      </template>
-      <template v-if="isTablet || isMobile">
         <NDropdown :options="tabs" size="large" @select="onSelect" trigger="click">
           <NButton type="default" circle strong quaternary size="large">
             <template #icon>
-              <NIcon size="28"><IconMenu /></NIcon>
+              <NIcon size="28">
+                <IconMenu />
+              </NIcon>
             </template>
           </NButton>
         </NDropdown>
       </template>
+    </NSpace>
+    <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
+      <template v-if="ethPrincipal">
+        <div class="header-user" @click="onPressUser">
+          <template v-if="emcBalance">
+            <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
+              <div class="carousel-item">
+                <span class="header-user-text"> {{ emcBalance }} EMC</span>
+                <div class="carousel-item-icon hidden xl:flex">
+                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                </div>
+              </div>
+              <div class="carousel-item">
+                <span class="header-user-text">{{ ethPrincipalFormatted }}</span>
+              </div>
+            </NCarousel>
+          </template>
+          <template v-else>
+            <NSpin size="small" />
+          </template>
+          <ETHWallet v-model:visible="showWalletETH" @disconnect="onDisconnectETH" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="header-user" @click="onPressConnect">
+          <span class="header-user-text">Connect Wallet</span>
+        </div>
+      </template>
+
       <ICPConnectDialog v-model:visible="showConnect" />
       <ETHConnectDialog v-model:visible="showConnectETH" />
     </div>
@@ -113,9 +69,6 @@ import {
   NSpace,
   NCarousel,
   NSelect,
-  SelectOption,
-  SelectRenderTag,
-  SelectRenderLabel,
   useMessage,
   NDropdown,
   NButton,
@@ -130,9 +83,10 @@ import ETHWallet from './eth-wallet.vue';
 import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import ETHConnectDialog from '@/components/eth-connect/dialog.vue';
 import { MenuSharp as IconMenu } from '@vicons/ionicons5';
-import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
+import { useIsMobile, useIsTablet } from '@/composables/use-screen';
 import IconArbitrum from '@/assets/icon_arbitrum.svg';
 import IconWalletIcp from '@/assets/wallet_icp.png';
+
 type tabkey = number;
 
 type TabItem = {
@@ -172,12 +126,10 @@ export default defineComponent({
   },
   emits: ['isLoading'],
   setup(props, context) {
-    const message = useMessage();
     const tabs = ref<TabItem[]>(tabConfigs);
     const userStore = useUserStore();
     const ethUserStore = useETHUserStore();
     const router = useRouter();
-
     const currentTabKey = ref<tabkey>(initTabKey);
     const route = useRoute();
     const showWalletICP = ref(false);
@@ -185,94 +137,18 @@ export default defineComponent({
     const showConnect = ref(false);
     const showConnectETH = ref(false);
     const chainName = ref('Arbitrum');
-    const selectValue = ref('Arbitrum');
-    const walletBalance = ref({
-      emcBalance: '',
-      icpBalance: '',
-    });
-    const EMCBalanceETH = ref('-1');
 
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
 
-    // props.config.forEach((item: TabItem) => {
-    //   options.push({ key: item.path, label:  });
-    // });
 
-    const options: Array<SelectOption> = [
-      {
-        label: 'ICP',
-        value: 'ICP',
-      },
-      {
-        label: 'Arbitrum',
-        value: 'Arbitrum',
-      },
-    ];
-
-    const renderLabel: SelectRenderLabel = (option: any) => {
-      return h(
-        'div',
-        {
-          style: {
-            display: 'flex',
-            alignItems: 'center',
-          },
-        },
-        [
-          option.value === 'Arbitrum'
-            ? h('img', {
-                src: IconArbitrum,
-                style: {
-                  width: '28px',
-                  height: '28px',
-                },
-              })
-            : h('img', {
-                src: IconWalletIcp,
-                style: {
-                  width: '28px',
-                  height: '28px',
-                },
-              }),
-          h(
-            'div',
-            {
-              style: {
-                marginLeft: '8px',
-                padding: '4px 0',
-              },
-            },
-            [h('div', null, [option.label as string])]
-          ),
-        ]
-      );
-    };
-
-    onMounted(() => {}),
-      watch(
-        () => route.path,
-        (path, oldVal) => {
-          const item = tabs.value.find((item) => item.key === path);
-          currentTabKey.value = item?.id || initTabKey;
-        },
-        { immediate: true }
-      );
     watch(
-      () => userStore.icpPrincipal,
-      (val) => {
-        if (chainName.value === 'ICP' && val) {
-          showConnect.value = false;
-        }
-      }
-    );
-    watch(
-      () => ethUserStore.account0,
-      (val) => {
-        if (chainName.value === 'Arbitrum' && val) {
-          showConnectETH.value = false;
-        }
-      }
+      () => route.path,
+      (path, oldVal) => {
+        const item = tabs.value.find((item) => item.key === path);
+        currentTabKey.value = item?.id || initTabKey;
+      },
+      { immediate: true }
     );
 
     return {
@@ -280,50 +156,21 @@ export default defineComponent({
       currentTabKey,
       ethPrincipal: computed(() => ethUserStore.account0),
       ethPrincipalFormatted: computed(() => Utils.formatAddress(ethUserStore.account0, 5)),
-      principal: computed(() => userStore.icpPrincipal),
-      principalFormatted: computed(() => Utils.formatAddress(userStore.icpPrincipal, 5)),
-      showWalletICP,
       showWalletETH,
       showConnect,
       showConnectETH,
-      walletBalance,
-      EMCBalanceETH,
+      emcBalance: computed(() => ethUserStore.balance.emc.short),
       chainName,
-      onPressUserICP() {
-        showWalletICP.value = true;
-      },
-      onPressUserETH() {
+      onPressUser() {
         showWalletETH.value = true;
       },
-      onPressLogin() {
-        showConnect.value = true;
-      },
-      onPressLoginETH() {
-        showConnectETH.value = true;
-      },
-      onDisconnectICP() {
-        showWalletICP.value = false;
-        userStore.disconnect();
-        walletBalance.value.emcBalance = '';
-        walletBalance.value.icpBalance = '';
+      async onPressConnect() {
+        ethUserStore.signIn();
       },
       onDisconnectETH() {
-        ethUserStore.signOut();
         showWalletETH.value = false;
+        ethUserStore.signOut();
       },
-      onUpdateBalance(val: { emcBalance: string; icpBalance: string }) {
-        walletBalance.value.emcBalance = Number(val.emcBalance).toFixed(2);
-        walletBalance.value.icpBalance = Number(val.icpBalance).toFixed(2);
-      },
-      onUpdateBalanceETH(val: { emcBalance: string }) {
-        EMCBalanceETH.value = Number(val.emcBalance).toFixed(2);
-      },
-      handleUpdateValue(value: string, option: SelectOption) {
-        chainName.value = value;
-      },
-      selectValue,
-      options,
-      renderLabel,
       onSelect(path: string) {
         if (path.startsWith('http')) {
           window.open(path);
@@ -346,7 +193,6 @@ export default defineComponent({
 .header-cell {
   position: relative;
   padding: 0 32px;
-  flex-shrink: 0;
 }
 
 .header-icon {
@@ -375,6 +221,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
+
 .carousel-item-icon {
   align-items: center;
   justify-content: center;
@@ -384,13 +231,14 @@ export default defineComponent({
   filter: drop-shadow(0px 2px 4px rgba(37, 0, 54, 0.1));
   margin-left: 4px;
 }
+
 .header-tabs-item::after {
   content: '';
   display: none;
   position: absolute;
   transform: translate(-50%, 0);
   left: 50%;
-  bottom: 0;
+  bottom: 16px;
   height: 2px;
   width: 32px;
   border-radius: 2px;
@@ -422,6 +270,7 @@ export default defineComponent({
   text-align: center;
   flex-shrink: 0;
 }
+
 .header-user-text {
   font-size: 16px;
   font-weight: 600;
@@ -433,6 +282,7 @@ export default defineComponent({
   --n-border-focus: 1px solid #8f7df8 !important;
   --n-color: transparent !important;
 }
+
 :global(.n-select-menu) {
   --n-option-text-color-active: #8f7df8 !important;
   --n-option-check-color: #8f7df8 !important;
@@ -461,6 +311,7 @@ export default defineComponent({
     width: 102px;
     height: 36px;
   }
+
   .header-user-text,
   .carousel-item {
     font-weight: normal;

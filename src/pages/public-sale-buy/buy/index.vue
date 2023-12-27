@@ -59,7 +59,7 @@ import { ethers } from 'ethers';
 import { useETHUserStore } from '@/stores/eth-user';
 import { Web3Service } from '@/web3';
 import { ApiManager } from '@/web3/api';
-import { PublicSellApi } from '@/web3/api/public-sell';
+import { PublicSaleApi } from '@/web3/api/public-sale';
 import { ERC20Api } from '@/web3/api/erc20';
 import { Http } from '@/tools/http';
 class Calculator {
@@ -76,7 +76,7 @@ class Calculator {
 }
 
 export default defineComponent({
-  name: 'public-sell-buy',
+  name: 'public-sale-buy',
   props: {
     sellContract: { type: String, default: '' },
     tokenContract: { type: String, default: '' },
@@ -98,7 +98,7 @@ export default defineComponent({
     const apiManager = ApiManager.getInstance();
     const w3s = Web3Service.getInstance();
 
-    let publicSellApi: PublicSellApi | null = null;
+    let publicSaleApi: PublicSaleApi | null = null;
     let fundApi: ERC20Api | null = null;
     let tokenApi: ERC20Api | null = null;
     const calculator = new Calculator();
@@ -127,7 +127,7 @@ export default defineComponent({
       errorText.value = '';
       inputTokenAmount.value = '';
 
-      publicSellApi = apiManager.create<PublicSellApi>(PublicSellApi, { address: props.sellContract });
+      publicSaleApi = apiManager.create<PublicSaleApi>(PublicSaleApi, { address: props.sellContract });
       fundApi = apiManager.create<ERC20Api>(ERC20Api, { address: props.fundContract });
       tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: props.tokenContract });
 
@@ -146,7 +146,7 @@ export default defineComponent({
         tokenApi.name(),
         tokenApi.symbol(),
         tokenApi.decimals(),
-        publicSellApi.tokenPrice(),
+        publicSaleApi.tokenPrice(),
       ]);
       fundName.value = _fundName;
       fundSymbol.value = _fundSymbol;
@@ -173,7 +173,7 @@ export default defineComponent({
       }
       const resp1 = await fundApi!.balanceOf({ account: ethUserStore.account0 });
       const resp2 = await tokenApi!.balanceOf({ account: ethUserStore.account0 });
-      const resp3 = await publicSellApi!.tokensOnSale();
+      const resp3 = await publicSaleApi!.tokensOnSale();
 
       fundBalance.value = (resp1.data as bigint) || 0n;
       tokenBalance.value = (resp2.data as bigint) || 0n;
@@ -194,7 +194,7 @@ export default defineComponent({
     }
 
     const preBuy = async (publicKey: string) => {
-      const signatureRaw = 'Public sell whitelist verify';
+      const signatureRaw = 'Public sale whitelist verify';
       const resp1 = await w3s.signMessage(signatureRaw);
       if (resp1._result !== 0) {
         return resp1;
@@ -211,7 +211,7 @@ export default defineComponent({
     const buy = async (params: { account: string, amount: string, isWhiteMode: boolean }) => {
       const account = params.account;
       const amountStr = params.amount;
-      const resp = await fundApi!.allowance({ account: account, spender: publicSellApi!.contract })
+      const resp = await fundApi!.allowance({ account: account, spender: publicSaleApi!.contract })
       if (resp._result !== 0) {
         return { _result: 1, _desc: 'Allowance failed' };
       }
@@ -219,7 +219,7 @@ export default defineComponent({
       const approveAmount = calculator.calc(amountStr);
       const diffApproveAmount = approveAmount - allowanceAmount;
       if (approveAmount - allowanceAmount > 0) {
-        const resp1 = await fundApi!.approve({ amount: diffApproveAmount, spender: publicSellApi!.contract });
+        const resp1 = await fundApi!.approve({ amount: diffApproveAmount, spender: publicSaleApi!.contract });
         if (resp1._result !== 0) {
           return { _result: 1, _desc: 'Approve failed' };
         }
@@ -231,9 +231,9 @@ export default defineComponent({
           return resp;
         }
         const signature = resp.data.signature;
-        return publicSellApi!.buyTokensWithSignature({ account, amount, signature });
+        return publicSaleApi!.buyTokensWithSignature({ account, amount, signature });
       } else {
-        return publicSellApi!.buyTokens({ account, amount });
+        return publicSaleApi!.buyTokens({ account, amount });
       }
     };
 
@@ -257,7 +257,7 @@ export default defineComponent({
     }
 
     const handleBuy = async ({ account, amount }: { account: string, amount: string }) => {
-      const resp1 = await publicSellApi!.onWhitelistMode();
+      const resp1 = await publicSaleApi!.onWhitelistMode();
       if (resp1._result !== 0) {
         return { _result: 1, _desc: 'Query mode error' };
       }

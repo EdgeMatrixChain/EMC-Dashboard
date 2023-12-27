@@ -11,11 +11,12 @@ export type CallOption = {
 };
 
 export class Web3Service {
-  public provider: BrowserProvider | undefined;
+  public provider: BrowserProvider | null;
   public defaultProvider: JsonRpcProvider;
   private static instance: Web3Service | null = null;
 
   private constructor() {
+    this.provider = null;
     this.defaultProvider = new JsonRpcProvider(getDefaultNetwork().rpcUrls[0]);
   }
 
@@ -26,11 +27,15 @@ export class Web3Service {
     return Web3Service.instance;
   }
 
-  async setup({ provider }: { provider: Eip1193Provider }) {
+  async setProvider(provider: Eip1193Provider | null) {
     if (this.provider) {
       this.provider.removeAllListeners();
     }
-    this.provider = new BrowserProvider(provider);
+    if (provider) {
+      this.provider = new BrowserProvider(provider);
+    } else {
+      this.provider = null;
+    }
   }
 
   async getSigner() {
@@ -103,7 +108,10 @@ export class Web3Service {
 
   async switchNetwork(chainId: number): Promise<Resp> {
     const chainIdHex = `0x${chainId.toString(16)}`;
-    const [err, resp] = await Web3Utils.to(this.provider!.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }]));
+    if (!this.provider) {
+      return { _result: 1, _desc: `Switch network error: Not found provider` };
+    }
+    const [err, resp] = await Web3Utils.to(this.provider.send('wallet_switchEthereumChain', [{ chainId: chainIdHex }]));
     if (!err) {
       return { _result: 0, data: resp };
     }

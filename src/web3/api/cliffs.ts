@@ -1,4 +1,4 @@
-import ABI from '@/web3/abi/stake-lock';
+import ABI from '@/web3/abi/cliffs';
 import { Api } from './api';
 
 type StakeOption = {
@@ -9,7 +9,7 @@ type StakeOption = {
   amount: bigint;
 };
 
-export class StakeLockApi extends Api {
+export class CliffsApi extends Api {
   getAbi() {
     return ABI;
   }
@@ -37,6 +37,13 @@ export class StakeLockApi extends Api {
     return super.call({
       method: 'createVestingSchedule',
       data: [account, start, cycles, cycleUnit, amount],
+    });
+  }
+
+  async getVestingSchedule({ account }: { account: string }) {
+    return super.call({
+      method: 'getVestingSchedule',
+      data: [account],
     });
   }
 }

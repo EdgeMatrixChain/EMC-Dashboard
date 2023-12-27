@@ -8,10 +8,7 @@
 import { ref, onMounted, defineComponent } from 'vue';
 import { useLoadingBar, useMessage, NSpin } from 'naive-ui';
 import { router } from '@/routes/index';
-
-import { Utils } from '@/tools/utils';
-import axios from 'axios';
-
+import { WalletConnect } from '@/web3/wallet-connect';
 export default defineComponent({
   name: 'app',
   components: { NSpin },
@@ -29,11 +26,14 @@ export default defineComponent({
 
     console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 
+    WalletConnect.init();
+
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
       ready.value = true;
     });
+
 
     return {
       ready,
@@ -50,6 +50,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
+
 .n-header {
   position: fixed;
   left: 0;

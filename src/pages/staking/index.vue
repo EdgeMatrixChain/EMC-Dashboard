@@ -472,7 +472,6 @@ const daysList: dayItem[] = [
 const currentDay = ref<dayItem>(daysList[0]);
 
 // 0xDC1E36492317D1A79c6e7DfA772e0D91930d99ea 测试用
-// 0x0B41968E3B98feFFF433cF780245D0A16C0a69fE 正式网
 const emcContract = '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00';
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();

@@ -1,114 +1,116 @@
-import { ref } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { defineStore } from 'pinia';
-import { Metamask } from '@/web3/metamask';
 import { getDefaultNetwork } from '@/web3/network';
 import { Web3Service } from '@/web3';
+import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount, useWeb3ModalEvents, useDisconnect } from '@web3modal/ethers/vue';
+import { ApiManager } from '@/web3/api';
+import { ERC20Api } from '@/web3/api/erc20';
+import { ethers } from 'ethers';
 
-interface User {
-  id: string | number;
-  nickname: string;
-  avatar: string;
+type Balance = { [k: string]: { formatted: string; short: string; value: bigint } };
+const BALANCE_NONE = '';
+function formatBalance(value: bigint, unit: number) {
+  const formatted = ethers.formatUnits(value, unit);
+  const matches = formatted.match(/^\d+(?:\.\d{0,4})?/);
+  return {
+    formatted: formatted,
+    short: (matches && matches[0]) || '0.0',
+    value: value,
+  };
 }
-
-const defaultUser = (): User => ({
-  id: 0,
-  nickname: '',
-  avatar: '',
-});
-
 export const useETHUserStore = defineStore('ethuser', () => {
-  const user = ref<User>(defaultUser());
-  const accounts = ref<string[]>([]);
-  const account0 = ref<string>('');
-  const chainId = ref<number | undefined>();
   const CHAIN_ID = getDefaultNetwork().chainId;
   const w3s = Web3Service.getInstance();
+  const apiManager = ApiManager.getInstance();
 
-  const getWalletService = (type: string) => {
-    switch (type) {
-      case 'metamask':
-        return Metamask;
-      default:
-        return null;
-    }
-  };
+  const wcModal = useWeb3Modal();
+  const { isConnected, address, chainId } = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
+  const { disconnect } = useDisconnect();
 
-  const signIn = async ({ type }: { type: 'metamask' }) => {
-    const WalletService = getWalletService(type);
-    if (!WalletService) {
-      return { _result: 1, _desc: `Not support wallet provider ${type}` };
-    }
+  const account0 = computed(() => address.value || '');
+  const balance = ref<Balance>({ emc: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n } });
+  watch(
+    () => isConnected.value,
+    async (isConnected) => {
+      console.info('watch isConnected', isConnected);
+      if (!isConnected) {
+        w3s.setProvider(null);
+        return;
+      }
+      if (!walletProvider.value) {
+        console.error('Not found provider');
+        return;
+      }
 
-    const wallet = new WalletService();
-    const walletProvider = await wallet.getProvider();
+      w3s.setProvider(walletProvider.value);
 
-    w3s.setup({ provider: walletProvider });
+      const { chainId } = await w3s.getChainId();
 
-    const resp = await w3s.connect();
-    if (resp._result !== 0) {
-      resp._desc = resp._desc || 'Unknow error';
-      return resp;
-    }
-    const resp1 = await w3s.getChainId();
-    if (resp1.chainId !== CHAIN_ID) {
-      const resp2 = await wallet.switchNetwork(CHAIN_ID);
-      if (resp2._result !== 0) {
-        resp2._desc = resp2._desc || 'Switch network unknow error';
-        return resp2;
+      if (chainId !== CHAIN_ID) {
+        const resp = await w3s.switchNetwork(CHAIN_ID);
+        if (resp._result !== 0) {
+          signOut();
+          return;
+        }
+      }
+
+      updateBalance();
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => chainId.value,
+    async (chainId) => {
+      console.info('watch chainId', chainId);
+      if (!chainId) return;
+      if (chainId !== CHAIN_ID) {
+        const resp = await w3s.switchNetwork(CHAIN_ID);
+        if (resp._result !== 0) {
+          console.error(`switch network error`, resp);
+          signOut();
+        }
       }
     }
-    chainId.value = CHAIN_ID;
-    accounts.value = resp.accounts;
-    account0.value = accounts.value[0];
+  );
 
-    //TODO Call api query user info if need...
+  watch(
+    () => address.value,
+    (account) => {
+      console.info('watch account', account);
+    }
+  );
 
-    walletProvider.on('chainChanged', (changed) => {
-      console.info(changed);
-      const chainIdHex = changed as string;
-      const _chainId = parseInt(chainIdHex || '');
-      chainId.value = _chainId;
-      if (_chainId !== CHAIN_ID) {
-        signOut();
-      }
-      // Metamask recommend reloading the page, unless you must do otherwise.
-      // window.location.reload();
-    });
-
-    walletProvider.on('accountsChanged', (_accounts) => {
-      accounts.value = _accounts as string[];
-      account0.value = accounts.value[0];
-    });
-
-    return { _result: 0, accounts, chainId };
+  const signIn = async () => {
+    wcModal.open({ view: 'Connect' });
   };
 
   const signOut = async () => {
-    accounts.value = [];
-    account0.value = '';
+    Object.entries(balance.value).forEach(([k, v]) => {
+      v.formatted = BALANCE_NONE;
+      v.short = BALANCE_NONE;
+      v.value = 0n;
+    });
+    await disconnect();
 
-    user.value = defaultUser();
     return { _result: 0 };
   };
-  const addToken = async ({ type, address, symbol, decimals }: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number }) => {
-    const resp = await w3s.addToken({
-      type: type,
-      address: address,
-      symbol: symbol,
-      decimals: decimals,
-      // image: 'path/to/image',
-      // tokenId: '123456',
-    });
 
-    return { _result: resp._result, _desc: resp._desc };
+  const updateBalance = async () => {
+    //emc contract
+    const contract = '0xDFB8BE6F8c87f74295A87de951974362CedCFA30';
+    const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: contract });
+    const { data: emc = 0n } = await erc20Api.balanceOf({ account: account0.value });
+    balance.value = { emc: formatBalance(emc, 18) };
   };
   return {
-    user,
-    accounts,
+    isConnected,
     account0,
+    balance,
     chainId,
     signIn,
     signOut,
-    addToken,
+    updateBalance,
   };
 });

@@ -20,9 +20,9 @@
             </NSpace>
           </div>
           <NButton class="logout-button" icon-placement="left" secondary strong @click="onPressLogout">
-            <span class="logout-button-span">Log out</span>
+            <span class="logout-button-span">Disconnect</span>
             <template #icon>
-              <img src="@/assets/icon_logout.svg" width="16" height="16" />
+              <img src="@/assets/icon_logout.svg" width="12" height="12" />
             </template>
           </NButton>
         </NSpace>

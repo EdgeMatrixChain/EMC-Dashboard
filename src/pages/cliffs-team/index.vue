@@ -11,9 +11,9 @@
                 </NSpace>
               </template>
               <NDescriptionsItem>
-                <template #label> Staking Lock Contract (ReleaseVesing) </template>
-                <NButton text tag="a" type="primary" @click="onPressExplorer(stakeLockContract)">
-                  {{ stakeLockContract }}
+                <template #label> Cliffs Contract (ReleaseVesing) </template>
+                <NButton text tag="a" type="primary" @click="onPressExplorer(cliffContract)">
+                  {{ cliffContract }}
                 </NButton>
               </NDescriptionsItem>
               <NDescriptionsItem>
@@ -56,8 +56,8 @@
                     {{ allowanceStr }}
                   </NDescriptionsItem>
                   <NDescriptionsItem>
-                    <template #label> Lock Amount </template>
-                    {{ lockAmountStr }}
+                    <template #label> Cliffs Amount </template>
+                    {{ cliffAmountStr }}
                   </NDescriptionsItem>
                   <NDescriptionsItem>
                     <template #label> Releasable Amount </template>
@@ -73,7 +73,7 @@
           </NCard>
         </NGridItem>
         <NGridItem span="24 1000:12">
-          <NCard title="Staking (Team)">
+          <NCard title="Cliffs(Team)">
             <NSpace vertical :wrap-item="false" :size="[16, 16]">
               <NForm ref="formRef" :model="formData" :show-feedback="false">
                 <NGrid x-gap="16" y-gap="16" cols="24">
@@ -95,7 +95,7 @@
                   </NFormItemGi>
                   <NFormItemGi span="24">
                     <NButton type="primary" strong :loading="sendLoading"
-                      style="width: 100%; background-color: var(--n-color)" @click="onPressSend">Staking</NButton>
+                      style="width: 100%; background-color: var(--n-color)" @click="onPressSend">Cliffs</NButton>
                   </NFormItemGi>
                 </NGrid>
               </NForm>
@@ -134,12 +134,13 @@ import {
 } from 'naive-ui';
 import { RefreshSharp as IconRefresh } from '@vicons/ionicons5';
 import { useRoute } from 'vue-router';
-import { useETHUserStore } from '@/stores/eth-user';
-import { getNetworkConfig } from '@/web3/network';
-import { ApiManager } from '@/web3/api';
-import { StakeLockApi } from '@/web3/api/stake-lock';
-import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
+import { useETHUserStore } from '@/stores/eth-user';
+import { ApiManager } from '@/web3/api';
+import { CliffsApi } from '@/web3/api/cliffs';
+import { ERC20Api } from '@/web3/api/erc20';
+import { list as cycleUnitList } from './cycle-unit';
+
 type FormData = {
   account: string;
   start: number;
@@ -173,11 +174,11 @@ export default defineComponent({
     const message = useMessage();
     const route = useRoute();
     const ethUserStore = useETHUserStore();
-    const stakeLockContract = ref('');
+    const cliffContract = ref('');
     const erc20Contract = ref('');
     const allowance = ref<bigint>(0n);
     const balance = ref<bigint>(0n);
-    const lockAmount = ref<bigint>(0n);
+    const cliffAmount = ref<bigint>(0n);
     const releasableAmount = ref<bigint>(0n);
     const releasableAmountReward = ref<bigint>(0n);
     const decimals = ref(0);
@@ -185,17 +186,10 @@ export default defineComponent({
     const sendLoading = ref(false);
     const apiManager = ApiManager.getInstance();
     let limitStart = new Date().getTime() + 365 * 86400000;
-    let stakeLockApi: StakeLockApi | null = null;
+    let cliffsApi: CliffsApi | null = null;
     let erc20Api: ERC20Api | null = null;
 
-    const cycleUnitOptions = ref<SelectOption[]>([
-      { label: 'Days30', value: 0 },
-      { label: 'Days90', value: 1 },
-      { label: 'Days180', value: 2 },
-      { label: 'Days360', value: 3 },
-      { label: 'Days720', value: 4 },
-      { label: 'Days1080', value: 5 },
-    ]);
+    const cycleUnitOptions = ref<SelectOption[]>(cycleUnitList);
     const defaultFormData = () => ({
       account: '',
       start: new Date().getTime(), //start timestamp second
@@ -209,24 +203,16 @@ export default defineComponent({
     const result = ref('');
 
     onMounted(() => {
-      const queryContract = (route.query?.contract as string);
-      const defaultContract = '0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B';
-      console.info(queryContract);
-      if (!queryContract || queryContract.toLocaleLowerCase() === defaultContract.toLocaleLowerCase()) {
-        stakeLockContract.value = defaultContract;
-        limitStart = new Date().getTime() + 365 * 86400000;
-      } else {
-        stakeLockContract.value = queryContract;
-        limitStart = new Date().getTime();
-      }
+      cliffContract.value = '0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B';
+      limitStart = new Date().getTime() + 365 * 86400000;
       formData.value.start = limitStart + 86400000;
       init();
     });
 
     const init = async () => {
       infoLoading.value = true;
-      stakeLockApi = apiManager.create(StakeLockApi, { address: stakeLockContract.value });
-      const resp = await stakeLockApi.token();
+      cliffsApi = apiManager.create(CliffsApi, { address: cliffContract.value });
+      const resp = await cliffsApi.token();
       erc20Contract.value = resp.data || '-';
       erc20Api = apiManager.create(ERC20Api, { address: erc20Contract.value });
       await initInfoWithUser();
@@ -236,7 +222,7 @@ export default defineComponent({
     const initInfoWithUser = async () => {
       if (!ethUserStore.account0) {
         allowance.value = 0n;
-        lockAmount.value = 0n;
+        cliffAmount.value = 0n;
         releasableAmount.value = 0n;
         return;
       }
@@ -244,22 +230,22 @@ export default defineComponent({
       const [resp0, resp1, resp2, resp3, resp4] = await Promise.all([
         erc20Api!.decimals(),
         erc20Api!.balanceOf({ account: ethUserStore.account0 }),
-        erc20Api!.allowance({ account: ethUserStore.account0, spender: stakeLockContract.value }),
-        stakeLockApi!.getLockedAmount({ account: ethUserStore.account0 }),
-        stakeLockApi!.getReleasableAmount({ account: ethUserStore.account0 }),
+        erc20Api!.allowance({ account: ethUserStore.account0, spender: cliffContract.value }),
+        cliffsApi!.getLockedAmount({ account: ethUserStore.account0 }),
+        cliffsApi!.getReleasableAmount({ account: ethUserStore.account0 }),
       ]);
 
       const _decimals = resp0.data;
       const _balance = resp1.data;
       const _allowance = resp2.data;
-      const _lockAmount = resp3.data;
+      const _cliffAmount = resp3.data;
       const _releasableAmount = resp4.data || [];
 
       decimals.value = Number(_decimals);
 
       allowance.value = _allowance;
       balance.value = _balance;
-      lockAmount.value = _lockAmount;
+      cliffAmount.value = _cliffAmount;
 
       releasableAmount.value = _releasableAmount[0] || 0n;
       releasableAmountReward.value = _releasableAmount[1] || 0n;
@@ -274,17 +260,17 @@ export default defineComponent({
     const createVesting = async (params: any) => {
       const { account, start, cycles, cycleUnit } = params;
       const amount = ethers.parseUnits(params.amount, decimals.value);
-      const resp = await erc20Api!.allowance({ account: ethUserStore.account0, spender: stakeLockContract.value });
+      const resp = await erc20Api!.allowance({ account: ethUserStore.account0, spender: cliffContract.value });
       const allowance = resp.data as bigint; //bigint;
       const diffAllowance = amount - allowance;
       if (diffAllowance > 0n) {
-        const resp2 = await erc20Api!.approve({ amount: diffAllowance, spender: stakeLockContract.value });
+        const resp2 = await erc20Api!.approve({ amount: diffAllowance, spender: cliffContract.value });
         if (resp2._result !== 0) {
           message.error(`Approve error: ${resp2._desc}`);
           return resp2;
         }
       }
-      const resp3 = await stakeLockApi!.createVestingSchedule({
+      const resp3 = await cliffsApi!.createVestingSchedule({
         account,
         start: BigInt(start),
         cycles: BigInt(cycles),
@@ -310,15 +296,15 @@ export default defineComponent({
       sendLoading,
       isSign: computed(() => ethUserStore.account0),
       chainId: computed(() => ethUserStore.chainId),
-      stakeLockContract,
+      cliffContract,
       erc20Contract,
       allowance,
       balance,
-      lockAmount,
+      cliffAmount,
       releasableAmount,
       balanceStr: computed(() => ethers.formatUnits(balance.value, decimals.value)),
       allowanceStr: computed(() => ethers.formatUnits(allowance.value, decimals.value)),
-      lockAmountStr: computed(() => ethers.formatUnits(lockAmount.value, decimals.value)),
+      cliffAmountStr: computed(() => ethers.formatUnits(cliffAmount.value, decimals.value)),
       releasableAmountStr: computed(() => ethers.formatUnits(releasableAmount.value, decimals.value)),
       releasableAmountRewardStr: computed(() => ethers.formatUnits(releasableAmountReward.value, decimals.value)),
       dateDisabledHandler(ts: number) {

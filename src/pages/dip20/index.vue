@@ -55,7 +55,7 @@ import { defineComponent, ref, onMounted } from 'vue';
 import { NSpace, useMessage, NText } from 'naive-ui';
 import Transfer from './transfer.vue';
 import Claim from './claim.vue';
-import { useETHUserStore } from '@/stores/eth-user';
+import { Web3Service } from '@/web3';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ApiManager } from '@/web3/api';
 
@@ -64,7 +64,7 @@ export default defineComponent({
   components: { NSpace, NText, Transfer, Claim },
 
   setup() {
-    const ethUserStore = useETHUserStore();
+    const w3s = Web3Service.getInstance();
     const apiManager = ApiManager.getInstance();
 
     const message = useMessage();
@@ -120,7 +120,7 @@ export default defineComponent({
         const { data: _decimals } = await erc20Api.decimals();
         const { data: _symbol } = await erc20Api.symbol();
 
-        const resp = await ethUserStore.addToken({
+        const resp = await w3s.addToken({
           type: 'ERC20',
           address: address,
           symbol: _symbol,

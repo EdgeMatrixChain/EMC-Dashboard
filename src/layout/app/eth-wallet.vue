@@ -13,16 +13,18 @@
       <div class="wallet-main">
         <NSpace class="wallet-main-account" justify="space-between">
           <div>
-            <div class="theme-font-style">Account ID</div>
+            <div class="theme-font-style">Address</div>
             <NSpace class="account-id" @click="onPressCopy(account)" :size="[0, 0]">
               <span>{{ Utils.formatAddress(account, 6) }}</span>
               <img src="@/assets/icon_copy.png" width="12" height="12" style="margin: 0px 0 4px 4px" />
             </NSpace>
           </div>
           <NButton class="logout-button" icon-placement="left" secondary strong @click="onPressLogout">
-            <span class="logout-button-span">Log out</span>
+            <span class="logout-button-span">Disconnect</span>
             <template #icon>
-              <img src="@/assets/icon_logout.svg" width="16" height="16" />
+              <NIcon size="16">
+                <IconUnlink />
+              </NIcon>
             </template>
           </NButton>
         </NSpace>
@@ -46,19 +48,16 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, computed, defineComponent, watch } from 'vue';
-import { NSpace, NModal, NButton, useMessage } from 'naive-ui';
+import { computed, defineComponent } from 'vue';
+import { NSpace, NModal, NButton, NIcon, useMessage } from 'naive-ui';
+import { UnlinkOutline as IconUnlink } from '@vicons/ionicons5';
 import copy from 'copy-to-clipboard';
 import { Utils } from '@/tools/utils';
 import { useETHUserStore } from '@/stores/eth-user';
-import { ethers } from 'ethers';
-import { Http } from '@/tools/http';
-import { ApiManager } from '@/web3/api';
-import { ERC20Api } from '@/web3/api/erc20';
 
 export default defineComponent({
   name: 'wallet',
-  components: { NSpace, NModal, NButton },
+  components: { NSpace, NModal, NButton, NIcon, IconUnlink },
   props: {
     visible: { type: Boolean, default: false },
   },
@@ -66,25 +65,6 @@ export default defineComponent({
   setup(props, context) {
     const message = useMessage();
     const ethUserStore = useETHUserStore();
-    const apiManager = ApiManager.getInstance();
-    const http = Http.getInstance();
-
-    const emcMetaData = ref({ symbol: '', logo: '', decimals: 0 });
-    const emcBalance = ref('--');
-
-    onMounted(async () => {
-      const [emcBalance] = await Promise.all([initEMCBalance()]);
-      context.emit('update:balance', { emcBalance });
-    });
-
-    async function initEMCBalance() {
-      const address = '0xDFB8BE6F8c87f74295A87de951974362CedCFA30';
-      const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: address });
-      const { data: balance } = await erc20Api.balanceOf({ account: ethUserStore.account0 });
-      const balanceStr = ethers.formatUnits(balance, 18);
-      emcBalance.value = balanceStr.replace(/(\.\d{4})\d+/, '$1');
-      return emcBalance.value;
-    }
 
     const onPressMask = () => {
       context.emit('update:visible');
@@ -102,8 +82,7 @@ export default defineComponent({
     return {
       Utils,
       account: computed(() => ethUserStore.account0),
-      emcMetaData,
-      emcBalance,
+      emcBalance: computed(() => ethUserStore.balance.emc.short),
       onPressMask,
       onPressLogout,
       onPressCopy,
@@ -127,6 +106,7 @@ export default defineComponent({
   overflow: hidden;
   z-index: 1;
 }
+
 .wallet-mask {
   position: absolute;
   top: 0;
@@ -136,6 +116,7 @@ export default defineComponent({
   filter: blur(40px);
   z-index: 2;
 }
+
 .wallet-mask-header {
   position: absolute;
   left: 30px;
@@ -144,6 +125,7 @@ export default defineComponent({
   height: 90px;
   background: linear-gradient(235deg, rgba(33, 55, 142, 0.48) 0%, rgba(176, 80, 160, 0.48) 100%);
 }
+
 .wallet-mask-footer {
   position: absolute;
   left: 35px;
@@ -152,6 +134,7 @@ export default defineComponent({
   height: 90px;
   background: linear-gradient(101deg, rgba(113, 209, 209, 0.18) 0%, rgba(176, 80, 160, 0.18) 100%);
 }
+
 .wallet-border {
   position: absolute;
   top: 0;
@@ -164,12 +147,14 @@ export default defineComponent({
   backdrop-filter: blur(10px);
   z-index: 3;
 }
+
 .wallet-decoration {
   position: absolute;
   top: 54px;
   right: 92px;
   z-index: 4;
 }
+
 .wallet-decoration-border-round {
   position: absolute;
   top: -10px;
@@ -181,6 +166,7 @@ export default defineComponent({
   border-radius: 50%;
   z-index: 5;
 }
+
 .wallet-decoration-ball {
   position: absolute;
   top: 0;
@@ -193,6 +179,7 @@ export default defineComponent({
   filter: blur(2px);
   z-index: 6;
 }
+
 .wallet-main {
   position: absolute;
   top: 0;
@@ -209,9 +196,11 @@ export default defineComponent({
   font-weight: 300;
   line-height: 16px;
 }
+
 .wallet-main-account {
   padding-left: 12px;
 }
+
 .account-id {
   margin-top: 8px;
   font-size: 14px;
@@ -226,6 +215,7 @@ export default defineComponent({
   background: rgba(14, 14, 14, 0.12);
   backdrop-filter: blur(1px);
 }
+
 .logout-button-span {
   font-size: 12px;
   font-weight: 300;
@@ -242,6 +232,7 @@ export default defineComponent({
   border-radius: 8px;
   box-sizing: border-box;
 }
+
 .coin-info-left {
   display: flex;
   align-items: center;
@@ -256,9 +247,9 @@ export default defineComponent({
   margin-right: 12px;
   border-radius: 50%;
   background-color: #fff;
-  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05)) drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01))
-    drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.09)) drop-shadow(0px 7px 4px rgba(0, 0, 0, 0.05)) drop-shadow(0px 12px 5px rgba(0, 0, 0, 0.01)) drop-shadow(0px 19px 5px rgba(0, 0, 0, 0));
 }
+
 .coin-info-name {
   min-width: 32px;
   margin-right: 4px;
@@ -268,6 +259,7 @@ export default defineComponent({
   line-height: 14px;
   letter-spacing: 0.7px;
 }
+
 .coin-info-balance {
   margin-right: 8px;
   color: #e4e4e4;
@@ -275,6 +267,7 @@ export default defineComponent({
   font-weight: 300;
   line-height: 8px;
 }
+
 .coin-info-balance-box {
   width: 144px;
   padding: 6px 0;
@@ -292,12 +285,14 @@ export default defineComponent({
   line-height: 22px;
   letter-spacing: 0.7px;
 }
+
 .coin-info-number-probably {
   color: #eee;
   font-size: 12px;
   font-weight: 300;
   line-height: 12px;
 }
+
 @media screen and (max-width: 1280px) {
   .n-modal {
     left: 0;

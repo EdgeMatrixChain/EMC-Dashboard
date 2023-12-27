@@ -4,8 +4,8 @@
       <NLayoutHeader class="n-header bg-[#ffffff20] xl:bg-[#18181c]">
         <Header @isLoading="isLoading" />
       </NLayoutHeader>
-
-      <NLayoutContent class="xl:w-[1440px]" style="margin: auto" content-style="margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
+      <!-- class="xl:w-[1440px]" -->
+      <NLayoutContent style="margin: auto" content-style="margin:auto;padding: 24px;min-height:calc(100vh - 84px)">
         <template v-if="ready">
           <router-view v-slot="{ Component, route }">
             <transition name="slide-fade">
@@ -71,6 +71,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
+
 .n-header {
   position: fixed;
   left: 0;
