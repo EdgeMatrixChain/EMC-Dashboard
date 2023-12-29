@@ -39,7 +39,7 @@
           </template>
         </NInput>
         <NSpin :show="currentLoading">
-          <NCard title="Public Sale" style="max-width:880px;">
+          <NCard title="Strategy Sale" style="max-width:880px;">
             <template #header>
               <NSpace vertical justify="space-between" :wrap-item="false" :size="[4, 4]">
                 <NText>About Address</NText>
@@ -63,13 +63,13 @@
         </NSpin>
       </NSpace>
       <AdminClaimFund v-model:visible="isAdminClaimFundVisible" :total-fund="totalFundStr"
-        :contract="publicSellContract" />
+        :contract="publicSaleContract" />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed, watch } from 'vue';
+import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue';
 import {
   NSpace,
   NCard,
@@ -116,7 +116,7 @@ export default defineComponent({
     const ethUserStore = useETHUserStore();
     const error = ref(-1);
     const errorText = ref('');
-    const publicSellContract = ref('');
+    const publicSaleContract = ref('');
     const beneficiaryAddress = ref('');
     const totalFund = ref(0n);
     const isAdminClaimFundVisible = ref(false);
@@ -137,7 +137,7 @@ export default defineComponent({
     let cliffsApi: CliffsApi | null = null;
 
     onMounted(() => {
-      publicSellContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
+      publicSaleContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
       init();
     });
 
@@ -174,7 +174,7 @@ export default defineComponent({
 
     const init = async () => {
       error.value = -1;
-      publicSaleApi = apiManager.create(PublicSaleApi, { address: publicSellContract.value });
+      publicSaleApi = apiManager.create(PublicSaleApi, { address: publicSaleContract.value });
       const [
         { data: _beneficiary },
         { data: _fundContract },
@@ -196,28 +196,31 @@ export default defineComponent({
       tokenContract.value = _tokenContract;
       stakeLockContract.value = _stakeLockContract;
       cliffsApi = apiManager.create(CliffsApi, { address: stakeLockContract.value });
-      if (ethUserStore.account0) {
+      if (!ethUserStore.isInvalidConnect) {
         await initUserInfo(ethUserStore.account0);
         inputAccount.value = ethUserStore.account0;
       }
       error.value = 0;
     };
 
-    watch(() => ethUserStore.account0, (value) => {
-      if (value) {
+    watch(
+      () => ethUserStore.isInvalidConnect,
+      (invalid) => {
+        if (invalid) return;
         if (!currentAccount.value) {
-          initUserInfo(value);
-          inputAccount.value = value;
+          nextTick(() => {
+            initUserInfo(ethUserStore.account0);
+            inputAccount.value = ethUserStore.account0;
+          });
         }
-      }
-    })
+      })
 
     return {
       error,
       errorText,
-      isSign: computed(() => ethUserStore.account0),
+      isSign: computed(() => !ethUserStore.isInvalidConnect),
       chainId: computed(() => ethUserStore.chainId),
-      publicSellContract,
+      publicSaleContract,
       isBeneficiary: computed(() => Web3Utils.eq(ethUserStore.account0, beneficiaryAddress.value)),
       totalFundStr: computed(() => ethers.formatUnits(totalFund.value, 6)),
       isAdminClaimFundVisible,
@@ -251,7 +254,7 @@ export default defineComponent({
 
       },
       onPressBuy() {
-        router.push({ name: 'public-sale-buy', query: { contract: publicSellContract.value } });
+        router.push({ name: 'public-sale-buy', query: { contract: publicSaleContract.value } });
       },
     };
   },

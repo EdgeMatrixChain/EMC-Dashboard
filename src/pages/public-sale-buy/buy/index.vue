@@ -1,60 +1,89 @@
 <template>
   <NSpin :show="error === -1">
-    <!-- :bordered="false" -->
-    <NSpace vertical :wrap-item="false" :size="[0, 16]">
-      <NSpace vertical :wrap-item="false" :size="[0, 4]">
-        <NSpace :wrap-item="false" justify="space-between">
-          <NText depth="3" strong style="font-size: 16px">Reciver Address</NText>
-        </NSpace>
-        <NInput v-model:value="inputReciver" placeholder="Address" size="large"
-          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
-        </NInput>
+    <template v-if="error !== 0">
+      <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+        <NText>{{ errorText }}</NText>
       </NSpace>
-      <NSpace vertical :wrap-item="false" :size="[0, 4]">
-        <NSpace :wrap-item="false" justify="space-between">
-          <NText depth="3" strong style="font-size: 16px">You want buy</NText>
-        </NSpace>
-        <NInput v-model:value="inputTokenAmount" placeholder="Token amount" size="large"
-          style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
-          <template #suffix>
-            <NSpace :size="[16, 0]" :wrap-item="false" align="center">
-              <NText style="color: #02a9c8; cursor: pointer" @click="onPressFundBuyableMax"> Max </NText>
-              <div style="height: 32px; width: 1px; background-color: #d1d1d1"></div>
-              <NText>{{ tokenSymbol }}</NText>
+    </template>
+    <template v-else>
+      <NSpace vertical :wrap-item="false" :size="[0, 32]">
+        <NCard title="Current Address">
+          <NSpace vertical :wrap-item="false" :size="[8, 16]">
+            <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+              <NText strong>{{ account0 }}</NText>
             </NSpace>
-          </template>
-        </NInput>
+
+          </NSpace>
+        </NCard>
+        <NCard title="Strategy Sale">
+          <NSpace vertical :wrap-item="false" :size="[0, 32]" style="min-height:240px;">
+            <NSpace vertical :wrap-item="false" :size="[0, 16]">
+              <NSpace vertical :wrap-item="false" :size="[0, 4]">
+                <NSpace :wrap-item="false" justify="space-between">
+                  <NText depth="3" strong style="font-size: 16px">Receiver Address</NText>
+                </NSpace>
+                <NInput v-model:value="inputReceiver" placeholder="Address" size="large"
+                  style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
+                </NInput>
+              </NSpace>
+              <NSpace vertical :wrap-item="false" :size="[0, 4]">
+                <NSpace :wrap-item="false" justify="space-between">
+                  <NText depth="3" strong style="font-size: 16px">You want buy</NText>
+                </NSpace>
+                <NInput v-model:value="inputTokenAmount" placeholder="Token amount" size="large"
+                  style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
+                  <template #suffix>
+                    <NSpace :size="[16, 0]" :wrap-item="false" align="center">
+                      <NText style="color: #02a9c8; cursor: pointer" @click="onPressFundBuyableMax"> Max </NText>
+                      <div style="height: 32px; width: 1px; background-color: #d1d1d1"></div>
+                      <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                        <div class="flex items-center justify-center w-[20px] h-[20px] bg-[#ffffff] rounded-[24px]">
+                          <img src="@/assets/icon_coin_emc.png" style="width: 16px; height: 16px" />
+                        </div>
+                        <NText strong>{{ tokenBuyableMaxStr }} {{ tokenSymbol }}</NText>
+                      </NSpace>
+                    </NSpace>
+                  </template>
+                </NInput>
+              </NSpace>
+              <NSpace align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                  <NText depth="3" strong>{{ tokenSymbol }}/{{ fundSymbol }} Rate </NText>
+                  <NText strong>1{{ tokenSymbol }} = {{ fundTokenPriceStr || '?' }}{{ fundSymbol }}</NText>
+                </NSpace>
+              </NSpace>
+              <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                <NText depth="3" strong>Your Balance:</NText>
+                <NSpace align="center" :wrap-item="false" :size="[4, 0]">
+                  <img src="@/assets/token/usdt.svg" style="width: 20px; height: 20px" />
+                  <NText strong>{{ fundBalanceStr }} {{ fundSymbol }}</NText>
+                </NSpace>
+              </NSpace>
+              <NSpace align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                  <NText depth="3" strong>You will pay: </NText>
+                  <NText strong>{{ total }}{{ fundSymbol }}</NText>
+                </NSpace>
+              </NSpace>
+            </NSpace>
+            <NSpace vertical :wrap-item="false" :size="[0, 0]">
+              <template v-if="!validationError">
+                <NButton strong size="large" :loading="buyLoading" @click="onPressConfirm"> Buy </NButton>
+              </template>
+              <template v-else>
+                <NButton strong size="large" disabled> {{ validationError }} </NButton>
+              </template>
+            </NSpace>
+          </NSpace>
+        </NCard>
       </NSpace>
-      <NSpace align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-        <div>
-          <NText depth="3" strong>{{ tokenSymbol }}/{{ fundSymbol }} Rate </NText>
-          <NText strong>1{{ tokenSymbol }} = {{ unitPrice }}{{ fundSymbol }}</NText>
-        </div>
-        <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-          <img src="@/assets/token/usdt.svg" style="width: 20px; height: 20px" />
-          <NText depth="3" strong style="font-size: 12px">Balance:</NText>
-          <NText strong>{{ fundBalanceStr }} {{ fundSymbol }}</NText>
-        </NSpace>
-      </NSpace>
-      <div>
-        <NText depth="3" strong>You will pay: </NText>
-        <NText strong>{{ total }}{{ fundSymbol }}</NText>
-      </div>
-    </NSpace>
-    <NSpace vertical :wrap-item="false" :size="[0, 0]" style="margin-top: 30px">
-      <template v-if="account0">
-        <NButton strong size="large" :loading="buyLoading" @click="onPressConfirm"> Buy </NButton>
-      </template>
-      <template v-else>
-        <NButton strong size="large" disabled> Not connected </NButton>
-      </template>
-    </NSpace>
+    </template>
   </NSpin>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch, computed, nextTick } from 'vue';
-import { NSpace, NText, NInput, NButton, NSpin, NIcon, useMessage } from 'naive-ui';
+import { NSpace, NCard, NText, NInput, NButton, NSpin, NIcon, useMessage } from 'naive-ui';
 import { ethers } from 'ethers';
 import { useETHUserStore } from '@/stores/eth-user';
 import { Web3Service } from '@/web3';
@@ -75,6 +104,17 @@ class Calculator {
   }
 }
 
+function debounce(fn: any, delay: number) {
+  return (...args: any[]) => {
+    clearTimeout(fn.id)
+    fn.id = setTimeout(() => {
+      fn.call(null, args)
+    }, delay)
+  }
+}
+
+
+
 export default defineComponent({
   name: 'public-sale-buy',
   props: {
@@ -85,6 +125,7 @@ export default defineComponent({
   emits: ['success', 'loading'],
   components: {
     NSpace,
+    NCard,
     NText,
     NInput,
     NButton,
@@ -105,8 +146,9 @@ export default defineComponent({
 
     const error = ref(-1);
     const errorText = ref('');
+    const validationError = ref('');
 
-    const inputReciver = ref('');
+    const inputReceiver = ref('');
     const inputTokenAmount = ref('');
 
     const fundTokenPriceWei = ref(0);
@@ -121,6 +163,7 @@ export default defineComponent({
     const tokenBalance = ref<bigint>(0n);
     const tokenBuyableMax = ref<bigint>(0n);
     const buyLoading = ref(false);
+
 
     const init = async () => {
       error.value = -1;
@@ -138,7 +181,7 @@ export default defineComponent({
         { data: _tokenName },
         { data: _tokenSymbol },
         { data: _tokenDecimals },
-        { data: _fundTokenPriceWei },
+
       ] = await Promise.all([
         fundApi.name(),
         fundApi.symbol(),
@@ -146,7 +189,6 @@ export default defineComponent({
         tokenApi.name(),
         tokenApi.symbol(),
         tokenApi.decimals(),
-        publicSaleApi.tokenPrice(),
       ]);
       fundName.value = _fundName;
       fundSymbol.value = _fundSymbol;
@@ -156,53 +198,91 @@ export default defineComponent({
       tokenSymbol.value = _tokenSymbol;
       tokenDecimal.value = Number(_tokenDecimals);
 
-      fundTokenPriceWei.value = Number(_fundTokenPriceWei);
-
-      calculator.init({ unitPrice: fundTokenPriceWei.value });
-      await initUserInfo();
-
+      const resp = await initUserInfo();
+      if (resp._result !== 0) {
+        validationError.value = resp._desc || '';
+      } else {
+        validationError.value = '';
+      }
       error.value = 0;
     };
     //init user balance
     const initUserInfo = async () => {
-      if (!ethUserStore.account0) {
-        fundBalance.value = 0n;
-        tokenBalance.value = 0n;
-        tokenBuyableMax.value = 0n;
-        return;
+      fundBalance.value = 0n;
+      tokenBalance.value = 0n;
+      tokenBuyableMax.value = 0n;
+      fundTokenPriceWei.value = 0;
+      if (ethUserStore.isInvalidConnect) {
+        return { _result: 1, _desc: 'Not connected' };
       }
-      const resp1 = await fundApi!.balanceOf({ account: ethUserStore.account0 });
-      const resp2 = await tokenApi!.balanceOf({ account: ethUserStore.account0 });
-      const resp3 = await publicSaleApi!.tokensOnSale();
-
-      fundBalance.value = (resp1.data as bigint) || 0n;
-      tokenBalance.value = (resp2.data as bigint) || 0n;
-      tokenBuyableMax.value = (resp3.data as bigint) || 0n;
-
-      if (!inputReciver.value) {
-        inputReciver.value = ethUserStore.account0;
+      const resp1 = await publicSaleApi!.onWhitelistMode();
+      if (resp1._result !== 0) {
+        return { _result: 1, _desc: 'Query white list error' };
       }
+      const isWhiteMode = resp1.data;
+      const resp2 = await validateWhiteList({ account: ethUserStore.account0, isWhiteMode })
+      if (resp2._result !== 0) {
+        return { _result: 1, _desc: resp2._desc };
+      }
+
+      const [
+        { data: _fundBalance },
+        { data: _tokenBalance },
+        { data: _tokenBuyableMax },
+        { data: _fundTokenPriceWei }
+      ] = await Promise.all([
+        fundApi!.balanceOf({ account: ethUserStore.account0 }),
+        tokenApi!.balanceOf({ account: ethUserStore.account0 }),
+        queryBuyableMax(isWhiteMode),
+        publicSaleApi!.tokenPrice()
+      ])
+
+      fundBalance.value = _fundBalance || 0n;
+      tokenBalance.value = _tokenBalance || 0n;
+      tokenBuyableMax.value = _tokenBuyableMax || 0n;
+      fundTokenPriceWei.value = Number(_fundTokenPriceWei) || 0;
+      calculator.init({ unitPrice: fundTokenPriceWei.value });
+
+      if (!inputReceiver.value) {
+        inputReceiver.value = ethUserStore.account0;
+      }
+      return { _result: 0 };
     };
 
+    const queryBuyableMax = async (isWhiteMode: boolean) => {
+      if (isWhiteMode) {
+        const resp = await http.postJSON({
+          url: 'https://api.edgematrix.pro/api/v1/publicsale/whitelimit',
+          data: { publicKey: ethUserStore.account0 },
+          noAutoHint: true
+        });
+        if (resp._result !== 0) {
+          return { data: 0n };
+        }
+        return { data: BigInt(resp.data) };
+      } else {
+        return await publicSaleApi!.tokensOnSale();
+      }
+    };
     const inWhiteList = async (publicKey: string) => {
       const resp = await http.postJSON({
-        url: 'https://api.edgematrix.pro/api/v1/publicsell/validate',
+        url: 'https://api.edgematrix.pro/api/v1/publicsale/validate',
         data: { publicKey },
         noAutoHint: true
       });
       return resp._result === 0;
     }
 
-    const preBuy = async (publicKey: string) => {
-      const signatureRaw = 'Public sale whitelist verify';
+    const preBuy = async (publicKey: string, amount: bigint) => {
+      const signatureRaw = 'Strategy Sale whitelist verify';
       const resp1 = await w3s.signMessage(signatureRaw);
       if (resp1._result !== 0) {
         return resp1;
       }
       const signature = resp1.data!.signature;
       const resp = await http.postJSON({
-        url: 'https://api.edgematrix.pro/api/v1/publicsell/prebuy',
-        data: { publicKey, signatureRaw, signature },
+        url: 'https://api.edgematrix.pro/api/v1/publicsale/prebuy',
+        data: { publicKey, amount: amount.toString(), signatureRaw, signature },
         noAutoHint: true
       });
       return resp;
@@ -226,37 +306,46 @@ export default defineComponent({
       }
       const amount = ethers.parseUnits(amountStr, tokenDecimal.value);
       if (params.isWhiteMode) {
-        const resp = await preBuy(account);
+        const resp = await preBuy(account, amount);
         if (resp._result !== 0) {
           return resp;
         }
-        const signature = resp.data.signature;
-        return publicSaleApi!.buyTokensWithSignature({ account, amount, signature });
+        const data = resp.data || {};
+        const nonce = data.nonce;
+        const signature = data.signature;
+        return publicSaleApi!.buyTokensWithSignature({ account, nonce, amount, signature });
       } else {
         return publicSaleApi!.buyTokens({ account, amount });
       }
     };
 
-    const validateBuy = async ({ account, amount, isWhiteMode }: { account: string, amount: string, isWhiteMode: boolean }) => {
-      if (!ethers.isAddress(account)) {
-        return { _result: -1, _desc: 'Invalid reciver' };
-      }
-      if (!Number(amount)) {
-        return { _result: -1, _desc: 'Invalid amount' };
-      }
+    const validateWhiteList = async ({ account, isWhiteMode }: { account: string, isWhiteMode: boolean }) => {
       if (isWhiteMode) {
         const isWhiteList = await inWhiteList(account);
         if (isWhiteList) {
           return { _result: 0, _desc: '' };
         } else {
-          return { _result: -1, _desc: 'Whitelist validation failed' };
+          return { _result: -1, _desc: 'The current address is not in the whitelist' };
         }
       } else {
         return { _result: 0, _desc: '' };
       }
     }
 
+    const validateBuy = ({ account, amount, isWhiteMode }: { account: string, amount: string, isWhiteMode: boolean }) => {
+      if (!ethers.isAddress(account)) {
+        return { _result: -1, _desc: 'Invalid receiver' };
+      }
+      if (!Number(amount)) {
+        return { _result: -1, _desc: 'Invalid amount' };
+      }
+      return validateWhiteList({ account, isWhiteMode });
+    }
+
     const handleBuy = async ({ account, amount }: { account: string, amount: string }) => {
+      if (!fundTokenPriceWei.value) {
+        return { _result: 1, _desc: 'Invalid price' };
+      }
       const resp1 = await publicSaleApi!.onWhitelistMode();
       if (resp1._result !== 0) {
         return { _result: 1, _desc: 'Query mode error' };
@@ -274,18 +363,27 @@ export default defineComponent({
     });
 
     watch(
-      () => ethUserStore.account0,
-      (val) => {
+      () => ethUserStore.isInvalidConnect,
+      (invalid) => {
         if (error.value !== 0) return;
-        nextTick(() => initUserInfo());
+        if (invalid) return;
+        nextTick(async () => {
+          const resp = await initUserInfo();
+          if (resp._result !== 0) {
+            validationError.value = resp._desc || '';
+          } else {
+            validationError.value = '';
+          }
+        });
       }
     );
 
     return {
       error,
       errorText,
+      validationError,
       account0: computed(() => ethUserStore.account0),
-      inputReciver,
+      inputReceiver,
       inputTokenAmount,
       fundName,
       fundSymbol,
@@ -295,13 +393,13 @@ export default defineComponent({
       tokenBalanceStr: computed(() => ethers.formatUnits(tokenBalance.value, tokenDecimal.value)),
       tokenBuyableMaxStr: computed(() => ethers.formatUnits(tokenBuyableMax.value, tokenDecimal.value)),
       total: computed(() => ethers.formatUnits(calculator.calc(inputTokenAmount.value), fundDecimal.value)),
-      unitPrice: computed(() => ethers.formatUnits(fundTokenPriceWei.value, fundDecimal.value)),
+      fundTokenPriceStr: computed(() => fundTokenPriceWei.value ? ethers.formatUnits(fundTokenPriceWei.value, fundDecimal.value) : '?'),
       buyLoading,
       onPressFundBuyableMax() {
         inputTokenAmount.value = ethers.formatUnits(tokenBuyableMax.value, tokenDecimal.value);
       },
       async onPressConfirm() {
-        const account = inputReciver.value;
+        const account = inputReceiver.value;
         const amount = inputTokenAmount.value;
         buyLoading.value = true;
         ctx.emit('loading', buyLoading.value);

@@ -42,7 +42,7 @@ export default defineComponent({
 
     return {
       async onPressConnectETH() {
-        await ethUserStore.signIn({ type: 'metamask' });
+        await ethUserStore.signIn();
       },
       onPressClose() {
         ctx.emit('update:visible', false);

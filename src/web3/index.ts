@@ -10,6 +10,12 @@ export type CallOption = {
   data?: any[];
 };
 
+function wait(t: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, t);
+  });
+}
+
 export class Web3Service {
   public provider: BrowserProvider | null;
   public defaultProvider: JsonRpcProvider;
@@ -115,15 +121,19 @@ export class Web3Service {
     if (!err) {
       return { _result: 0, data: resp };
     }
-    if (err.error.code === 4902) {
+    const error = err.error;
+    if (error?.code === 4902) {
       const resp = await this.addNetwork(chainId);
       if (resp._result === 0) {
-        return await this.switchNetwork(chainId);
+        return this.switchNetwork(chainId);
       } else {
         return resp;
       }
+    } else if (error?.code === -32002) {
+      return { _result: 1, _desc: `Already request for 'switch network', please close first.` };
     }
-    return { _result: 1, _desc: `Switch network error: ${err}` };
+
+    return { _result: 1, _desc: `Switch network error: ${error}` };
   }
 
   async getChainId() {

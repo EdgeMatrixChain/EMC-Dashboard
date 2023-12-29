@@ -220,7 +220,7 @@ export default defineComponent({
     };
 
     const initInfoWithUser = async () => {
-      if (!ethUserStore.account0) {
+      if (ethUserStore.isInvalidConnect) {
         allowance.value = 0n;
         cliffAmount.value = 0n;
         releasableAmount.value = 0n;
@@ -281,8 +281,9 @@ export default defineComponent({
     };
 
     watch(
-      () => ethUserStore.account0,
-      (val) => {
+      () => ethUserStore.isInvalidConnect,
+      (invalid) => {
+        if (invalid) return;
         nextTick(() => initInfoWithUser());
       }
     );
@@ -317,7 +318,7 @@ export default defineComponent({
         window.open(`https://arbiscan.io/address/${contract}`);
       },
       async onPressSend() {
-        if (!ethUserStore.account0) {
+        if (ethUserStore.isInvalidConnect) {
           message.error('Please connect wallet first');
           return;
         }

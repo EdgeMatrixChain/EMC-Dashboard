@@ -7,6 +7,7 @@ export default [
       { internalType: 'address', name: '_token', type: 'address' },
       { internalType: 'address', name: '_fundToken', type: 'address' },
       { internalType: 'address', name: '_beneficiary', type: 'address' },
+      { internalType: 'address', name: '_manager', type: 'address' },
       { internalType: 'address', name: '_feeReceiver', type: 'address' },
       { internalType: 'uint256', name: '_salsFeeRate', type: 'uint256' },
       { internalType: 'uint256', name: '_tokenPrice', type: 'uint256' },
@@ -37,7 +38,6 @@ export default [
     inputs: [
       { indexed: false, internalType: 'address', name: 'buyer', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'tokenAmount', type: 'uint256' },
-      { indexed: false, internalType: 'uint256', name: 'fundAmount', type: 'uint256' },
     ],
     name: 'Sold',
     type: 'event',
@@ -45,10 +45,11 @@ export default [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'address', name: '_operator', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: '_fundAmountForOneToken', type: 'uint256' },
+      { indexed: false, internalType: 'address', name: 'buyer', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'tokenAmount', type: 'uint256' },
+      { indexed: false, internalType: 'string', name: 'nonce', type: 'string' },
     ],
-    name: 'TokenPriceUpdated',
+    name: 'SoldBySignature',
     type: 'event',
   },
   {
@@ -73,7 +74,7 @@ export default [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: 'tokenAmount', type: 'uint256' },
+      { internalType: 'uint256', name: '_tokenAmount', type: 'uint256' },
       { internalType: 'address', name: '_beneficiary', type: 'address' },
     ],
     name: 'buyTokens',
@@ -83,9 +84,10 @@ export default [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: 'tokenAmount', type: 'uint256' },
+      { internalType: 'uint256', name: '_tokenAmount', type: 'uint256' },
+      { internalType: 'string', name: '_nonce', type: 'string' },
       { internalType: 'address', name: '_beneficiary', type: 'address' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+      { internalType: 'bytes', name: '_signature', type: 'bytes' },
     ],
     name: 'buyTokensWithSignature',
     outputs: [],
@@ -147,6 +149,16 @@ export default [
     type: 'function',
   },
   { inputs: [{ internalType: 'bool', name: '_onSale', type: 'bool' }], name: 'setOnSale', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_startDays', type: 'uint256' },
+      { internalType: 'uint256', name: '_periods', type: 'uint256' },
+    ],
+    name: 'setReleaseParams',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
   {
     inputs: [{ internalType: 'uint256', name: '_fundAmountForOneToken', type: 'uint256' }],
     name: 'setTokenPrice',

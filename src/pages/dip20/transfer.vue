@@ -239,7 +239,7 @@ export default defineComponent({
       loading,
       initLoading,
       async onPressConnectETH() {
-        await ethUserStore.signIn({ type: 'metamask' });
+        await ethUserStore.signIn();
         message.success('Connection successful');
       },
       onPressUnConnect() {
@@ -257,7 +257,7 @@ export default defineComponent({
         init(userStore.icpPrincipal);
       },
       async onPressDeposit() {
-        if (!ethUserStore.account0) {
+        if (ethUserStore.isInvalidConnect) {
           message.error('No Connection of Metamask');
           return;
         }

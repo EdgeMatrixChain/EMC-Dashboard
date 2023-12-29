@@ -47,11 +47,11 @@ export class PublicSaleApi extends Api {
     });
   }
 
-  buyTokensWithSignature({ account, amount, signature }: { account: string; amount: bigint; signature: string }) {
+  buyTokensWithSignature({ account, nonce, amount, signature }: { account: string; nonce: string; amount: bigint; signature: string }) {
     console.info([amount, account, signature]);
     return super.call({
       method: 'buyTokensWithSignature',
-      data: [amount, account, signature],
+      data: [amount, nonce, account, signature],
     });
   }
 

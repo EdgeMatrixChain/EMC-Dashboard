@@ -10,6 +10,7 @@ import { ethers } from 'ethers';
 type Balance = { [k: string]: { formatted: string; short: string; value: bigint } };
 const BALANCE_NONE = '';
 function formatBalance(value: bigint, unit: number) {
+  value = value || 0n;
   const formatted = ethers.formatUnits(value, unit);
   const matches = formatted.match(/^\d+(?:\.\d{0,4})?/);
   return {
@@ -28,7 +29,6 @@ export const useETHUserStore = defineStore('ethuser', () => {
   const { walletProvider } = useWeb3ModalProvider();
   const { disconnect } = useDisconnect();
 
-  const account0 = computed(() => address.value || '');
   const balance = ref<Balance>({ emc: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n } });
   watch(
     () => isConnected.value,
@@ -50,35 +50,35 @@ export const useETHUserStore = defineStore('ethuser', () => {
       if (chainId !== CHAIN_ID) {
         const resp = await w3s.switchNetwork(CHAIN_ID);
         if (resp._result !== 0) {
+          console.error(`switch network error`, resp);
           signOut();
           return;
         }
       }
-
-      updateBalance();
+      if (address.value) {
+        updateBalance(address.value);
+      }
     },
     { immediate: true }
   );
 
   watch(
-    () => chainId.value,
-    async (chainId) => {
-      console.info('watch chainId', chainId);
-      if (!chainId) return;
-      if (chainId !== CHAIN_ID) {
-        const resp = await w3s.switchNetwork(CHAIN_ID);
-        if (resp._result !== 0) {
-          console.error(`switch network error`, resp);
-          signOut();
-        }
+    () => address.value,
+    (account) => {
+      if (account) {
+        updateBalance(account);
       }
     }
   );
 
   watch(
-    () => address.value,
-    (account) => {
-      console.info('watch account', account);
+    () => chainId.value,
+    async (chainId) => {
+      if (chainId === CHAIN_ID) {
+        if (address.value) {
+          updateBalance(address.value);
+        }
+      }
     }
   );
 
@@ -97,20 +97,25 @@ export const useETHUserStore = defineStore('ethuser', () => {
     return { _result: 0 };
   };
 
-  const updateBalance = async () => {
+  const updateBalance = async (account: string) => {
     //emc contract
     const contract = '0xDFB8BE6F8c87f74295A87de951974362CedCFA30';
     const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: contract });
-    const { data: emc = 0n } = await erc20Api.balanceOf({ account: account0.value });
+    const { data: emc } = await erc20Api.balanceOf({ account });
     balance.value = { emc: formatBalance(emc, 18) };
   };
   return {
     isConnected,
-    account0,
-    balance,
+    isInvalidNetwork: computed(() => chainId.value !== CHAIN_ID),
+    isInvalidConnect: computed(() => !address.value || chainId.value !== CHAIN_ID),
+    account0: computed(() => address.value || ''),
     chainId,
+    balance,
     signIn,
     signOut,
     updateBalance,
+    switchNetwork: () => {
+      w3s.switchNetwork(CHAIN_ID);
+    },
   };
 });

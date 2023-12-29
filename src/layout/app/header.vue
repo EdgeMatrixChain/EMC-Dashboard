@@ -16,7 +16,7 @@
         </NSpace>
       </template>
       <template v-else>
-        <NDropdown :options="tabs" size="large" @select="onSelect" trigger="click">
+        <NDropdown :options="tabs" size="large" @select="onTabSelect" trigger="click">
           <NButton type="default" circle strong quaternary size="large">
             <template #icon>
               <NIcon size="28">
@@ -28,35 +28,40 @@
       </template>
     </NSpace>
     <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
-      <template v-if="ethPrincipal">
-        <div class="header-user" @click="onPressUser">
-          <template v-if="emcBalance">
-            <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
-              <div class="carousel-item">
-                <span class="header-user-text"> {{ emcBalance }} EMC</span>
-                <div class="carousel-item-icon hidden xl:flex">
-                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
-                </div>
-              </div>
-              <div class="carousel-item">
-                <span class="header-user-text">{{ ethPrincipalFormatted }}</span>
-              </div>
-            </NCarousel>
-          </template>
-          <template v-else>
-            <NSpin size="small" />
-          </template>
-          <ETHWallet v-model:visible="showWalletETH" @disconnect="onDisconnectETH" />
-        </div>
-      </template>
-      <template v-else>
+      <template v-if="!isConnected">
         <div class="header-user" @click="onPressConnect">
           <span class="header-user-text">Connect Wallet</span>
         </div>
       </template>
+      <template v-else-if="isInvalidChainId">
+        <div class="header-user" @click="onPressSwitchNetwork">
+          <span class="header-user-text">Network Error</span>
+        </div>
+      </template>
+      <template v-else>
+        <div class="header-user" @click="onPressUser">
+          <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
+            <template v-if="emcBalance">
+              <div class="carousel-item">
+                <span class="header-user-text max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis">{{ emcBalance
+                }}</span>
+                <span class="header-user-text mr-[4px]">EMC</span>
+                <div class="carousel-item-icon hidden xl:flex">
+                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                </div>
+              </div>
+            </template>
+            <div class="carousel-item">
+              <span class="header-user-text">{{ accountFormatted }}</span>
+            </div>
+          </NCarousel>
+          <!-- <template v-else>
+            <NSpin size="small" />
+          </template> -->
+          <ETHWallet v-model:visible="visibleETHWallet" @disconnect="onDisconnect" />
+        </div>
+      </template>
 
-      <ICPConnectDialog v-model:visible="showConnect" />
-      <ETHConnectDialog v-model:visible="showConnectETH" />
     </div>
   </NSpace>
 </template>
@@ -84,8 +89,6 @@ import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import ETHConnectDialog from '@/components/eth-connect/dialog.vue';
 import { MenuSharp as IconMenu } from '@vicons/ionicons5';
 import { useIsMobile, useIsTablet } from '@/composables/use-screen';
-import IconArbitrum from '@/assets/icon_arbitrum.svg';
-import IconWalletIcp from '@/assets/wallet_icp.png';
 
 type tabkey = number;
 
@@ -100,7 +103,6 @@ const tabConfigs: TabItem[] = [
   { id: 2, label: 'Node', key: '/nodes' },
   { id: 3, label: 'Staking', key: '/staking' },
   { id: 4, label: 'Transfer token', key: '/dip20' },
-
   // { id: 3, name: 'Marketplace', path: '/market' },
 ];
 
@@ -126,16 +128,13 @@ export default defineComponent({
   },
   emits: ['isLoading'],
   setup(props, context) {
-    const tabs = ref<TabItem[]>(tabConfigs);
-    const userStore = useUserStore();
     const ethUserStore = useETHUserStore();
     const router = useRouter();
-    const currentTabKey = ref<tabkey>(initTabKey);
     const route = useRoute();
-    const showWalletICP = ref(false);
-    const showWalletETH = ref(false);
-    const showConnect = ref(false);
-    const showConnectETH = ref(false);
+
+    const tabs = ref<TabItem[]>(tabConfigs);
+    const currentTabKey = ref<tabkey>(initTabKey);
+    const visibleETHWallet = ref(false);
     const chainName = ref('Arbitrum');
 
     const isMobile = useIsMobile();
@@ -154,32 +153,36 @@ export default defineComponent({
     return {
       tabs,
       currentTabKey,
-      ethPrincipal: computed(() => ethUserStore.account0),
-      ethPrincipalFormatted: computed(() => Utils.formatAddress(ethUserStore.account0, 5)),
-      showWalletETH,
-      showConnect,
-      showConnectETH,
+      isConnected: computed(() => ethUserStore.isConnected),
+      isInvalidChainId: computed(() => ethUserStore.isInvalidNetwork),
+      account: computed(() => ethUserStore.account0),
+      accountFormatted: computed(() => Utils.formatAddress(ethUserStore.account0, 5)),
       emcBalance: computed(() => ethUserStore.balance.emc.short),
       chainName,
-      onPressUser() {
-        showWalletETH.value = true;
-      },
-      async onPressConnect() {
-        ethUserStore.signIn();
-      },
-      onDisconnectETH() {
-        showWalletETH.value = false;
-        ethUserStore.signOut();
-      },
-      onSelect(path: string) {
+      visibleETHWallet,
+      isMobile,
+      isTablet,
+      onTabSelect(path: string) {
         if (path.startsWith('http')) {
           window.open(path);
         } else {
           router.push(path);
         }
       },
-      isMobile,
-      isTablet,
+
+      async onPressConnect() {
+        ethUserStore.signIn();
+      },
+      onPressSwitchNetwork() {
+        ethUserStore.switchNetwork();
+      },
+      onPressUser() {
+        visibleETHWallet.value = true;
+      },
+      onDisconnect() {
+        visibleETHWallet.value = false;
+        ethUserStore.signOut();
+      },
     };
   },
 });

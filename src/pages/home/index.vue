@@ -28,37 +28,9 @@
       </template>
     </NGrid>
     <div class="map-body">
-      <WorldMap></WorldMap>
+      <WorldMap :data="mapData" />
     </div>
-    <!-- <div class="nft-body">
-      <div class="nft-body-header">AI Computing Power RWA-NFT</div>
-      <div class="nft-body-card">
-        <template v-for="index in 4">
-          <div class="nft-card">
-            <img
-              class="nft-card-cover"
-              src="https://ts1.cn.mm.bing.net/th/id/R-C.c504f926a149bad6fcc39bc7e372c1cb?rik=y7XwtY%2bjNhSymw&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190916%2fa3f5d42c09dd48f38e54dd33d22e4b8e.gif&ehk=QiEQyZV4iTSdupzA9e0D%2bQtuU9DhjQ32LZuOhRDpLAE%3d&risl=&pid=ImgRaw&r=0"
-            />
-            <div class="nft-card-title">Beautiful Flower</div>
-            <div class="nft-card-footer">
-              <div class="nft-card-footer-item">
-                <div class="nft-card-footer-item-property">floor</div>
-                <div class="nft-card-footer-item-value">3.3ICP</div>
-              </div>
-              <div class="nft-card-footer-item">
-                <div class="nft-card-footer-item-property">floor</div>
-                <div class="nft-card-footer-item-value">3.3ICP</div>
-              </div>
-              <div class="nft-card-footer-item">
-                <div class="nft-card-footer-item-property">floor</div>
-                <div class="nft-card-footer-item-value">3.3ICP</div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </div>
-    </div> -->
-    <NGrid class="data-body" x-gap="56" y-gap="48" cols=" 300:1  1392:2">
+    <NGrid class="data-body" x-gap="56" y-gap="48" cols="300:1 1392:2">
       <NGridItem class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
@@ -73,18 +45,18 @@
             <div class="node-list-theader-item">EMC Reward</div>
           </div>
           <div class="node-list-body">
-            <template v-if="nodeList.length !== 0">
+            <template v-if="!nodeList">
+              <NSpin size="small" />
+            </template>
+            <template v-else>
               <template v-for="(item, index) in nodeList" :key="item.nodeID">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID, isDesktop ? 11 : 4) }}</div>
+                    <div class="node-list-main-item">{{ isDesktop ? item.nodeIDFormtted : item.nodeIDShort }}</div>
                     <div class="node-list-main-item">{{ item.reward }}</div>
                   </div>
                 </RouterLink>
               </template>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
             </template>
           </div>
         </div>
@@ -103,50 +75,34 @@
             <div class="node-list-theader-item">EMC Reward</div>
           </div>
           <div class="node-list-body">
-            <template v-if="nodeList1.length !== 0">
+            <template v-if="!nodeList1">
+              <NSpin size="small" />
+            </template>
+            <template v-else>
               <template v-for="(item, index) in nodeList1" :key="item.nodeID">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item.nodeID } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item">{{ Utils.formatAddress(item.nodeID, isDesktop ? 11 : 4) }}</div>
+                    <div class="node-list-main-item">{{ isDesktop ? item.nodeIDFormtted : item.nodeIDShort }}</div>
                     <div class="node-list-main-item">{{ item.reward }}</div>
                   </div>
                 </RouterLink>
               </template>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
             </template>
           </div>
         </div>
       </NGridItem>
     </NGrid>
-    <!-- <div class="models-body"> 
-      <div class="models-body-header">
-        <span class="models-body-header-span">Featured Models</span>
-        <div class="models-body-header-explore">
-          <span class="models-body-header-explore-span">Explore</span>
-          <img class="models-body-header-explore-icon" src="@/assets/icon_right_arrow.svg" />
-        </div>
-      </div>
-      <div class="models-body-card">
-        <template v-for="item in 4">
-          <ModelsItem />
-        </template>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script lang="ts">
 import { ref, onMounted, defineComponent } from 'vue';
-import { NPopover, NSpin, NSpace, NGrid, NGridItem } from 'naive-ui';
-import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-import WorldMap from '@/components/world-map/index.vue';
-import ModelsItem from '@/components/models-item.vue';
-import axios from 'axios';
+import { NSpin, NSpace, NGrid, NGridItem } from 'naive-ui';
+import { useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
+import WorldMap from '@/components/world-map/index.vue';
 import { useRewardStore } from '@/stores/reward';
 import iconBlocks from '@/assets/icon_data_blocks.png';
 import iconTransactions from '@/assets/icon_data_transactions.png';
@@ -157,6 +113,8 @@ import iconStaked from '@/assets/icon_data_staked.png';
 
 type NodeListItem = {
   nodeID: string;
+  nodeIDFormtted: string;
+  nodeIDShort: string;
   reward: string;
 };
 
@@ -170,23 +128,19 @@ type DataInfoItem = {
 
 export default defineComponent({
   components: {
-    WorldMap,
-    ModelsItem,
-    NPopover,
     NSpace,
     NSpin,
     NGrid,
     NGridItem,
+    WorldMap
   },
-
   setup() {
     const http = Http.getInstance();
     const isSmallDesktop = useIsSmallDesktop();
     const isDesktop = useIsDesktop();
-    const blockData = ref('');
-    const transactionsData = ref('');
-    const nodeList = ref<NodeListItem[]>([]);
-    const nodeList1 = ref<NodeListItem[]>([]);
+    const mapData = ref<any[]>([]);
+    const nodeList = ref<NodeListItem[] | null>();
+    const nodeList1 = ref<NodeListItem[] | null>();
 
     const dataInfo = ref<DataInfoItem[]>([
       { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '', tips: '' },
@@ -204,61 +158,63 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-      const endpoints = ['https://api.edgematrix.pro/api/v1/blocks', 'https://api.edgematrix.pro/api/v1/dip20transactions', 'https://api.edgematrix.pro/api/v1/nodes', 'https://api.edgematrix.pro/api/v1/nodestatsnapshot'];
-      endpoints.forEach(async (item, index) => {
-        const data = await fetchAndFormatData(item);
-        if (data !== null) {
-          if (index === 2) {
-            dataInfo.value[2].data = formatData(data.total);
-            dataInfo.value[3].data = formatData(data.poctotal);
-            dataInfo.value[3].tips = 'Start form ' + moment(Date.now()).format('dddd MMMM DD 00.00 UTC YYYY');
-          } else if (index === 3) {
-            dataInfo.value[4].data = formatData(Utils.toFixed(data.totalAvgPower, 2));
-            dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
-            dataInfo.value[5].data = formatData(data.totalStaked);
-          } else {
-            dataInfo.value[index].data = formatData(data);
-          }
-        }
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
+        const data = resp.data || 0;
+        dataInfo.value[0].data = formatData(data);
       });
-      // http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
-      //   if (resp._result !== 0) return;
-      //   dataInfo.value[0].data = formatData(resp.data);
-      // });
-      // http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
-      //   if (resp._result !== 0) return;
-      //   dataInfo.value[1].data = formatData(resp.data);
-      // });
-      // http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
-      //   if (resp._result !== 0) return;
-      //   dataInfo.value[2].data = formatData(resp.data.total);
-      //   dataInfo.value[3].data = formatData(resp.data.poctotal);
-      // });
-      // http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
-      //   if (resp._result !== 0) return;
-      //   dataInfo.value[4].data = formatData(Utils.toFixed(resp.data.totalAvgPower, 2));
-      //   dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
-      //   dataInfo.value[5].data = formatData(resp.data.totalStaked);
-      // });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
+        const data = resp.data || 0;
+        dataInfo.value[1].data = formatData(data);
+      });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
+        const data = resp.data || { total: 0, poctotal: 0 };
+        dataInfo.value[2].data = formatData(data.total || 0);
+        dataInfo.value[3].data = formatData(data.poctotal || 0);
+        dataInfo.value[3].tips = 'Start form ' + moment(Date.now()).format('dddd MMMM DD 00.00 UTC YYYY');
+      });
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
+        const data = resp.data || { totalAvgPower: 0, totalStaked: 0 };
+        dataInfo.value[4].data = formatData(Utils.toFixed(data.totalAvgPower, 2));
+        dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
+        dataInfo.value[5].data = formatData(data.totalStaked);
+      });
 
-      const { total: total1, list: list1 } = await useReward.getNodeRewardList(0, 10);
-      nodeList.value = list1;
-      const { total: total2, list: list2 } = await useReward.getNodeRewardList(1, 10);
-      nodeList1.value = list2;
+      http.get({ url: 'https://api.edgematrix.pro/api/v1/ipmap' }).then((resp: any) => {
+        const list = resp.data || [];
+        mapData.value = [];
+        list.forEach((item: any) => {
+          if (!item.latitude || !item.longitude || item.nodes === 0) return;
+          mapData.value.push({
+            name: item.nodes,
+            value: [item.longitude, item.latitude],
+            symbolSize: item.nodes * 10 > 60 ? 60 : item.nodes * 10,
+          });
+        });
+      });
+
+      useReward.getNodeRewardList(0, 10).then((resp) => {
+        const { total, list } = resp || { list: [] };
+        list.forEach((item: any) => {
+          item.nodeIDFormtted = Utils.formatAddress(item.nodeID, 11);
+          item.nodeIDShort = Utils.formatAddress(item.nodeID, 4);
+        });
+        nodeList.value = list;
+      });
+      useReward.getNodeRewardList(1, 10).then((resp) => {
+        const { total, list } = resp || { list: [] };
+        list.forEach((item: any) => {
+          item.nodeIDFormtted = Utils.formatAddress(item.nodeID, 11);
+          item.nodeIDShort = Utils.formatAddress(item.nodeID, 4);
+        });
+        nodeList1.value = list;
+      });
+
     });
 
-    const fetchAndFormatData = async (url: string) => {
-      const resp = await http.get({ url });
-      if (resp._result !== 0) return null;
-      return resp.data;
-    };
-
     return {
-      Utils,
       isSmallDesktop,
       isDesktop,
-      blockData,
-      transactionsData,
+      mapData,
       nodeList,
       nodeList1,
       dataInfo,
@@ -303,6 +259,7 @@ export default defineComponent({
   overflow: hidden;
   box-sizing: border-box;
 }
+
 /* .card-body-item:nth-child(3n) {
   margin-right: 0;
 } */
@@ -323,17 +280,20 @@ export default defineComponent({
   -webkit-background-clip: text;
   color: transparent;
 }
+
 .card-item-data {
   height: 36px;
   line-height: 36px;
   /* margin: 16px 0 12px; */
 }
+
 .card-item-footer {
   color: #f2d6ff;
   font-size: 14px;
   font-weight: 300;
   line-height: 20px;
 }
+
 .card-body-item-bg-small {
   position: absolute;
   right: -39px;
@@ -345,6 +305,7 @@ export default defineComponent({
   opacity: 0.2;
   z-index: 2;
 }
+
 .card-body-item-bg-big {
   position: absolute;
   right: -48px;
@@ -356,13 +317,16 @@ export default defineComponent({
   opacity: 0.2;
   z-index: 1;
 }
+
 .map-body {
   margin-bottom: 64px;
 }
+
 .nft-body {
   margin-bottom: 64px;
   position: relative;
 }
+
 .nft-body-header {
   margin-bottom: 48px;
   color: #fff;
@@ -370,11 +334,13 @@ export default defineComponent({
   font-weight: 600;
   line-height: 24px;
 }
+
 .nft-body-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .nft-card {
   width: 300px;
   height: 400px;
@@ -390,6 +356,7 @@ export default defineComponent({
   object-fit: cover;
   aspect-ratio: 10 / 9.14;
 }
+
 .nft-card-title {
   padding: 0 10px;
   margin-bottom: 24px;
@@ -398,17 +365,20 @@ export default defineComponent({
   font-weight: 500;
   line-height: 18px;
 }
+
 .nft-card-footer {
   padding: 0 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .nft-card-footer-item {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .nft-card-footer-item-property {
   margin-bottom: 14px;
   color: #999;
@@ -416,6 +386,7 @@ export default defineComponent({
   font-weight: 400;
   line-height: 12px;
 }
+
 .nft-card-footer-item-value {
   color: #f5f5f5;
   font-size: 14px;
@@ -429,12 +400,14 @@ export default defineComponent({
   justify-content: space-between;
   margin-bottom: 64px;
 }
+
 .node-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
+
 .node-list-header-button {
   position: relative;
   height: 30px;
@@ -454,6 +427,7 @@ export default defineComponent({
   font-weight: 400;
   line-height: 30px;
 }
+
 .node-list-header-button-tips {
   display: none;
   position: absolute;
@@ -500,6 +474,7 @@ export default defineComponent({
   height: 14px;
   margin-right: 4px;
 }
+
 .node-list-subtitle-span {
   color: #a0aec0;
   font-size: 14px;
@@ -521,6 +496,7 @@ export default defineComponent({
   font-weight: 400;
   line-height: 12px;
 }
+
 .node-list-body {
   overflow-y: auto;
   height: 336px;
@@ -529,6 +505,7 @@ export default defineComponent({
 .node-list-body::-webkit-scrollbar {
   display: none;
 }
+
 .node-list-main {
   display: flex;
   align-items: center;
@@ -537,6 +514,7 @@ export default defineComponent({
   border-top: 1px solid #56577a;
   box-sizing: border-box;
 }
+
 .node-list-main-item {
   width: 100%;
   line-height: 56px;
@@ -556,13 +534,16 @@ export default defineComponent({
   overflow-y: auto;
   box-sizing: border-box;
 }
+
 .transactions::-webkit-scrollbar {
   display: none;
 }
+
 .transactions-header {
   line-height: 30px;
   margin-bottom: 32px;
 }
+
 .transactions-header-span {
   color: #fff;
   font-size: 18px;
@@ -584,6 +565,7 @@ export default defineComponent({
   font-weight: 400;
   line-height: 12px;
 }
+
 .transactions-body {
   overflow-y: auto;
   height: 336px;
@@ -592,6 +574,7 @@ export default defineComponent({
 .transactions-body::-webkit-scrollbar {
   display: none;
 }
+
 .transactions-main {
   display: flex;
   align-items: center;
@@ -600,6 +583,7 @@ export default defineComponent({
   border-top: 1px solid #56577a;
   box-sizing: border-box;
 }
+
 .transactions-main-item {
   width: 100%;
   line-height: 56px;
@@ -612,18 +596,21 @@ export default defineComponent({
 .models-body {
   padding: 0 16px;
 }
+
 .models-body-header {
   margin-bottom: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .models-body-header-span {
   color: #fff;
   font-size: 24px;
   font-weight: 600;
   line-height: 24px;
 }
+
 .models-body-header-explore {
   display: flex;
   align-items: center;
@@ -632,6 +619,7 @@ export default defineComponent({
   border-radius: 4px;
   background: linear-gradient(270deg, #c020c4 0%, #3e30ec 100%);
 }
+
 .models-body-header-explore-span {
   margin-right: 4px;
   color: #fff;
@@ -639,6 +627,7 @@ export default defineComponent({
   font-weight: 400;
   line-height: 14px;
 }
+
 .models-body-header-explore-icon {
   width: 20px;
   height: 20px;

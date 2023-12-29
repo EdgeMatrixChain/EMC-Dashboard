@@ -1,23 +1,21 @@
 <template>
   <div class="page">
-    <NSpace vertical :wrap-item="false" align="center" :size="[16, 16]">
-      <NCard title="Public Sale" style="max-width:640px;">
-        <template v-if="error === -1">
-          <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
-            <NSpin />
-          </NSpace>
-        </template>
-        <template v-else-if="error > 0">
-          <NSpace vertical align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
-            <NText depth="3" style="font-size:16px;">{{ errorText }}</NText>
-            <NButton size="large" strong @click="onPressTry">Try Again</NButton>
-          </NSpace>
-        </template>
-        <template v-else>
-          <Buy :sell-contract="publicSellContract" :token-contract="tokenContract" :fund-contract="fundContract" />
-        </template>
-      </NCard>
-    </NSpace>
+    <div style="max-width:640px;margin:auto;">
+      <template v-if="error === -1">
+        <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+          <NSpin />
+        </NSpace>
+      </template>
+      <template v-else-if="error > 0">
+        <NSpace vertical align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+          <NText depth="3" style="font-size:16px;">{{ errorText }}</NText>
+          <NButton size="large" strong @click="onPressTry">Try Again</NButton>
+        </NSpace>
+      </template>
+      <template v-else>
+        <Buy :sell-contract="publicSaleContract" :token-contract="tokenContract" :fund-contract="fundContract" />
+      </template>
+    </div>
   </div>
 </template>
 
@@ -57,7 +55,7 @@ export default defineComponent({
     const ethUserStore = useETHUserStore();
     const error = ref(-1);
     const errorText = ref('');
-    const publicSellContract = ref('');
+    const publicSaleContract = ref('');
     const fundContract = ref('');
     const tokenContract = ref('');
     const stakeLockContract = ref('');
@@ -66,13 +64,14 @@ export default defineComponent({
     let cliffsApi: CliffsApi | null = null;
 
     onMounted(() => {
-      publicSellContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
+      publicSaleContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
+      // publicSaleContract.value = '0x70bbf54454117D30B32eCAbCD16899C545DB14e4';
       init();
     });
 
     const init = async () => {
       error.value = -1;
-      publicSaleApi = apiManager.create(PublicSaleApi, { address: publicSellContract.value });
+      publicSaleApi = apiManager.create(PublicSaleApi, { address: publicSaleContract.value });
       const [{ data: _fundContract }, { data: _tokenContract }, { data: _stakeLockContract }] = await Promise.all([
         publicSaleApi.fundToken(),
         publicSaleApi.token(),
@@ -95,7 +94,7 @@ export default defineComponent({
       errorText,
       isSign: computed(() => ethUserStore.account0),
       chainId: computed(() => ethUserStore.chainId),
-      publicSellContract,
+      publicSaleContract,
       fundContract,
       tokenContract,
       onPressTry() {

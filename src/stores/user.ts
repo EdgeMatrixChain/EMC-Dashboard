@@ -1,22 +1,26 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { Client, Provider, createClient } from '@connect2ic/core';
-import { defaultProviders, InternetIdentity, PlugWallet, AstroX, IConnector } from '@connect2ic/core/providers';
+import { InternetIdentity, PlugWallet, AstroX, IConnector } from '@connect2ic/core/providers';
 import { HttpAgent } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
-import type { Agent, Identity } from '@dfinity/agent';
 import { createActor } from '@/web3icp/declarations';
 import { principalToAccountIdentifier } from '@/web3icp/account-id';
-import { _SERVICE as IDLRecycle, Result as RecycleResult, idlFactory as idlFactoryRecycle, WhitelistInfoResult as RecycleWhitelistInfoResult, Order as RecycleOrder } from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
+import {
+  _SERVICE as IDLRecycle,
+  Result as RecycleResult,
+  idlFactory as idlFactoryRecycle,
+  WhitelistInfoResult as RecycleWhitelistInfoResult,
+  Order as RecycleOrder,
+} from '@/web3icp/declarations/emc_dip20_recycle/emc_dip20_recycle.did';
 
 import { _SERVICE as IDLDip20, Metadata, TxReceipt, idlFactory as idlFactoryDip20 } from '@/web3icp/declarations/emc_token_dip20/emc_token_dip20.did';
 
 import { ethers } from 'ethers';
-// export const DFINITY_HOST = 'https://boundary.ic0.app/';
-export const DFINITY_HOST = 'https://icp0.io';
-
-export const CANISTER_ID_RECYCLE = 'pvcyg-pyaaa-aaaal-qciqa-cai';
-export const CANISTER_ID_DIP20 = 'aeex5-aqaaa-aaaam-abm3q-cai';
+// const DFINITY_HOST = 'https://boundary.ic0.app/';
+const DFINITY_HOST = 'https://icp0.io';
+const CANISTER_ID_RECYCLE = 'pvcyg-pyaaa-aaaal-qciqa-cai';
+const CANISTER_ID_DIP20 = 'aeex5-aqaaa-aaaam-abm3q-cai';
 
 export const useUserStore = defineStore('user', () => {
   const globalProviderConfig = {
@@ -123,7 +127,6 @@ export const useUserStore = defineStore('user', () => {
       icpPrincipal.value = '';
       icpAccount.value = '';
     },
-
     dip20Metadata,
     async dip20Approve({ principal: _principal, amount: _amount }: { principal?: string; amount: string }) {
       const { decimals } = await dip20Metadata();

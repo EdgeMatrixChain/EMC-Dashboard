@@ -90,11 +90,10 @@ export default defineComponent({
     };
 
     watch(
-      () => ethUserStore.account0,
-      (val) => {
-        if (val) {
-          initDepositOrders();
-        }
+      () => ethUserStore.isInvalidConnect,
+      (invalid) => {
+        if (invalid) return;
+        initDepositOrders();
       },
       {
         immediate: true,
@@ -116,10 +115,10 @@ export default defineComponent({
         loading.value = false;
       },
       async onPressConnectETH() {
-        await ethUserStore.signIn({ type: 'metamask' });
+        await ethUserStore.signIn();
       },
       async onPressClaim(item: DepositOrder, index: number) {
-        if (!ethUserStore.account0) {
+        if (ethUserStore.isInvalidConnect) {
           message.error('Sign in ethernet first');
         }
         const resp = await merkleClaimApi.claim({
