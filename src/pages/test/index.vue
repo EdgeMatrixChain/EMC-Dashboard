@@ -83,7 +83,7 @@ export default defineComponent({
     const depositOrders = ref<Array<DepositOrder>>([]);
     const initDepositOrders = async () => {
       const resp = await http.get({
-        url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
+        url: '/icpconvertorder/query',
         data: { to: ethUserStore.account0 || undefined },
       });
       depositOrders.value = resp.data || [];

@@ -140,7 +140,7 @@ export default defineComponent({
 
       //convert order
       const resp = await http.get({
-        url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
+        url: '/icpconvertorder/query',
         data: { to: ethUserStore.account0 || undefined },
       });
       depositOrders.value = resp.data || [];
@@ -151,7 +151,7 @@ export default defineComponent({
 
       //ALL  Claimed
       const resp1 = await http.get({
-        url: 'https://api.edgematrix.pro/api/v1/event/query',
+        url: '/event/query',
         data: { contract: '0xe485b19Cd1bF9bD417c05ff1d7336789727dB0b9', topic: 'Claimed', page: pageNo.value, size: pageSize.value },
       });
 
@@ -258,7 +258,7 @@ export default defineComponent({
           return;
         }
         const resp1 = await http.get({
-          url: 'https://api.edgematrix.pro/api/v1/icpconvertorder/query',
+          url: '/icpconvertorder/query',
           data: { id: item.id },
         });
         const { proofIndex, to, toAmount, proof } = resp1.data[0];

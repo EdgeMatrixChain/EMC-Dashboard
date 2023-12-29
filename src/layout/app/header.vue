@@ -40,21 +40,32 @@
       </template>
       <template v-else>
         <div class="header-user" @click="onPressUser">
-          <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
-            <template v-if="emcBalance">
-              <div class="carousel-item">
-                <span class="header-user-text max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis">{{ emcBalance
-                }}</span>
-                <span class="header-user-text mr-[4px]">EMC</span>
-                <div class="carousel-item-icon hidden xl:flex">
-                  <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+          <!-- <template v-if="carouselReady">
+            <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
+              <template v-if="emcBalanceShort">
+                <div class="carousel-item">
+                  <span
+                    class="header-user-text max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis">{{ emcBalanceShort
+                    }}</span>
+                  <span class="header-user-text mr-[4px]">{{ emcSymbol }}</span>
+                  <div class="carousel-item-icon hidden xl:flex">
+                    <img src="@/assets/icon_wallet.svg" width="16" height="16" />
+                  </div>
                 </div>
+              </template>
+              <div class="carousel-item">
+                <span class="header-user-text">{{ accountFormatted }}</span>
               </div>
-            </template>
-            <div class="carousel-item">
-              <span class="header-user-text">{{ accountFormatted }}</span>
+            </NCarousel>
+          </template> -->
+          <div>
+            <span class="header-user-text">{{ accountFormatted }}</span>
+            <div style="font-size:12px;">
+              <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right:4px;">{{
+                emcBalanceShort }}</span>
+              <span class="mr-[4px]">{{ emcSymbol }}</span>
             </div>
-          </NCarousel>
+          </div>
           <!-- <template v-else>
             <NSpin size="small" />
           </template> -->
@@ -66,7 +77,7 @@
   </NSpace>
 </template>
 <script lang="ts">
-import { ref, defineComponent, watch, h, onMounted, computed } from 'vue';
+import { ref, defineComponent, watch, nextTick, computed } from 'vue';
 import {
   NAvatar,
   NText,
@@ -136,6 +147,7 @@ export default defineComponent({
     const currentTabKey = ref<tabkey>(initTabKey);
     const visibleETHWallet = ref(false);
     const chainName = ref('Arbitrum');
+    const carouselReady = ref(true);
 
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
@@ -150,6 +162,16 @@ export default defineComponent({
       { immediate: true }
     );
 
+    watch(
+      () => ethUserStore.account0,
+      () => {
+        carouselReady.value = false;
+        nextTick(() => {
+          carouselReady.value = true;
+        })
+      }
+    )
+
     return {
       tabs,
       currentTabKey,
@@ -157,8 +179,10 @@ export default defineComponent({
       isInvalidChainId: computed(() => ethUserStore.isInvalidNetwork),
       account: computed(() => ethUserStore.account0),
       accountFormatted: computed(() => Utils.formatAddress(ethUserStore.account0, 5)),
-      emcBalance: computed(() => ethUserStore.balance.emc.short),
+      emcBalanceShort: computed(() => ethUserStore.balance.emc.short),
+      emcSymbol: computed(() => ethUserStore.balance.emc.symbolName),
       chainName,
+      carouselReady,
       visibleETHWallet,
       isMobile,
       isTablet,

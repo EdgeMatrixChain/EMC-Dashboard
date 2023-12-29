@@ -12,7 +12,7 @@ const _fetchRewardNodes = async () => {
   } else {
     const http = Http.getInstance();
     const resp = await http.get({
-      url: 'https://api.edgematrix.pro/api/v1/noderewardtoday',
+      url: '/noderewardtoday',
     });
     const list = resp.data || [];
     const timestamp = Date.now();
@@ -67,6 +67,7 @@ export const useRewardStore = defineStore('reward', () => {
       ...item,
       ...(nodeMap[item.nodeID] || {}),
       _id: item.nodeID,
+      reward: '-', //test
     }));
 
     caches[page] = { total, list };
@@ -76,7 +77,7 @@ export const useRewardStore = defineStore('reward', () => {
    * update data
    */
   async function update() {
-    const resp = await http.get({ url: 'https://api.edgematrix.pro/api/v1/noderewardtoday' });
+    const resp = await http.get({ url: '/noderewardtoday' });
     const reward = resp.data || [];
     const newReward: Array<any[]> = [];
     let group: any = [];

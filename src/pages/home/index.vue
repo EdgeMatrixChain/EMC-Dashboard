@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page max-w-[1440px]" style="margin:auto;">
     <!-- <div class="page-mask"></div> -->
     <div class="mask-bgcolor-left"></div>
     <div class="mask-bgcolor-center"></div>
@@ -146,9 +146,9 @@ export default defineComponent({
       { name: 'Blocks', icon: iconBlocks, unit: 'Blocks', data: '', tips: '' },
       { name: 'Transactions', icon: iconTransactions, unit: 'TXs', data: '', tips: '' },
       { name: 'Total Nodes', icon: iconTotalNodes, unit: 'Nodes', data: '', tips: '' },
-      { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '', tips: '' },
-      { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '', tips: '' },
-      { name: 'Total Staked', icon: iconStaked, unit: 'EMC', data: '', tips: '' },
+      // { name: 'POC Nodes', icon: iconPocNodes, unit: 'Nodes', data: '', tips: '' },
+      // { name: 'Total Power', icon: iconAvgpower, unit: 'E', data: '', tips: '' },
+      // { name: 'Total Staked', icon: iconStaked, unit: 'EMC', data: '', tips: '' },
     ]);
 
     const formatData = (data: number) => {
@@ -158,29 +158,30 @@ export default defineComponent({
     const useReward = useRewardStore();
 
     onMounted(async () => {
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/blocks' }).then((resp: any) => {
+      http.get({ url: '/blocks' }).then((resp: any) => {
         const data = resp.data || 0;
         dataInfo.value[0].data = formatData(data);
       });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/dip20transactions' }).then((resp: any) => {
+      http.get({ url: '/dip20transactions' }).then((resp: any) => {
         const data = resp.data || 0;
         dataInfo.value[1].data = formatData(data);
       });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodes' }).then((resp: any) => {
-        const data = resp.data || { total: 0, poctotal: 0 };
-        dataInfo.value[2].data = formatData(data.total || 0);
-        dataInfo.value[3].data = formatData(data.poctotal || 0);
-        dataInfo.value[3].tips = 'Start form ' + moment(Date.now()).format('dddd MMMM DD 00.00 UTC YYYY');
-      });
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/nodestatsnapshot' }).then((resp: any) => {
-        const data = resp.data || { totalAvgPower: 0, totalStaked: 0 };
-        dataInfo.value[4].data = formatData(Utils.toFixed(data.totalAvgPower, 2));
-        dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
-        dataInfo.value[5].data = formatData(data.totalStaked);
-      });
+      // http.get({ url: '/nodes' }).then((resp: any) => {
+      //   const data = resp.data || { total: 0, poctotal: 0 };
+      //   dataInfo.value[2].data = formatData(data.total || 0);
+      //   dataInfo.value[3].data = formatData(data.poctotal || 0);
+      //   dataInfo.value[3].tips = 'Start form ' + moment(Date.now()).format('dddd MMMM DD 00.00 UTC YYYY');
+      // });
+      // http.get({ url: '/nodestatsnapshot' }).then((resp: any) => {
+      //   const data = resp.data || { totalAvgPower: 0, totalStaked: 0 };
+      //   dataInfo.value[4].data = formatData(Utils.toFixed(data.totalAvgPower, 2));
+      //   dataInfo.value[4].tips = 'Active Nodes In Past 30 min';
+      //   dataInfo.value[5].data = formatData(data.totalStaked);
+      // });
 
-      http.get({ url: 'https://api.edgematrix.pro/api/v1/ipmap' }).then((resp: any) => {
+      http.get({ url: '/ipmap' }).then((resp: any) => {
         const list = resp.data || [];
+        dataInfo.value[2].data = formatData(list.reduce((a:number, b:any) => a + b.nodes, 0));
         mapData.value = [];
         list.forEach((item: any) => {
           if (!item.latitude || !item.longitude || item.nodes === 0) return;

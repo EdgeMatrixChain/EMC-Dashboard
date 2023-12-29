@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page max-w-[1440px]" style="margin:auto;">
     <div class="mask-bgcolor-left"></div>
     <div class="page-node">
       <div class="page-search w-full max-w-[960px]">
@@ -32,8 +32,8 @@
                   <div class="node-list-main">
                     <div class="node-list-main-item min-w-[80px] text-[12px] xl:text-[14px]">{{ Utils.formatAddress(item._id, isDesktop ? 11 : 4) }}</div>
                     <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower ? '--' : item.avgPower }}</div>
-                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div>
-
+                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div> -->
+                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div>
                     <template v-if="isSmallDesktop || isDesktop">
                       <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
                       <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime) }}</div>

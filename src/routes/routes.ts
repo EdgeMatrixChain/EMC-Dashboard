@@ -51,14 +51,14 @@ export const routes = [
         component: () => import('@/pages/cliffs-team/index.vue'),
       },
       {
-        name: 'public-sale',
-        path: 'public-sale',
-        component: () => import('@/pages/public-sale/index.vue'),
+        name: 'cliffs-view',
+        path: 'cliffs-view',
+        component: () => import('@/pages/cliffs-view/index.vue'),
       },
       {
-        name: 'public-sale-buy',
-        path: 'public-sale-buy',
-        component: () => import('@/pages/public-sale-buy/index.vue'),
+        name: 'strategy-sale',
+        path: 'strategy-sale',
+        component: () => import('@/pages/public-sale/index.vue'),
       },
       // {
       //   name: 'test',

@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page max-w-[1440px]" style="margin:auto;">
     <NGrid class="main pt-4 mb-10" x-gap="96" y-gap="48" cols="1 1200:2 " item-responsive>
       <NGridItem class="node-detail">
         <div class="main-header">Node Details</div>
@@ -11,7 +11,8 @@
                   <span class="main-table-item-name-span">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info">
-                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{ item.info }} </NEllipsis>
+                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{
+                    item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
@@ -29,7 +30,8 @@
                   <span class="main-table-item-name-span text-[12px] xl:text-[18px]">{{ item.name }} :</span>
                 </div>
                 <div class="main-table-item-info">
-                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{ item.info }} </NEllipsis>
+                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{
+                    item.info }} </NEllipsis>
                 </div>
               </div>
             </template>
@@ -37,7 +39,7 @@
         </div>
       </NGridItem>
     </NGrid>
-    <div class="main-header">Deployed Application——Stable diffusion</div>
+    <div class="main-header">Deployed</div>
     <NSpin :show="isLoading">
       <template v-if="modelList.length !== 0">
         <div class="deployed-bgcolor">
@@ -52,7 +54,7 @@
       </template>
       <template v-else>
         <div class="deployed-bgcolor">
-          <div class="deployed-no-data">No model</div>
+          <div class="deployed-no-data">No data</div>
         </div>
       </template>
     </NSpin>
@@ -62,11 +64,11 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Utils } from '@/tools/utils';
 import { NDatePicker, NEllipsis, NGrid, NGridItem, NSpin } from 'naive-ui';
 import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
-import axios from 'axios';
+import { Utils } from '@/tools/utils';
+import { Http } from '@/tools/http';
 
 import ModelsItem from '@/components/models-item.vue';
 
@@ -99,7 +101,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const useReward = useRewardStore();
-
+    const http = Http.getInstance();
     const nodeId: string = router.currentRoute.value.params.id as string;
 
     const modelList = ref<ModelItem[]>([]);
@@ -115,7 +117,7 @@ export default defineComponent({
       { name: 'Mac Address', key: 'mac', icon: iconGpu, info: '--' },
       { name: 'IP Address', key: 'ip', icon: iconIP, info: '--' },
       { name: 'Memory', key: 'memory', icon: iconMemory, info: '--' },
-      { name: 'Model Name', key: 'modelName', icon: iconModel, info: '--' },
+      { name: 'Application', key: 'appOrigin', icon: iconModel, info: '--' },
     ]);
 
     const isLoading = ref(false);
@@ -125,21 +127,21 @@ export default defineComponent({
     });
 
     const init = async (nodeId: string) => {
-      const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodeinfosnapshot', {
+      const resp = await http.get('/nodeinfosnapshot', {
         params: { nodeid: nodeId },
       });
-      if (resp.data._result !== 0) return;
-      const nodeinfosnapshot = resp.data.data;
-      if (Object.keys(nodeinfosnapshot).length !== 0) {
-        dataInfoFunction(nodeinfosnapshot, nodeId);
-        return;
+      let nodeinfosnapshot = resp.data?.data || {};
+      if (Object.keys(nodeinfosnapshot).length === 0) {
+        const resp1 = await http.get('/nodeinfo', {
+          params: { nodeid: nodeId },
+        });
+        nodeinfosnapshot = resp1.data?.data || {};
       }
-
-      const resp1 = await axios.get('https://api.edgematrix.pro/api/v1/nodeinfo', {
-        params: { nodeid: nodeId },
-      });
-      if (resp1.data._result !== 0) return;
-      dataInfoFunction(resp1.data.data, nodeId);
+      dataInfoFunction(nodeinfosnapshot, nodeId);
+      console.info(nodeinfosnapshot.appOrigin);
+      if (nodeinfosnapshot.appOrigin === 'StableDiffusion') {
+        initSdModels(nodeId);
+      }
     };
 
     const dataInfoFunction = (data: any, nodeId: string) => {
@@ -177,55 +179,54 @@ export default defineComponent({
           if (!data.memoryInfo) return;
           const formatMemory = JSON.parse(data.memoryInfo);
           item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
-        } else if (item.key === 'modelName') {
-          isLoading.value = true;
-          const resp = await axios.get('https://api.edgematrix.pro/api/v1/nodesdmodels', {
-            params: { nodeid: nodeId },
-          });
-          const modelsData = resp.data;
-          if (modelsData._result !== 0 || modelsData.data === '') return;
-          const models = JSON.parse(modelsData.data);
-          isLoading.value = false;
-
-          if (typeof models !== 'object' || !models.length) {
-            modelList.value = [];
-          } else {
-            const comparator = (a: any, b: any) => {
-              const aSha256 = Boolean(a.sha256);
-              const bSha256 = Boolean(b.sha256);
-
-              if (aSha256 && !bSha256) {
-                return -1;
-              } else if (!aSha256 && bSha256) {
-                return 1;
-              } else {
-                return 0;
-              }
-            };
-            models.sort(comparator);
-            modelList.value = [...models];
-          }
-
-          const resp1 = await axios.get('https://client.emchub.ai/emchub/api/client/modelInfo/queryList', {
-            params: { pageNo: 1, pageSize: 99 },
-          });
-          const modelAllList = resp1.data.pageInfo?.list;
-
-          modelList.value.forEach((modelItem: ModelItem) => {
-            if (!modelItem.sha256) return;
-            const resp = modelAllList.find((modelItemAllItems: any) => modelItem.sha256 === modelItemAllItems.modelVersions[0].hashCodeSha256);
-            // console.log(resp);
-            if (!resp) return;
-            const previewPicturesUrl = JSON.parse(resp.modelVersions[0].previewPicturesUrl)[0] || [];
-            modelItem.cover = previewPicturesUrl.url;
-            modelItem.model_name = resp.modelName;
-            modelItem.model_sn = resp.modelSn;
-            item.info = modelItem.model_name;
-          });
-          // console.log(modelList.value);
+        } else if (item.key === 'appOrigin') {
+          item.info = data.appOrigin;
         }
       });
     };
+
+    const initSdModels = async (nodeId: string) => {
+      isLoading.value = true;
+      const resp = await http.get('/nodesdmodels', {
+        params: { nodeid: nodeId },
+      });
+      const modelsData = resp.data;
+      if (modelsData._result !== 0 || modelsData.data === '') return;
+      const models = JSON.parse(modelsData.data);
+      isLoading.value = false;
+
+      if (typeof models !== 'object' || !models.length) {
+        modelList.value = [];
+      } else {
+        models.sort((a: any, b: any) => {
+          const aSha256 = Boolean(a.sha256);
+          const bSha256 = Boolean(b.sha256);
+          if (aSha256 && !bSha256) {
+            return -1;
+          } else if (!aSha256 && bSha256) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        modelList.value = [...models];
+      }
+
+      const resp1 = await http.get('https://client.emchub.ai/emchub/api/client/modelInfo/queryList', {
+        params: { pageNo: 1, pageSize: 99 },
+      });
+      const modelAllList = resp1.data.pageInfo?.list;
+
+      modelList.value.forEach((modelItem: ModelItem) => {
+        if (!modelItem.sha256) return;
+        const resp = modelAllList.find((modelItemAllItems: any) => modelItem.sha256 === modelItemAllItems.modelVersions[0].hashCodeSha256);
+        if (!resp) return;
+        const previewPicturesUrl = JSON.parse(resp.modelVersions[0].previewPicturesUrl)[0] || [];
+        modelItem.cover = previewPicturesUrl.url;
+        modelItem.model_name = resp.modelName;
+        modelItem.model_sn = resp.modelSn;
+      });
+    }
 
     const reward = async (nodeId: string) => {
       const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
@@ -254,6 +255,7 @@ export default defineComponent({
 .page {
   width: 100%;
 }
+
 .main-header {
   margin-bottom: 24px;
   font-weight: 400;
@@ -262,10 +264,12 @@ export default defineComponent({
   color: #fff;
   text-shadow: 0px 2px 8px #762db6;
 }
+
 .node-detail {
   width: 100%;
   /* width: calc(50% - 56px); */
 }
+
 .main-bgcolor {
   width: 100%;
   height: 300px;
@@ -274,6 +278,7 @@ export default defineComponent({
   border-left-width: 4px;
   overflow: hidden;
 }
+
 .main-table {
   width: 100%;
   height: 100%;
@@ -298,6 +303,7 @@ export default defineComponent({
   align-items: center;
   /* width: 0; */
 }
+
 .main-table-item-icon {
   width: 24px;
   height: 24px;
@@ -330,6 +336,7 @@ export default defineComponent({
   box-sizing: border-box;
   overflow: hidden;
 }
+
 .deployed-no-data {
   width: 100%;
   min-height: 400px;

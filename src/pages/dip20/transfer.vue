@@ -184,7 +184,7 @@ export default defineComponent({
       // }
 
       const resp1 = await http.get({
-        url: 'https://api.edgematrix.pro/api/v1/dip20balance',
+        url: '/dip20balance',
         data: { principal: principal },
       });
       balance.value = ethers.formatUnits(resp1.data, 8);

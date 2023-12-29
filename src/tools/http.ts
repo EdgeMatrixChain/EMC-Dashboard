@@ -16,9 +16,8 @@ interface HttpConfig {
   baseURL: string;
   timeout: number;
 }
-
 const _defaultHttpConfig = {
-  baseURL: 'https://api.edgematrix.pro/api/v1',
+  baseURL: (import.meta as any).env.MODE === 'development' ? 'https://api.edgematrix.pro/dev/api/v1' : 'https://api.edgematrix.pro/api/v1',
   timeout: 60000,
 };
 

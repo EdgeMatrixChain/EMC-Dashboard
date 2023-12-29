@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import { routes } from './routes';
 
 export default function createAppRouter(routes: any) {

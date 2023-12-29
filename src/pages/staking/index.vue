@@ -731,7 +731,7 @@ const tradingListInit = async () => {
     };
   })();
   const resp = await http.get({
-    url: 'https://api.edgematrix.pro/api/v1/event/query',
+    url: '/event/query',
     data: {
       contract: emcContract.toLocaleLowerCase(),
       topic: 'VestingScheduleCreated',
@@ -841,7 +841,7 @@ onMounted(async () => {
     });
 
   const resp = await http.get({
-    url: 'https://api.edgematrix.pro/api/v1/event/stakingsum',
+    url: '/event/stakingsum',
     data: { contract: emcContract },
   });
   if (resp._result !== 0) return;

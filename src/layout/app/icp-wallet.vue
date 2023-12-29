@@ -157,11 +157,11 @@ export default defineComponent({
     async function initEMCBalance() {
       const [{ data: metaDataStr }, { data: balance }] = await Promise.all([
         http.get({
-          url: 'https://api.edgematrix.pro/api/v1/dip20simple',
+          url: '/dip20simple',
           data: { method: 'getMetadata' },
         }),
         http.get({
-          url: 'https://api.edgematrix.pro/api/v1/dip20balance',
+          url: '/dip20balance',
           data: { principal: userStore.icpPrincipal },
         }),
       ]);
@@ -175,10 +175,10 @@ export default defineComponent({
     async function initICPBalance() {
       const [{ data: metaData }, { data: balance }] = await Promise.all([
         http.get({
-          url: 'https://api.edgematrix.pro/api/v1/icrc1metadata',
+          url: '/icrc1metadata',
         }),
         http.get({
-          url: 'https://api.edgematrix.pro/api/v1/icrc1balance',
+          url: '/icrc1balance',
           data: { principal: userStore.icpPrincipal },
         }),
       ]);

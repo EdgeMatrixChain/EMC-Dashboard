@@ -96,7 +96,7 @@ function formatAddress(value = '', width = 10) {
 function metaData() {
   return new Promise((resolve, reject) => {
     axios
-      .get('https://api.edgematrix.pro/api/v1/dip20simple', {
+      .get('/dip20simple', {
         params: {
           method: 'getMetadata',
         },
