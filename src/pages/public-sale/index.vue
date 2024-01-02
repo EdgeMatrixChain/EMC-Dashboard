@@ -35,7 +35,7 @@ import { useRoute } from 'vue-router';
 import { ApiManager } from '@/web3/api';
 import { useETHUserStore } from '@/stores/eth-user';
 import { PublicSaleApi } from '@/web3/api/public-sale';
-import { CliffsApi } from '@/web3/api/cliffs';
+import { LockApi } from '@/web3/api/lock';
 import Buy from './buy/index.vue';
 
 export default defineComponent({
@@ -61,7 +61,7 @@ export default defineComponent({
     const cliffsContract = ref('');
     const apiManager = ApiManager.getInstance();
     let publicSaleApi: PublicSaleApi | null = null;
-    let cliffsApi: CliffsApi | null = null;
+    let lockApi: LockApi | null = null;
 
     onMounted(() => {
       // saleContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
@@ -85,7 +85,7 @@ export default defineComponent({
       fundContract.value = _fundContract;
       tokenContract.value = _tokenContract;
       cliffsContract.value = _cliffsContract;
-      cliffsApi = apiManager.create(CliffsApi, { address: cliffsContract.value });
+      lockApi = apiManager.create(LockApi, { address: cliffsContract.value });
       error.value = 0;
     };
 

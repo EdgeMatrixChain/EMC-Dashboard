@@ -1,4 +1,4 @@
-import ABI from '@/web3/abi/cliffs';
+import ABI from '@/web3/abi/lock';
 import { Api } from './api';
 
 type StakeOption = {
@@ -9,38 +9,42 @@ type StakeOption = {
   amount: bigint;
 };
 
-export class CliffsApi extends Api {
+export class LockApi extends Api {
   getAbi() {
     return ABI;
   }
 
-  async getLockedAmount({ account }: any) {
+  getLockedAmount({ account }: any) {
     return super.call({ method: 'getLockedAmount', data: [account] });
   }
 
-  async getReleasableAmount({ account }: any) {
+  getAmount({ account }: any) {
+    return super.call({ method: 'getAmount', data: [account] });
+  }
+
+  getReleasableAmount({ account }: any) {
     return super.call({ method: 'getReleasableAmount', data: [account] });
   }
 
-  async token() {
+  token() {
     return super.call({ method: 'token' });
   }
 
-  async release({ account }: { account: string }) {
+  release({ account }: { account: string }) {
     return super.call({
       method: 'release',
       data: [account],
     });
   }
 
-  async createVestingSchedule({ account, start, cycles, cycleUnit, amount }: StakeOption) {
+  createVestingSchedule({ account, start, cycles, cycleUnit, amount }: StakeOption) {
     return super.call({
       method: 'createVestingSchedule',
       data: [account, start, cycles, cycleUnit, amount],
     });
   }
 
-  async getVestingSchedule({ account }: { account: string }) {
+  getVestingSchedule({ account }: { account: string }) {
     return super.call({
       method: 'getVestingSchedule',
       data: [account],

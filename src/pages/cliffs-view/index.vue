@@ -13,7 +13,32 @@
     </template>
     <template v-else>
       <NSpace vertical :wrap-item="false" align="center" :size="[16, 16]">
-        <NInput v-model:value="inputAccount" size="large" :round="true" placeholder="Address"
+        <NCard title="$EMC Locks" style="max-width:880px;">
+          <template #header>
+            <NSpace justify="space-between" :wrap-item="false" :size="[4, 4]">
+              <NText>$EMC Locks</NText>
+              <NButton text tag="a" type="primary" icon-placement="right" @click="onPressExplorer(cliffsContract)">
+                {{ cliffsContractFormatted }}
+                <template #icon>
+                  <NIcon size="18">
+                    <IconLink />
+                  </NIcon>
+                </template>
+              </NButton>
+            </NSpace>
+          </template>
+          <NInput v-model:value="inputAccount" size="large" :round="true" placeholder="Address"
+            style="width:100%;max-width:880px; border-radius: 99px !important;">
+            <template #suffix>
+              <NButton type="primary" strong round @click="onPressSearch" style="background-color:var(--n-color)">
+                <NIcon size="24">
+                  <IconRefresh />
+                </NIcon>
+              </NButton>
+            </template>
+          </NInput>
+        </NCard>
+        <!-- <NInput v-model:value="inputAccount" size="large" :round="true" placeholder="Address"
           style="width:100%;max-width:880px; border-radius: 99px !important;">
           <template #suffix>
             <NButton type="primary" strong round @click="onPressSearch" style="background-color:var(--n-color)">
@@ -22,7 +47,7 @@
               </NIcon>
             </NButton>
           </template>
-        </NInput>
+        </NInput> -->
         <NSpin :show="currentLoading">
           <NCard title="Strategy Sale" style="max-width:880px;">
             <template #header>
@@ -32,27 +57,20 @@
               </NSpace>
             </template>
             <NSpace vertical justify="center" :wrap-item="false" :size="[16, 16]">
-              <NSpace vertical align="start" justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="3" style="font-size:16px">Contract address</NText>
-                <NButton text tag="a" type="primary" icon-placement="right" @click="onPressExplorer(cliffsContract)">{{
-                  cliffsContract }}
-                  <template #icon>
-                    <NIcon size="18">
-                      <IconLink />
-                    </NIcon>
-                  </template>
-                </NButton>
+              <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
+                <NText depth="2" style="font-size:14px">Total locked</NText>
+                <NText class="text-[18px]" strong>{{ totalLockedAmountStr }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="3" style="font-size:16px">Balance of the holder</NText>
-                <NText>{{ currentStakeAmountStr }} EMC</NText>
+                <NText depth="2" style="font-size:14px">Current locked</NText>
+                <NText class="text-[18px]" strong>{{ currentStakeAmountStr }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="3" style="font-size:16px">Amount can be withdrawn</NText>
-                <NText>{{ currentWithdrawAmountStr }} EMC</NText>
+                <NText depth="2" style="font-size:14px">Eligible for claiming</NText>
+                <NText class="text-[18px]" strong>{{ currentClaimAmountStr }} EMC</NText>
               </NSpace>
               <NButton type="primary" strong size="large" :disabled="!currentCanWithdraw" round @click="onPressClaim"
-                style="background-color:var(--n-color);width:100%;">Withdrawn</NButton>
+                style="background-color:var(--n-color);width:100%;">Claim Now</NButton>
               <Table :data="currentSchedule" />
             </NSpace>
           </NCard>
@@ -80,10 +98,10 @@ import { useRoute, useRouter } from 'vue-router';
 import { ethers } from 'ethers';
 import { ApiManager } from '@/web3/api';
 import { useETHUserStore } from '@/stores/eth-user';
-import { CliffsApi } from '@/web3/api/cliffs';
+import { LockApi } from '@/web3/api/lock';
 import Table from './table.vue';
 import type { Item } from './table.vue';
-
+import { Utils } from '@/tools/utils';
 export default defineComponent({
   name: 'public-sale',
   components: {
@@ -110,17 +128,18 @@ export default defineComponent({
     const inputAccount = ref('');
     const currentLoading = ref(false);
     const currentAccount = ref('');
+    const totalLockedAmount = ref(0n);
     const currentStakeAmount = ref(0n);
-    const currentWithdrawAmount = ref(0n);
+    const currentClaimAmount = ref(0n);
     const currentSchedule = ref<Item[]>([]);
 
     const apiManager = ApiManager.getInstance();
-    let cliffsApi: CliffsApi | null = null;
+    let lockApi: LockApi | null = null;
 
     onMounted(async () => {
       cliffsContract.value = route.query.contract as string || '';
       inputAccount.value = route.query.address as string || '';
-      cliffsApi = apiManager.create(CliffsApi, { address: cliffsContract.value });
+      lockApi = apiManager.create(LockApi, { address: cliffsContract.value });
       error.value = -1;
       if (inputAccount.value) {
         await init(inputAccount.value);
@@ -132,16 +151,19 @@ export default defineComponent({
     const init = async (account: string) => {
       currentLoading.value = true;
       const [
+        { data: [_totalLockedAmount, _totalClaimedAmount] },
         { data: _currentStaked },
         { data: _currentClaim },
         { data: _currentSchedule }
       ] = await Promise.all([
-        cliffsApi!.getLockedAmount({ account }),
-        cliffsApi!.getReleasableAmount({ account }),
-        cliffsApi!.getVestingSchedule({ account }),
+        lockApi!.getAmount({ account }),
+        lockApi!.getLockedAmount({ account }),
+        lockApi!.getReleasableAmount({ account }),
+        lockApi!.getVestingSchedule({ account }),
       ]);
+      totalLockedAmount.value = _totalLockedAmount || 0n;
       currentStakeAmount.value = _currentStaked || 0n;
-      currentWithdrawAmount.value = _currentClaim || 0n;
+      currentClaimAmount.value = _currentClaim || 0n;
       currentSchedule.value = (_currentSchedule || []).map((row: any[]) => {
         const start = Number(row[1] as bigint || 0n);
         const cycles = Number(row[2] as bigint || 0n);
@@ -181,9 +203,11 @@ export default defineComponent({
       inputAccount,
       currentLoading,
       currentAccount,
+      cliffsContractFormatted: computed(() => Utils.formatAddress(cliffsContract.value, 6)),
+      totalLockedAmountStr: computed(() => ethers.formatUnits(totalLockedAmount.value, 18)),
       currentStakeAmountStr: computed(() => ethers.formatUnits(currentStakeAmount.value, 18)),
-      currentWithdrawAmountStr: computed(() => ethers.formatUnits(currentWithdrawAmount.value, 18)),
-      currentCanWithdraw: computed(() => currentWithdrawAmount.value > 0n),
+      currentClaimAmountStr: computed(() => ethers.formatUnits(currentClaimAmount.value, 18)),
+      currentCanWithdraw: computed(() => currentClaimAmount.value > 0n),
       currentSchedule,
       onPressTry() {
         location.reload();

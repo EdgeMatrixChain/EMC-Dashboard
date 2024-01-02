@@ -137,7 +137,7 @@ import { useRoute } from 'vue-router';
 import { ethers } from 'ethers';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
-import { CliffsApi } from '@/web3/api/cliffs';
+import { LockApi } from '@/web3/api/lock';
 import { ERC20Api } from '@/web3/api/erc20';
 import { list as cycleUnitList } from '@/pages/cliffs-team/cycle-unit';
 
@@ -186,7 +186,7 @@ export default defineComponent({
     const sendLoading = ref(false);
     const apiManager = ApiManager.getInstance();
     let limitStart = new Date().getTime() + 365 * 86400000;
-    let cliffsApi: CliffsApi | null = null;
+    let lockApi: LockApi | null = null;
     let erc20Api: ERC20Api | null = null;
 
     const cycleUnitOptions = ref<SelectOption[]>(cycleUnitList);
@@ -211,8 +211,8 @@ export default defineComponent({
 
     const init = async () => {
       infoLoading.value = true;
-      cliffsApi = apiManager.create(CliffsApi, { address: cliffContract.value });
-      const resp = await cliffsApi.token();
+      lockApi = apiManager.create(LockApi, { address: cliffContract.value });
+      const resp = await lockApi.token();
       erc20Contract.value = resp.data || '-';
       erc20Api = apiManager.create(ERC20Api, { address: erc20Contract.value });
       await initInfoWithUser();
@@ -231,8 +231,8 @@ export default defineComponent({
         erc20Api!.decimals(),
         erc20Api!.balanceOf({ account: ethUserStore.account0 }),
         erc20Api!.allowance({ account: ethUserStore.account0, spender: cliffContract.value }),
-        cliffsApi!.getLockedAmount({ account: ethUserStore.account0 }),
-        cliffsApi!.getReleasableAmount({ account: ethUserStore.account0 }),
+        lockApi!.getLockedAmount({ account: ethUserStore.account0 }),
+        lockApi!.getReleasableAmount({ account: ethUserStore.account0 }),
       ]);
 
       const _decimals = resp0.data;
@@ -270,7 +270,7 @@ export default defineComponent({
           return resp2;
         }
       }
-      const resp3 = await cliffsApi!.createVestingSchedule({
+      const resp3 = await lockApi!.createVestingSchedule({
         account,
         start: BigInt(start),
         cycles: BigInt(cycles),

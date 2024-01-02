@@ -51,7 +51,7 @@ export default defineComponent({
             },
             {
                 title: 'Action', key: 'status', align: 'center', render(row: Item) {
-                    return h(NButton, { text: true, tag: 'a', type: 'primary', disabled: row.status !== 1, onClick: () => ctx.emit('item', row) }, { default: () => 'View cliffs' });
+                    return h(NButton, { text: true, tag: 'a', type: 'primary', disabled: row.status !== 1, onClick: () => ctx.emit('item', row) }, { default: () => 'View locks' });
                 },
             },
         ]);
