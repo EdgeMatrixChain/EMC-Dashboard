@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard title="Change principal" style="max-width: 640px;">
+    <NCard title="Change owner" style="max-width: 640px;">
       <template #header-extra>
         <NButton strong secondary circle :disabled="isLoading" @click.stop.prevent="onPressClose">
           <template #icon>
@@ -10,11 +10,11 @@
       </template>
       <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height:240px;">
         <NAlert title="Warning" type="warning">
-          Make sure that the wallet address you entered is working!
+          Make sure that the owner you entered is working!
         </NAlert>
         <NSpace vertical :wrap-item="false" :size="[0, 4]">
           <NSpace :wrap-item="false" justify="space-between">
-            <NText depth="3" strong style="font-size: 16px">Principal</NText>
+            <NText depth="3" strong style="font-size: 16px">Owner</NText>
           </NSpace>
           <NInput v-model:value="inputAddress" placeholder=" " size="large"
             style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
@@ -52,9 +52,9 @@ export default defineComponent({
 
     const inputAddress = ref('');
     const isLoading = ref(false);
-    const handlerSubmit = async (principal: string) => {
+    const handlerSubmit = async (owner: string) => {
       const nodeId = props.nodeId;
-      const signatureRaw = `Change principal to ${principal}`;
+      const signatureRaw = `Change owner to ${owner}`;
       const resp1 = await w3s.signMessage(signatureRaw);
       if (resp1._result !== 0) {
         return resp1;
@@ -62,7 +62,7 @@ export default defineComponent({
       const signature = resp1.data!.signature;
       return http.postJSON({
         url: '/nodesign/update',
-        data: { principal, nodeId, signatureRaw, signature },
+        data: { principal:owner, nodeId, signatureRaw, signature },
         noAutoHint: true,
       });
     }
@@ -73,19 +73,19 @@ export default defineComponent({
         ctx.emit('update:visible', false);
       },
       async onPressSubmit() {
-        const principal = inputAddress.value;
-        if (!ethers.isAddress(principal)) {
+        const owner = inputAddress.value;
+        if (!ethers.isAddress(owner)) {
           message.warning('Invalid wallet address');
           return;
         }
         isLoading.value = true;
-        const resp = await handlerSubmit(principal);
+        const resp = await handlerSubmit(owner);
         isLoading.value = false;
         if (resp._result !== 0) {
           message.warning(resp._desc);
           return;
         }
-        ctx.emit('success');
+        ctx.emit('success', owner);
       },
     };
   },

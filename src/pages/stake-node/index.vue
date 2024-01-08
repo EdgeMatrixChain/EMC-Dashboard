@@ -67,11 +67,11 @@
                 <NText class="text-[18px]" strong>{{ nodeInfo.nodeType }}</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="3" style="font-size:14px">Principal</NText>
+                <NText depth="3" style="font-size:14px">Owner</NText>
                 <NSpace align="center" :wrap-item="false" :size="[4, 4]">
                   <NText class="text-[18px]" strong>{{ nodeInfo.registerAccount }}</NText>
                   <template v-if="status === 0">
-                    <NButton strong secondary circle @click.stop.prevent="onPressChangePrincipal">
+                    <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
                       <template #icon>
                         <NIcon size="18">
                           <IconEdit />
@@ -130,7 +130,7 @@
           </NCard>
           <Bill :node-id="nodeInfo.nodeId" :stake-contract="stakeContract" :token-contract="tokenContract" />
           <Claim :node-id="nodeInfo.nodeId" :stake-contract="stakeContract" :token-contract="tokenContract" />
-          <ModalChangePrincipal v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId"
+          <ModalChangeOwner v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId"
             @success="onChangePrincipalSuccess" />
           <ModalStake v-model:visible="isVisibleStake" :stake-contract="stakeContract" :token-contract="tokenContract"
             :node-id="nodeInfo.nodeId" @success="onStakeSuccess" />
@@ -166,7 +166,7 @@ import { Web3Service } from '@/web3';
 import { getDefaultNetwork } from '@/web3/network';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
-import ModalChangePrincipal from './change-principal/index.vue';
+import ModalChangeOwner from './change-owner/index.vue';
 import ModalStake from './stake/index.vue';
 import ModalUnstake from './unstake/index.vue';
 import Bill from './bill/index.vue';
@@ -189,7 +189,7 @@ export default defineComponent({
     IconEdit,
     Bill,
     Claim,
-    ModalChangePrincipal,
+    ModalChangeOwner,
     ModalStake,
     ModalUnstake
   },
@@ -358,7 +358,7 @@ export default defineComponent({
       async onPressBind() {
         handleBind();
       },
-      onPressChangePrincipal() {
+      onPressChangeOwner() {
         isVisibleChangePrincipal.value = true;
       },
       onChangePrincipalSuccess() {

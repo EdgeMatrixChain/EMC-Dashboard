@@ -21,7 +21,7 @@
                   style="background-color:var(--n-color);width:auto;">Bind</NButton>
               </template>
               <template v-if="status === 2">
-                <NText>Need to be rebind after change principal</NText>
+                <NText>Need to be rebind after change owner</NText>
                 <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind"
                   style="background-color:var(--n-color);width:auto;">Rebind</NButton>
               </template>
@@ -48,12 +48,12 @@
 
                 <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
                   <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
-                    <NText class="text-[14px] xl:text-[16px]" depth="3">Principal</NText>
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Owner</NText>
                   </NSpace>
                   <NSpace class="flex-1" align="center" :wrap-item="false" :size="[8, 0]">
                     <NText class="text-[12px] xl:text-[13px]"> {{ nodeInfo.principal || '--' }}</NText>
                     <template v-if="status === 0 || status === 1 || status === 2">
-                      <NButton strong secondary circle @click.stop.prevent="onPressChangePrincipal">
+                      <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
                         <template #icon>
                           <NIcon size="18">
                             <IconEdit />
@@ -144,7 +144,7 @@
           </NGridItem>
         </NGrid>
         <template v-if="status === 0 || status === 1 || status === 2">
-          <ModalChangePrincipal v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId"
+          <ModalChangeOwner v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId"
             @success="onChangePrincipalSuccess" />
         </template>
         <template v-if="status === 0">
@@ -177,7 +177,7 @@ import { getDefaultNetwork } from '@/web3/network';
 
 import ModelsItem from '@/components/models-item.vue';
 
-import ModalChangePrincipal from './change-principal/index.vue';
+import ModalChangeOwner from './change-owner/index.vue';
 import ModalStake from './stake/index.vue';
 import ModalUnstake from './unstake/index.vue';
 import ModalTips from './tips/index.vue'
@@ -205,7 +205,7 @@ export default defineComponent({
     NGridItem,
     NSpin,
     ModelsItem,
-    ModalChangePrincipal,
+    ModalChangeOwner,
     ModalStake,
     ModalUnstake,
     ModalTips,
@@ -296,7 +296,7 @@ export default defineComponent({
       }
     }
 
-    async function queryPrincipal(nodeId: string) {
+    async function queryOwner(nodeId: string) {
       const resp = await http.get({
         url: '/nodesign/query',
         data: { nodeId }
@@ -343,7 +343,7 @@ export default defineComponent({
 
       const [_nodeInfo, { principal }, { bindStakeAccount, currentStaked }, { currentReward }] = await Promise.all([
         queryInfo(nodeId),
-        queryPrincipal(nodeId),
+        queryOwner(nodeId),
         queryStake(nodeId),
         queryReward(nodeId),
       ]);
@@ -494,13 +494,13 @@ export default defineComponent({
         if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
         handleCheckoutReward(nodeInfo.value.currentReward);
       },
-      onPressChangePrincipal() {
+      onPressChangeOwner() {
         isVisibleChangePrincipal.value = true;
       },
       onChangePrincipalSuccess(inputAddress: string) {
         init(nodeId);
         isVisibleChangePrincipal.value = false;
-        tipsTitle.value = 'Change principal success';
+        tipsTitle.value = 'Change owner success';
         tipsMessage.value = `Need to switch to ${inputAddress} account to continue operation.`
         isVisibleTips.value = true;
 

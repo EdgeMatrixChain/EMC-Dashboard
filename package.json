@@ -18,7 +18,7 @@
   "dependencies": {
     "@connect2ic/core": "0.2.0-beta.23",
     "@connect2ic/vue": "0.2.0-beta.23",
-    "@dfinity/agent": "^0.15.4",
+    "@dfinity/agent": "^0.15.4", 
     "@dfinity/auth-client": "^0.15.4",
     "@dfinity/candid": "^0.15.4",
     "@dfinity/principal": "^0.15.4",

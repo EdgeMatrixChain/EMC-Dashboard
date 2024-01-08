@@ -1,10 +1,5 @@
 export const routes = [
   {
-    name: 'auth',
-    path: '/auth',
-    component: () => import('@/pages/auth/index.vue'),
-  },
-  {
     name: 'staking',
     path: '/staking',
     component: () => import('@/pages/staking/index.vue'),
