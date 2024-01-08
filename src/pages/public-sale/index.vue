@@ -65,7 +65,7 @@ export default defineComponent({
 
     onMounted(() => {
       // saleContract.value = '0x17EA72D614C47Dc4ee5d71044076500272dfBEe3';
-      saleContract.value = '0x35C7b92b32258E5a83292d1a99A59caAb8CE2d7c';
+      saleContract.value = '0x4A71EdAeDf64b29F43A6eF1F581d83bc71586D1f';
       init();
     });
 

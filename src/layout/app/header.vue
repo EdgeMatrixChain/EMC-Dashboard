@@ -40,56 +40,20 @@
       </template>
       <template v-else>
         <div class="header-user" @click="onPressUser">
-          <!-- <template v-if="carouselReady">
-            <NCarousel direction="vertical" :autoplay="true" :show-dots="false" style="width: 100%; height: 52px">
-              <template v-if="emcBalanceShort">
-                <div class="carousel-item">
-                  <span
-                    class="header-user-text max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis">{{ emcBalanceShort
-                    }}</span>
-                  <span class="header-user-text mr-[4px]">{{ emcSymbol }}</span>
-                  <div class="carousel-item-icon hidden xl:flex">
-                    <img src="@/assets/icon_wallet.svg" width="16" height="16" />
-                  </div>
-                </div>
-              </template>
-              <div class="carousel-item">
-                <span class="header-user-text">{{ accountFormatted }}</span>
-              </div>
-            </NCarousel>
-          </template> -->
-          <div>
-            <span class="header-user-text">{{ accountFormatted }}</span>
-            <div style="font-size:12px;">
-              <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right:4px;">{{
-                emcBalanceShort }}</span>
-              <span class="mr-[4px]">{{ emcSymbol }}</span>
-            </div>
+          <span class="header-user-text">{{ accountFormatted }}</span>
+          <div class="text-[12px]">
+            <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right: 4px">{{ emcBalanceShort }}</span>
+            <span class="mr-[4px]">{{ emcSymbol }}</span>
           </div>
-          <!-- <template v-else>
-            <NSpin size="small" />
-          </template> -->
-          <ETHWallet v-model:visible="visibleETHWallet" @disconnect="onDisconnect" />
         </div>
+        <ETHWallet v-model:visible="visibleETHWallet" @disconnect="onDisconnect" @claim-rewards="onClaimReward" @claim-unstake="onClaimUnstake" />
       </template>
-
     </div>
   </NSpace>
 </template>
 <script lang="ts">
 import { ref, defineComponent, watch, nextTick, computed } from 'vue';
-import {
-  NAvatar,
-  NText,
-  NSpin,
-  NSpace,
-  NCarousel,
-  NSelect,
-  useMessage,
-  NDropdown,
-  NButton,
-  NIcon,
-} from 'naive-ui';
+import { NAvatar, NText, NSpin, NSpace, NCarousel, NSelect, useMessage, NDropdown, NButton, NIcon } from 'naive-ui';
 import { useRoute, useRouter, RouterLink, onBeforeRouteUpdate } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useUserStore } from '@/stores/user';
@@ -100,7 +64,7 @@ import ICPConnectDialog from '@/components/icp-connect/dialog.vue';
 import ETHConnectDialog from '@/components/eth-connect/dialog.vue';
 import { MenuSharp as IconMenu } from '@vicons/ionicons5';
 import { useIsMobile, useIsTablet } from '@/composables/use-screen';
-
+import { getDefaultNetwork } from '@/web3/network';
 type tabkey = number;
 
 type TabItem = {
@@ -152,7 +116,6 @@ export default defineComponent({
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
 
-
     watch(
       () => route.path,
       (path, oldVal) => {
@@ -168,9 +131,9 @@ export default defineComponent({
         carouselReady.value = false;
         nextTick(() => {
           carouselReady.value = true;
-        })
+        });
       }
-    )
+    );
 
     return {
       tabs,
@@ -206,6 +169,13 @@ export default defineComponent({
       onDisconnect() {
         visibleETHWallet.value = false;
         ethUserStore.signOut();
+      },
+      onClaimUnstake() {
+        const networkConfig = getDefaultNetwork();
+        router.push({ name: 'cliffs-view', query: { contract: networkConfig.smarts.nodeUnstakeClaim.contract, address: ethUserStore.account0 } });
+      },
+      onClaimReward() {
+        router.push({ name: 'claim-node-rewards' });
       },
     };
   },
@@ -332,17 +302,6 @@ export default defineComponent({
     height: 36px;
     /* content: url('@/assets/logo.light.png'); */
     content: url('@/assets/icon_coin_emc.png');
-  }
-
-  .header-user {
-    width: 102px;
-    height: 36px;
-  }
-
-  .header-user-text,
-  .carousel-item {
-    font-weight: normal;
-    font-size: 12px;
   }
 }
 </style>

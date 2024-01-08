@@ -1,82 +1,186 @@
 <template>
   <div class="page max-w-[1440px]" style="margin:auto;">
-    <NGrid class="main pt-4 mb-10" x-gap="96" y-gap="48" cols="1 1200:2 " item-responsive>
-      <NGridItem class="node-detail">
-        <div class="main-header">Node Details</div>
-        <div class="main-bgcolor" style="border-left-color: #8f7df8">
-          <div class="main-table">
-            <template v-for="item in nodeList">
-              <div class="main-table-item">
-                <div class="main-table-item-name min-w-[128px] xl:min-w-[200px]">
-                  <span class="main-table-item-name-span">{{ item.name }} :</span>
-                </div>
-                <div class="main-table-item-info">
-                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{
-                    item.info }} </NEllipsis>
-                </div>
+    <template v-if="error === -1">
+      <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+        <NSpin />
+      </NSpace>
+    </template>
+    <template v-else-if="error > 0">
+      <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+        <NText>{{ errorText }}</NText>
+      </NSpace>
+    </template>
+    <template v-else>
+      <NSpace vertical :wrap-item="false" :size="[0, 24]">
+        <template v-if="status === 1 || status === 2">
+          <NAlert title="Warning" type="warning">
+            <NSpace align="center" :wrap-item="false" :size="[8, 8]">
+              <template v-if="status === 1">
+                <NText>Nodes need to be bound before stake</NText>
+                <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind"
+                  style="background-color:var(--n-color);width:auto;">Bind</NButton>
+              </template>
+              <template v-if="status === 2">
+                <NText>Need to be rebind after change principal</NText>
+                <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind"
+                  style="background-color:var(--n-color);width:auto;">Rebind</NButton>
+              </template>
+            </NSpace>
+          </NAlert>
+        </template>
+        <NSpace align="center" :wrap-item="false" :size="[0, 0]">
+          <NText class="header-text text-[20px] mr-[8px]">Node</NText>
+          <NText class="header-text text-[14px]">{{ nodeInfo.nodeId }}</NText>
+        </NSpace>
+        <NGrid x-gap="48" y-gap="48" :cols="24" item-responsive>
+          <NGridItem span="24 1000:12">
+            <div class="main-bgcolor" style="border-left-color: #8f7df8">
+              <div class="main-table">
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Run Time</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.runTime }}</NText>
+                  </NSpace>
+                </NSpace>
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Principal</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[12px] xl:text-[13px]"> {{ nodeInfo.principal || '--' }}</NText>
+                    <template v-if="status === 0 || status === 1 || status === 2">
+                      <NButton strong secondary circle @click.stop.prevent="onPressChangePrincipal">
+                        <template #icon>
+                          <NIcon size="18">
+                            <IconEdit />
+                          </NIcon>
+                        </template>
+                      </NButton>
+                    </template>
+                  </NSpace>
+                </NSpace>
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Reward</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ formatUnits(nodeInfo.currentReward || 0n, 18) }} EMC
+                    </NText>
+                    <template v-if="status === 0">
+                      <NButton type="primary" strong size="small" round :loading="loadings.checkout"
+                        @click="onPressCheckout" :disabled="nodeInfo.currentReward === 0n || !nodeInfo.currentReward"
+                        style="background-color:var(--n-color);width:auto;">Check out rewards
+                      </NButton>
+                    </template>
+                  </NSpace>
+                </NSpace>
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Staked</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC
+                    </NText>
+                    <template v-if="status === 0">
+                      <NSpace align="center" :wrap-item="false" :size="[8, 0]">
+                        <NButton type="primary" strong size="small" round :loading="loadings.stake" @click="onPressStake"
+                          style="background-color:var(--n-color);width:auto;">Stake</NButton>
+                        <NButton type="primary" strong size="small" round :loading="loadings.unstake"
+                          :disabled="nodeInfo.currentStaked === 0n || !nodeInfo.currentStaked" @click="onPressUnstake"
+                          style="background-color:var(--n-color);width:auto;">Unstake</NButton>
+                      </NSpace>
+                    </template>
+                  </NSpace>
+                </NSpace>
               </div>
-            </template>
-          </div>
-        </div>
-      </NGridItem>
-      <NGridItem class="node-detail">
-        <div class="main-header">Node Details</div>
-        <div class="main-bgcolor" style="border-left-color: #5554fe">
-          <div class="main-table">
-            <template v-for="(item, index) in infoList">
-              <div class="main-table-item">
-                <div class="main-table-item-name min-w-[128px] xl:min-w-[200px]">
-                  <img class="main-table-item-icon" :src="item.icon" />
-                  <span class="main-table-item-name-span text-[12px] xl:text-[18px]">{{ item.name }} :</span>
-                </div>
-                <div class="main-table-item-info">
-                  <NEllipsis class="main-table-item-info-span text-[12px] xl:text-[16px]" style="max-width: 400px"> {{
-                    item.info }} </NEllipsis>
-                </div>
+            </div>
+          </NGridItem>
+          <NGridItem span="24 1000:12">
+            <div class="main-bgcolor" style="border-left-color: #5554fe">
+              <div class="main-table">
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">CPU</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.cpuName }}</NText>
+                  </NSpace>
+                </NSpace>
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Mac Address</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.macAddr }}</NText>
+                  </NSpace>
+                </NSpace>
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">IP Address</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.ipAddr }}</NText>
+                  </NSpace>
+                </NSpace>
+
+                <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
+                  <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]" depth="3">Memory</NText>
+                  </NSpace>
+                  <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.memoryInfo }}</NText>
+                  </NSpace>
+                </NSpace>
+
               </div>
-            </template>
-          </div>
-        </div>
-      </NGridItem>
-    </NGrid>
-    <div class="main-header">Deployed</div>
-    <NSpin :show="isLoading">
-      <template v-if="modelList.length !== 0">
-        <div class="deployed-bgcolor">
-          <NGrid x-gap="24" y-gap="24" cols="1356:4 1037:3 718:2 399:1" item-responsive>
-            <template v-for="item in modelList">
-              <NGridItem>
-                <ModelsItem class="mode-item" :item="item" />
-              </NGridItem>
-            </template>
-          </NGrid>
-        </div>
-      </template>
-      <template v-else>
-        <div class="deployed-bgcolor">
-          <div class="deployed-no-data">No data</div>
-        </div>
-      </template>
-    </NSpin>
+            </div>
+          </NGridItem>
+        </NGrid>
+        <template v-if="status === 0 || status === 1 || status === 2">
+          <ModalChangePrincipal v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId"
+            @success="onChangePrincipalSuccess" />
+        </template>
+        <template v-if="status === 0">
+          <ModalStake v-model:visible="isVisibleStake" :stake-contract="stakeContract" :token-contract="tokenContract"
+            :node-id="nodeInfo.nodeId" @success="onStakeSuccess" />
+          <ModalUnstake v-model:visible="isVisibleUnstake" :stake-contract="stakeContract" :token-contract="tokenContract"
+            :node-id="nodeInfo.nodeId" @success="onUnstakeSuccess" />
+        </template>
+        <ModalTips v-model:visible="isVisibleTips" :title="tipsTitle" :message="tipsMessage" />
+      </NSpace>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { NDatePicker, NEllipsis, NGrid, NGridItem, NSpin } from 'naive-ui';
-import { useRewardStore } from '@/stores/reward';
+import { defineComponent, ref, onMounted, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { NSpace, NAlert, NText, NButton, NIcon, NEllipsis, NGrid, NGridItem, NSpin, useMessage } from 'naive-ui';
+import { SearchSharp as IconRefresh, Close as IconClose, LinkOutline as IconLink, PencilSharp as IconEdit } from '@vicons/ionicons5';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
+import { ethers } from 'ethers';
+import { useETHUserStore } from '@/stores/eth-user';
+import { Web3Utils } from '@/web3/utils';
+import { ApiManager } from '@/web3/api';
+import { StakeNodeApi } from '@/web3/api/stake-node';
+import { Web3Service } from '@/web3';
+import { getDefaultNetwork } from '@/web3/network';
 
 import ModelsItem from '@/components/models-item.vue';
 
-import iconCpu from '@/assets/icon_cpu.svg';
-import iconGpu from '@/assets/icon_gpu.svg';
-import iconIP from '@/assets/icon_ip.png';
-import iconMemory from '@/assets/icon_memory.png';
-import iconModel from '@/assets/icon_model.png';
+import ModalChangePrincipal from './change-principal/index.vue';
+import ModalStake from './stake/index.vue';
+import ModalUnstake from './unstake/index.vue';
+import ModalTips from './tips/index.vue'
 
 type ModelItem = {
   hash: string;
@@ -91,109 +195,248 @@ type ModelItem = {
 
 export default defineComponent({
   components: {
-    ModelsItem,
-    NDatePicker,
+    NSpace,
+    NAlert,
+    NText,
+    NButton,
+    NIcon,
     NEllipsis,
     NGrid,
     NGridItem,
     NSpin,
+    ModelsItem,
+    ModalChangePrincipal,
+    ModalStake,
+    ModalUnstake,
+    ModalTips,
+    IconEdit
   },
   setup() {
     const router = useRouter();
-    const useReward = useRewardStore();
+
+    const route = useRoute();
+    const message = useMessage();
+
     const http = Http.getInstance();
-    const nodeId: string = router.currentRoute.value.params.id as string;
+    const apiManager = ApiManager.getInstance();
 
-    const modelList = ref<ModelItem[]>([]);
-    const nodeList = ref([
-      { name: 'Node ID', key: 'nodeId', info: '--' },
-      { name: 'Startup Time', key: 'startTime', info: '--' },
-      { name: 'Run Time', key: 'runTime', info: '--' },
-      { name: 'Reward', key: 'reward', info: '--' },
-      { name: 'AvgPower', key: 'avgPower', info: '--' },
-    ]);
-    const infoList = ref([
-      { name: 'CPU', key: 'cpu', icon: iconCpu, info: '--' },
-      { name: 'Mac Address', key: 'mac', icon: iconGpu, info: '--' },
-      { name: 'IP Address', key: 'ip', icon: iconIP, info: '--' },
-      { name: 'Memory', key: 'memory', icon: iconMemory, info: '--' },
-      { name: 'Application', key: 'appOrigin', icon: iconModel, info: '--' },
-    ]);
+    const w3s = Web3Service.getInstance();
+    const ethUserStore = useETHUserStore();
 
-    const isLoading = ref(false);
+    let stakeNodeApi: StakeNodeApi | null = null;
+    let nodeId = '';
 
-    onMounted(() => {
-      init(nodeId);
+    const error = ref(-1);
+    const errorText = ref('');
+
+    const loadings = ref({
+      bind: false,
+      checkout: false,
+      stake: false,
+      unstake: false,
     });
 
+    const stakeContract = ref('');
+    const tokenContract = ref('');
+
+    const nodeInfo = ref<any>({});
+
+    const isVisibleChangePrincipal = ref(false);
+    const isVisibleStake = ref(false);
+    const isVisibleUnstake = ref(false);
+    const isVisibleTips = ref(false);
+    const tipsTitle = ref('');
+    const tipsMessage = ref('');
+
+    const status = computed(() => {
+      if (!ethUserStore.account0) {
+        return 11; // Not connected
+      } else if (ethUserStore.isInvalidNetwork) {
+        return 12;// Please switch to arbitrum one first
+      } else if (!Web3Utils.eq(ethUserStore.account0, nodeInfo.value.principal)) {
+        return 13; // No access privilege
+      } else {
+        if (!nodeInfo.value.bindStakeAccount || nodeInfo.value.bindStakeAccount === '0x0000000000000000000000000000000000000000') {
+          return 1; // Node binding
+        } else if (!Web3Utils.eq(nodeInfo.value.bindStakeAccount, nodeInfo.value.principal)) {
+          return 2; // Update binding
+        } else {
+          return 0; // Stake、Unstake、Change binding
+        }
+      }
+    });
+
+    const modelList = ref<ModelItem[]>([]);
+
+
+    async function queryInfo(nodeId: string) {
+      const resp = await http.get({
+        url: '/nodeinfosnapshot',
+        data: { nodeid: nodeId },
+      });
+      let node = resp.data || {};
+      if (Object.keys(node).length === 0) {
+        const resp = await http.get({ url: '/nodeinfo', data: { nodeid: nodeId } });
+        node = resp.data || {};
+      }
+      const cpuInfo = Utils.parseJSON(node.cpuInfo) || {};
+      const ipInfo = node.ipInfo || {};
+      const memory = Utils.parseJSON(node.memoryInfo) || {};
+      const memoryTotal = Math.round(memory.total / Math.pow(1024, 3));
+      const memoryUsedPercent = Utils.toFixed(Number(memory.used_percent));
+      return {
+        nodeId: node._id,
+        startupTime: moment(node.startupTime).format('YYYY-MM-DD hh:mm'),
+        runTime: Utils.formatDate(node.runTime),
+        cpuName: cpuInfo.ModelName,
+        macAddr: node.macAddr,
+        ipAddr: ipInfo.ipAddr,
+        memoryInfo: `${memoryTotal}GB ${memoryUsedPercent}%`,
+        application: node.appOrigin
+      }
+    }
+
+    async function queryPrincipal(nodeId: string) {
+      const resp = await http.get({
+        url: '/nodesign/query',
+        data: { nodeId }
+      })
+      const signInfo = resp.data || {};
+      return {
+        principal: signInfo.principal,
+      }
+    }
+
+    async function queryStake(nodeId: string) {
+      const { data: _stakeInfo } = await stakeNodeApi!.nodeInfo({ nodeId });
+      const [_bindStakeAccount, _totalStaked, _currentStaked, _totalUnstaked] = _stakeInfo || [];
+      return {
+        bindStakeAccount: _bindStakeAccount || '', //contract bind wallet address
+        totalStaked: _totalStaked || 0n,
+        currentStaked: _currentStaked || 0n,
+        totalUnstaked: _totalUnstaked || 0n,
+      }
+    }
+
+    async function queryReward(nodeId: string) {
+      const resp = await http.get({
+        url: '/nodebill/summary',
+        data: { nodeId: nodeId }
+      });
+      const data = resp.data || {};
+      const totalReward = data.billTotal || 0;
+      const totalClaim = data.withdrawTotal || 0;
+      return {
+        currentReward: BigInt(totalReward) - BigInt(totalClaim),
+        totalReward: totalReward
+      }
+    }
+
     const init = async (nodeId: string) => {
-      const resp = await http.get('/nodeinfosnapshot', {
-        params: { nodeid: nodeId },
-      });
-      let nodeinfosnapshot = resp.data?.data || {};
-      if (Object.keys(nodeinfosnapshot).length === 0) {
-        const resp1 = await http.get('/nodeinfo', {
-          params: { nodeid: nodeId },
-        });
-        nodeinfosnapshot = resp1.data?.data || {};
+      error.value = -1;
+
+      if (!nodeId) {
+        error.value = 1;
+        errorText.value = 'Invalid node id';
+        return
       }
-      dataInfoFunction(nodeinfosnapshot, nodeId);
-      console.info(nodeinfosnapshot.appOrigin);
-      if (nodeinfosnapshot.appOrigin === 'StableDiffusion') {
-        initSdModels(nodeId);
+
+      const [_nodeInfo, { principal }, { bindStakeAccount, currentStaked }, { currentReward }] = await Promise.all([
+        queryInfo(nodeId),
+        queryPrincipal(nodeId),
+        queryStake(nodeId),
+        queryReward(nodeId),
+      ]);
+
+      nodeInfo.value = {
+        ..._nodeInfo,
+        principal,
+        bindStakeAccount,
+        currentStaked,
+        currentReward,
       }
+
+      error.value = 0;
     };
 
-    const dataInfoFunction = (data: any, nodeId: string) => {
-      nodeList.value.forEach((item) => {
-        if (item.key === 'nodeId') {
-          if (!data._id) return;
-          item.info = Utils.formatAddress(data._id);
-        } else if (item.key === 'startTime') {
-          if (!data.startupTime) return;
-          item.info = moment(data.startupTime).format('YYYY-MM-DD hh:mm');
-        } else if (item.key === 'runTime') {
-          if (data.startupTime === data.runTime) return;
-          item.info = Utils.formatDate(data.runTime);
-        } else if (item.key === 'reward') {
-          reward(nodeId);
-        } else if (item.key === 'avgPower') {
-          if (!data.avgPower) return;
-          item.info = data.avgPower;
-        }
+    const preNodeBind = async (params: { account: string, nodeId: string }) => {
+      const nodeId = params.nodeId;
+      const signatureRaw = `Node bind ${nodeId}`;
+      const resp1 = await w3s.signMessage(signatureRaw);
+      if (resp1._result !== 0) {
+        return resp1;
+      }
+      const signature = resp1.data!.signature;
+      return http.postJSON({
+        url: '/nodestake/bindsign',
+        data: { nodeId, signatureRaw, signature },
+        noAutoHint: true,
       });
+    }
 
-      infoList.value.forEach(async (item) => {
-        if (item.key === 'cpu') {
-          if (data.cpuInfo) {
-            item.info = JSON.parse(data.cpuInfo).ModelName;
-          }
-        } else if (item.key === 'mac') {
-          if (!data.macAddr) return;
-          item.info = data.macAddr;
-        } else if (item.key === 'ip') {
-          if (!data.ipInfo) return;
-          if (Object.keys(data.ipInfo).length === 0) return;
-          item.info = data.ipInfo.ipAddr;
-        } else if (item.key === 'memory') {
-          if (!data.memoryInfo) return;
-          const formatMemory = JSON.parse(data.memoryInfo);
-          item.info = Math.round(formatMemory.total / Math.pow(1024, 3)) + 'GB ' + ' Useage ' + Number(formatMemory.used_percent).toFixed(2) + '%';
-        } else if (item.key === 'appOrigin') {
-          item.info = data.appOrigin;
-        }
-      });
-    };
+    const nodeBind = async (params: { account: string, nodeId: string }) => {
+      const nodeId = params.nodeId;
+      const resp = await preNodeBind(params);
+      if (resp._result !== 0) return resp;
+      const data = resp.data || {};
+      const nonce = data.nonce;
+      const signature = data.signature;
+      return stakeNodeApi!.bindNode({ nodeId, nonce, signature });
+    }
+
+    const handleBind = async () => {
+      const account = ethUserStore.account0;
+      const nodeId = nodeInfo.value.nodeId;
+      loadings.value.bind = true;
+      const resp = await nodeBind({ account, nodeId });
+      loadings.value.bind = false;
+      if (resp._result !== 0) {
+        message.warning(resp._desc);
+        return;
+      }
+      loadings.value.bind = true;
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      loadings.value.bind = false;
+
+      message.success('Successful, and the transaction may be delayed');
+      init(nodeId);
+    }
+
+    const handleCheckoutReward = async (amount: bigint) => {
+      loadings.value.checkout = true;
+      const resp = await http.postJSON({
+        url: '/nodebill/withdraw',
+        data: { nodeId, amount: amount.toString() }
+      })
+      loadings.value.checkout = false;
+      if (resp._result !== 0) {
+        message.warning(resp._desc);
+        return;
+      }
+      init(nodeId);
+      tipsTitle.value = 'Check out success';
+      tipsMessage.value = `The amount of this check out ${ethers.formatUnits(amount, 18)} $EMC. You can click top-right "Claim node reward" for more information`
+      isVisibleTips.value = true;
+    }
+
+    onMounted(async () => {
+      nodeId = route.params.id as string;
+      const networkConfig = getDefaultNetwork();
+      stakeContract.value = networkConfig.smarts.nodeStake.contract;
+      stakeNodeApi = apiManager.create(StakeNodeApi, { address: stakeContract.value });
+      const { data: _tokenContract } = await stakeNodeApi!.token();
+      tokenContract.value = _tokenContract || '';
+      await init(nodeId);
+    });
+
 
     const initSdModels = async (nodeId: string) => {
-      isLoading.value = true;
       const resp = await http.get('/nodesdmodels', {
         params: { nodeid: nodeId },
       });
       const modelsData = resp.data;
       if (modelsData._result !== 0 || modelsData.data === '') return;
       const models = JSON.parse(modelsData.data);
-      isLoading.value = false;
 
       if (typeof models !== 'object' || !models.length) {
         modelList.value = [];
@@ -228,24 +471,57 @@ export default defineComponent({
       });
     }
 
-    const reward = async (nodeId: string) => {
-      const { total: total, list: list } = await useReward.getNodeRewardList(0, 10);
-      const localList = Utils.getLocalStorage('icp.reward.list')?.list || [];
-      if (localList.length === 0) return;
-      const reward = localList.find((item: any) => item.nodeID === nodeId);
-      if (!reward) return;
-      if (reward.reward !== '0') {
-        nodeList.value[3].info = '≈ ' + reward.reward / Math.pow(10, 8) + ' EMC';
-      } else {
-        nodeList.value[3].info = reward.reward;
-      }
-    };
-
     return {
-      isLoading,
-      nodeList,
-      infoList,
+      error,
+      errorText,
+      loadings,
+      status,
+      nodeInfo,
       modelList,
+      isVisibleChangePrincipal,
+      isVisibleStake,
+      isVisibleUnstake,
+      isVisibleTips,
+      tipsTitle,
+      tipsMessage,
+      stakeContract,
+      tokenContract,
+      formatUnits: ethers.formatUnits,
+      onPressBind() {
+        handleBind();
+      },
+      onPressCheckout() {
+        if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
+        handleCheckoutReward(nodeInfo.value.currentReward);
+      },
+      onPressChangePrincipal() {
+        isVisibleChangePrincipal.value = true;
+      },
+      onChangePrincipalSuccess(inputAddress: string) {
+        init(nodeId);
+        isVisibleChangePrincipal.value = false;
+        tipsTitle.value = 'Change principal success';
+        tipsMessage.value = `Need to switch to ${inputAddress} account to continue operation.`
+        isVisibleTips.value = true;
+
+      },
+      onPressStake() {
+        isVisibleStake.value = true;
+      },
+      onStakeSuccess() {
+        init(nodeId);
+        isVisibleStake.value = false;
+      },
+      onPressUnstake() {
+        isVisibleUnstake.value = true;
+      },
+      onUnstakeSuccess() {
+        init(nodeId);
+        isVisibleUnstake.value = false;
+        tipsTitle.value = 'Unstake success';
+        tipsMessage.value = `$EMC have to wait 30 days for release. You can click top-right "Claim node reward" for more information.`
+        isVisibleTips.value = true;
+      },
     };
   },
 });
@@ -256,23 +532,15 @@ export default defineComponent({
   width: 100%;
 }
 
-.main-header {
-  margin-bottom: 24px;
+
+.header-text {
   font-weight: 400;
-  font-size: 20px;
-  line-height: 28px;
   color: #fff;
   text-shadow: 0px 2px 8px #762db6;
 }
 
-.node-detail {
-  width: 100%;
-  /* width: calc(50% - 56px); */
-}
-
 .main-bgcolor {
   width: 100%;
-  height: 300px;
   border-radius: 12px;
   border-left-style: solid;
   border-left-width: 4px;
@@ -281,72 +549,17 @@ export default defineComponent({
 
 .main-table {
   width: 100%;
-  height: 100%;
   background-color: #1c2025;
   backdrop-filter: blur(60px);
 }
 
 .main-table-item {
-  display: flex;
-  align-items: center;
-  height: 60px;
+  height: 64px;
   padding: 0 24px;
   border-bottom: 1px solid #2d343f;
 }
 
 .main-table-item:nth-last-child(1) {
   border-bottom: none;
-}
-
-.main-table-item-name {
-  display: flex;
-  align-items: center;
-  /* width: 0; */
-}
-
-.main-table-item-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 16px;
-}
-
-.main-table-item-name-span {
-  color: #a6b6d1;
-  font-weight: 400;
-  line-height: 62px;
-}
-
-.main-table-item-info-span {
-  color: #fff;
-  font-weight: 400;
-  line-height: 62px;
-}
-
-.deployed-bgcolor {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  width: 100%;
-  padding: 16px;
-  background-color: #1c2025;
-  backdrop-filter: blur(60px);
-  border-radius: 12px;
-  border-left: 4px solid #14acff;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.deployed-no-data {
-  width: 100%;
-  min-height: 400px;
-  line-height: 400px;
-  text-align: center;
-  font-size: 24px;
-}
-
-.mode-item {
-  border: 1px solid #464646;
-  background-color: #191d22;
 }
 </style>

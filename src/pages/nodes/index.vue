@@ -6,52 +6,51 @@
         <div class="page-search-icon">
           <img src="@/assets/icon_search.png" width="20" height="20" />
         </div>
-        <input class="page-search-input" v-model="searchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
+        <input class="page-search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs"
+          @keyup.enter="onPressSearch" />
       </div>
-
       <div class="node-list">
         <div class="node-list-header">
           <span class="node-list-header-span">Node list</span>
         </div>
         <div class="node-list-subtitle">
           <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
-          <span class="node-list-subtitle-span">Last updated node</span>
+          <span class="node-list-subtitle-span">Last 30days updated node</span>
         </div>
-        <div class="node-list-table">
-          <div class="node-list-theader">
-            <div class="node-list-theader-item min-w-[80px]">Node ID</div>
-            <div class="node-list-theader-item">Avg E-Power</div>
-            <div class="node-list-theader-item">Today Reward</div>
-            <div class="node-list-theader-item hidden xl:block">Last Update</div>
-            <div class="node-list-theader-item hidden xl:block">Run Time</div>
-          </div>
-          <div class="node-list-body">
-            <template v-if="nodeInfoList.length !== 0">
-              <template v-for="(item, index) in nodeInfoList" :key="item._id">
+        <NSpin size="small" :show="loading">
+          <div class="node-list-table">
+            <div class="node-list-theader">
+              <div class="node-list-theader-item min-w-[80px]">Node ID</div>
+              <!-- <div class="node-list-theader-item">Avg E-Power</div> -->
+              <!-- <div class="node-list-theader-item">Today Reward</div> -->
+              <div class="node-list-theader-item hidden xl:block">Last Update</div>
+              <div class="node-list-theader-item hidden xl:block">Run Time</div>
+            </div>
+            <div class="node-list-body">
+              <template v-for="(item, index) in list" :key="item._id">
                 <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
                   <div class="node-list-main">
-                    <div class="node-list-main-item min-w-[80px] text-[12px] xl:text-[14px]">{{ Utils.formatAddress(item._id, isDesktop ? 11 : 4) }}</div>
-                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower ? '--' : item.avgPower }}</div>
+                    <div class="node-list-main-item min-w-[80px] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
+                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower
+                      ? '--' : item.avgPower }}</div> -->
                     <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div> -->
-                    <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div>
+                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div> -->
                     <template v-if="isSmallDesktop || isDesktop">
-                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ moment(item.updateTime).format('YYYY-MM-DD hh:mm') }}</div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime) }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.updateTimeStr }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime }}</div>
                     </template>
                   </div>
                 </RouterLink>
               </template>
-            </template>
-            <template v-else>
-              <NSpin size="small" />
-            </template>
+
+            </div>
           </div>
-        </div>
+        </NSpin>
       </div>
     </div>
-    <!--v-model:page-size="pageSize" show-size-picker :page-sizes="[10]" -->
     <NSpace class="pagination" justify="center">
-      <NPagination v-model:page="page" :page-count="pageCount" @update:page="handlePageChange" size="large" :page-slot="isDesktop ? 10 : 6" />
+      <NPagination v-model:page="pageNo" :disabled="loading" :page-count="pageCount" @update:page="handlePageChange"
+        size="large" :page-slot="isDesktop ? 10 : 6" />
     </NSpace>
   </div>
 </template>
@@ -65,12 +64,15 @@ import { useRoute, useRouter } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
+import { Http } from '@/tools/http';
 
-type NodeListItem = {
+type Item = {
   _id: string;
+  nodeIdFormat: string;
   avgPower: string;
   reward: string;
   updateTime: string;
+  updateTimeStr: string;
   createTime: string;
   runTime: string;
   startupTime: string;
@@ -92,63 +94,72 @@ export default defineComponent({
     next();
   },
   setup() {
-    const page = ref(1);
+    const pageNo = ref(1);
     const pageCount = ref(1);
-    const nodeInfoList = ref<NodeListItem[]>([]);
+    const list = ref<Item[]>([]);
+    const loading = ref(false);
     const route = useRoute();
     const router = useRouter();
-    const useReward = useRewardStore();
+    const http = Http.getInstance();
     const isSmallDesktop = useIsSmallDesktop();
     const isDesktop = useIsDesktop();
 
-    const rewardData = ref<any[]>([]);
-    const searchValue = ref('');
+    const inputSearchValue = ref('');
     onActivated(() => {
       if (route.meta.isBack) {
-        init(page.value);
+        init();
       } else {
-        page.value = 1;
+        pageNo.value = 1;
         pageCount.value = 1;
-        nodeInfoList.value = [];
-        init(page.value);
+        list.value = [];
+        init();
       }
     });
 
     // const allData: any = [];
-    const init = async (index: number) => {
-      const { total, list } = await useReward.getNodeRewardList(index, 10);
-      nodeInfoList.value = list || [];
-      pageCount.value = Math.floor(total / 10);
-
-      // allData.push(...list);
-      // if (index === pageCount.value + 1) {
-      //   console.log(JSON.stringify(allData));
-      // }
+    const init = async () => {
+      loading.value = true;
+      const resp = await http.get({
+        url: '/nodelistsnapshot',
+        data: {
+          page: pageNo.value,
+          size: 10,
+          updatetimebegin: new Date().getTime() - 30 * 86400000,
+          updatetimeend: new Date().getTime()
+        },
+      });
+      loading.value = false;
+      const nodeList: any[] = [];
+      (resp.data || []).forEach((item: any) => {
+        item.nodeIdFormat = Utils.formatAddress(item._id, 11);
+        item.updateTimeStr = moment(item.updateTime).format('YYYY-MM-DD hh:mm');
+        item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);
+        nodeList.push(item);
+      });
+      const total = resp.total || 0;
+      list.value = nodeList;
+      pageCount.value = Math.ceil(total / 10);
     };
 
     const handlePageChange = (currentPage: number) => {
-      init(currentPage);
+      pageNo.value = currentPage;
+      init();
     };
+
     const onPressSearch = async () => {
-      router.push({ name: 'node-detail', params: { id: searchValue.value } });
-      // for (let index = 1; index <= pageCount.value + 1; index++) {
-      //   init(index);
-      // }
+      router.push({ name: 'node-detail', params: { id: inputSearchValue.value } });
     };
 
     return {
-      Utils,
       isSmallDesktop,
       isDesktop,
-      moment,
-      page,
+      pageNo,
       pageCount,
-      rewardData,
-      init,
-      nodeInfoList,
-      handlePageChange,
-      searchValue,
+      list,
+      loading,
+      inputSearchValue,
       onPressSearch,
+      handlePageChange,
     };
   },
 });
@@ -166,7 +177,7 @@ export default defineComponent({
 }
 
 .page-node {
-  margin: 40px 0 36px;
+  margin: 40px 0 24px;
   min-height: 682px;
 }
 
@@ -182,6 +193,7 @@ export default defineComponent({
   background: linear-gradient(70deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.08) 100%);
   backdrop-filter: blur(21px);
 }
+
 .page-search-input {
   margin-left: 8px;
   width: 100%;
@@ -192,6 +204,7 @@ export default defineComponent({
   background-color: transparent;
   color: #fff;
 }
+
 .node-list {
   width: 100%;
   height: 100%;
@@ -202,6 +215,7 @@ export default defineComponent({
   backdrop-filter: blur(60px);
   box-sizing: border-box;
 }
+
 .node-list-header {
   display: flex;
   align-items: center;
@@ -227,6 +241,7 @@ export default defineComponent({
   height: 14px;
   margin-right: 4px;
 }
+
 .node-list-subtitle-span {
   color: #a0aec0;
   font-size: 14px;
@@ -256,6 +271,7 @@ export default defineComponent({
   height: 56px;
   border-top: 1px solid #56577a;
 }
+
 .node-list-main-item {
   width: 100%;
   height: 100%;

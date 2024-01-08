@@ -69,9 +69,12 @@
                 <NText depth="2" style="font-size:14px">Eligible for claiming</NText>
                 <NText class="text-[18px]" strong>{{ currentClaimAmountStr }} EMC</NText>
               </NSpace>
+              <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
+                <NText depth="2" style="font-size:14px">Vesting schedules</NText>
+                <Table :data="currentSchedule" />
+              </NSpace>
               <NButton type="primary" strong size="large" :disabled="!currentCanWithdraw" round @click="onPressClaim"
                 style="background-color:var(--n-color);width:100%;">Claim Now</NButton>
-              <Table :data="currentSchedule" />
             </NSpace>
           </NCard>
         </NSpin>
@@ -151,7 +154,7 @@ export default defineComponent({
     const init = async (account: string) => {
       currentLoading.value = true;
       const [
-        { data: [_totalLockedAmount, _totalClaimedAmount] },
+        { data: _amountInfo },
         { data: _currentStaked },
         { data: _currentClaim },
         { data: _currentSchedule }
@@ -161,6 +164,7 @@ export default defineComponent({
         lockApi!.getReleasableAmount({ account }),
         lockApi!.getVestingSchedule({ account }),
       ]);
+      const [_totalLockedAmount, _totalClaimedAmount] = _amountInfo || [];
       totalLockedAmount.value = _totalLockedAmount || 0n;
       currentStakeAmount.value = _currentStaked || 0n;
       currentClaimAmount.value = _currentClaim || 0n;

@@ -64,9 +64,9 @@ function parseJSON(str: string | object) {
   }
 }
 
-function toFixed(value: number, fix: number) {
+function toFixed(value: number, fix: number = 2) {
   if (typeof value !== 'number') return value;
-  return parseFloat(value.toFixed(fix || 2));
+  return parseFloat(value.toFixed(fix));
 }
 
 function textOverflow(value: string = '', width: number = 10) {

@@ -1,6 +1,4 @@
 import { Axios } from 'axios';
-import type { RouteLocationRaw } from 'vue-router';
-import { router } from '@/routes/index';
 import { Utils } from '@/tools/utils';
 
 const HTTP_METHOD = {
@@ -17,7 +15,7 @@ interface HttpConfig {
   timeout: number;
 }
 const _defaultHttpConfig = {
-  baseURL: (import.meta as any).env.MODE === 'development' ? 'https://api.edgematrix.pro/dev/api/v1' : 'https://api.edgematrix.pro/api/v1',
+  baseURL: 'https://api.edgematrix.pro/api/v1',//(import.meta as any).env.MODE === 'development' ? 'https://api.edgematrix.pro/dev/api/v1' : 'https://api.edgematrix.pro/api/v1',
   timeout: 60000,
 };
 

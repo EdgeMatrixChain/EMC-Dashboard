@@ -42,6 +42,14 @@
             </div>
           </NSpace>
         </NSpace>
+        <NSpace class="coin-info" justify="center" align="center" :wrap-item="false" @click="onPressClaimUnstake"
+          style="color:#ffffff;width:100%;cursor: pointer;">
+          <NText class="text-[18px]">Claim node unstake</NText>
+        </NSpace>
+        <NSpace class="coin-info" justify="center" align="center" :wrap-item="false" @click="onPressClaimReward"
+          style="color:#ffffff;width:100%;cursor: pointer;">
+          <NText class="text-[18px]">Claim node reward</NText>
+        </NSpace>
       </div>
     </div>
   </NModal>
@@ -49,7 +57,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { NSpace, NModal, NButton, NIcon, useMessage } from 'naive-ui';
+import { NSpace, NModal, NButton, NIcon, NText, useMessage } from 'naive-ui';
 import { UnlinkOutline as IconUnlink } from '@vicons/ionicons5';
 import copy from 'copy-to-clipboard';
 import { Utils } from '@/tools/utils';
@@ -57,11 +65,11 @@ import { useETHUserStore } from '@/stores/eth-user';
 
 export default defineComponent({
   name: 'wallet',
-  components: { NSpace, NModal, NButton, NIcon, IconUnlink },
+  components: { NSpace, NModal, NButton, NIcon, NText, IconUnlink },
   props: {
     visible: { type: Boolean, default: false },
   },
-  emits: ['update:visible', 'disconnect', 'update:balance'],
+  emits: ['update:visible', 'disconnect', 'claim-rewards', 'claim-unstake', 'update:balance'],
   setup(props, context) {
     const message = useMessage();
     const ethUserStore = useETHUserStore();
@@ -74,6 +82,10 @@ export default defineComponent({
       context.emit('disconnect');
     };
 
+    const onPressClaimReward = () => {
+      context.emit('claim-rewards');
+    }
+
     const onPressCopy = (item: string) => {
       copy(item);
       message.success('Copied');
@@ -85,6 +97,10 @@ export default defineComponent({
       emcBalance: computed(() => ethUserStore.balance.emc.short),
       onPressMask,
       onPressLogout,
+      onPressClaimReward,
+      onPressClaimUnstake() {
+        context.emit('claim-unstake');
+      },
       onPressCopy,
     };
   },
@@ -97,7 +113,7 @@ export default defineComponent({
   top: 72px;
   right: 32px;
   width: 380px;
-  height: 166px;
+  height: 340px;
   border-radius: 0px 0px 8px 8px;
   background-color: #181927;
   box-shadow: 0px 0px 0px 0px rgba(131, 125, 176, 0.1), 0px 10px 30px 0px rgba(131, 125, 176, 0.1), 0px 20px 54px 0px rgba(131, 125, 176, 0.09), 0px 20px 73px 0px rgba(131, 125, 176, 0.05), 0px 100px 86px 0px rgba(131, 125, 176, 0.01),

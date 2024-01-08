@@ -1,5 +1,5 @@
 <template>
-  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="300"
+  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="480"
     striped />
 </template>
   
@@ -7,12 +7,10 @@
 import { defineComponent, ref, PropType, h } from 'vue';
 import { NDataTable, NEllipsis, NButton } from 'naive-ui';
 import { ethers } from 'ethers';
-import moment from 'moment';
 
 export type Item = {
-  createdAt: number;
+  _id: string;
   account: string;
-  receiver: string;
   amount: bigint;
   status: number;
 };
@@ -27,18 +25,8 @@ export default defineComponent({
   },
   emits: ['item'],
   setup(props, ctx) {
-    const statusText = ['Pendding', 'Success', 'Timeout'];
+    const StatusText = ['Wait', 'Pendding', 'Complete'];
     const columns: any = ref([
-      {
-        title: 'Create Time', key: 'createdAt', align: 'center', render(row: Item) {
-          return h('span', {}, { default: () => moment(row.createdAt).utc().format('MMMM DD HH:mm UTC YYYY') });
-        },
-      },
-      {
-        title: 'Receiver Address', key: 'receiver', align: 'center', render(row: Item) {
-          return h(NEllipsis, { style: 'width:100%' }, { default: () => h('span', {}, { default: () => row.receiver }) });
-        },
-      },
       {
         title: 'Amount', key: 'amount', align: 'center', render(row: Item) {
           return h('span', {}, { default: () => ethers.formatUnits(row.amount, 18) });
@@ -46,12 +34,12 @@ export default defineComponent({
       },
       {
         title: 'Status', key: 'status', align: 'center', render(row: Item) {
-          return h('span', {}, { default: () => statusText[row.status] });
+          return h('span', {}, { default: () => StatusText[row.status] });
         },
       },
       {
         title: 'Action', key: 'status', align: 'center', render(row: Item) {
-          return h(NButton, { text: true, tag: 'a', type: 'primary', disabled: row.status !== 1, onClick: () => ctx.emit('item', row) }, { default: () => 'View locks' });
+          return h(NButton, { text: true, tag: 'a', type: 'primary', disabled: row.status !== 2, onClick: () => ctx.emit('item', row) }, { default: () => 'Claim' });
         },
       },
     ]);

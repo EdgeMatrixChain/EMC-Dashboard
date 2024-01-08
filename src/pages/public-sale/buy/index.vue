@@ -9,8 +9,7 @@
       <NSpace vertical :wrap-item="false" :size="[0, 32]">
         <NCard title="EMC Strategic Sales: Unlock Your Limit in AI × Web3 Era">
           <NText>
-            * Whitelist Only: This strategic sale is only for EMC's global strategic partners. The EMC
-            tokens will be locked for 1 month, then released linearly from the 2nd to the 7th month.
+            * EMC tokens will be locked for 1 month from the date of purchase, then released linearly between the 2nd and the 7th month.
           </NText>
         </NCard>
         <NCard title="Strategy Sale">
@@ -46,7 +45,7 @@
               </NSpace>
               <NSpace align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
                 <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                  <NText depth="3" strong>{{ tokenSymbol }}/{{ fundSymbol }} Ratio </NText>
+                  <NText depth="3" strong>{{ tokenSymbol }}/{{ fundSymbol }} Rate </NText>
                   <NText strong>1{{ tokenSymbol }} = {{ fundTokenPriceStr || '?' }}{{ fundSymbol }}</NText>
                 </NSpace>
               </NSpace>
