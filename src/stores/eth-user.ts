@@ -5,6 +5,7 @@ import { Web3Service } from '@/web3';
 import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/vue';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
+import { Web3Utils } from '@/web3/utils';
 import { ethers } from 'ethers';
 
 type Balance = { [k: string]: { formatted: string; short: string; value: bigint; symbolName: string } };
@@ -13,10 +14,9 @@ const BALANCE_NONE = '';
 function formatBalance(value: bigint, unit: number, symbolName: string) {
   value = value || 0n;
   const formatted = ethers.formatUnits(value, unit);
-  const matches = formatted.match(/^\d+(?:\.\d{0,4})?/);
   return {
     formatted: formatted,
-    short: (matches && matches[0]) || '0.0',
+    short: Web3Utils.shortAmount(formatted),
     value: value,
     symbolName,
   };

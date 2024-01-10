@@ -192,5 +192,5 @@ class Http {
     return this.client?.request(_opt).then(this._handler(_opt));
   }
 }
-
+export const http = Http.getInstance();
 export { Http };

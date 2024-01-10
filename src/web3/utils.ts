@@ -5,4 +5,13 @@ export const Web3Utils = {
   eq(address1: string, address2: string) {
     return (address1 || '').toLocaleUpperCase() === (address2 || '').toLocaleUpperCase();
   },
+  shortAmount(amount: string) {
+    const matches = amount.match(/^\d+(?:\.\d{0,4})?/);
+    return (matches && matches[0]) || '0.0';
+  },
+  toFixedClip(num: string | number, decimal: number) {
+    const str = typeof num === 'number' ? num.toString() : num;
+    const matches = str.match(new RegExp(`^\d+(?:\.\d{0,${decimal}})?`));
+    return (matches && matches[0]) || '0';
+  },
 };

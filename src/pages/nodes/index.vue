@@ -1,13 +1,12 @@
 <template>
-  <div class="page max-w-[1440px]" style="margin:auto;">
+  <div class="page max-w-[1440px]" style="margin: auto">
     <div class="mask-bgcolor-left"></div>
     <div class="page-node">
       <div class="page-search w-full max-w-[960px]">
         <div class="page-search-icon">
           <img src="@/assets/icon_search.png" width="20" height="20" />
         </div>
-        <input class="page-search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs"
-          @keyup.enter="onPressSearch" />
+        <input class="page-search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
       </div>
       <div class="node-list">
         <div class="node-list-header">
@@ -42,15 +41,20 @@
                   </div>
                 </RouterLink>
               </template>
-
             </div>
           </div>
         </NSpin>
       </div>
     </div>
     <NSpace class="pagination" justify="center">
-      <NPagination v-model:page="pageNo" :disabled="loading" :page-count="pageCount" @update:page="handlePageChange"
-        size="large" :page-slot="isDesktop ? 10 : 6" />
+      <NPagination
+        v-model:page="pageNo"
+        :disabled="loading"
+        :page-count="pageCount"
+        @update:page="handlePageChange"
+        size="large"
+        :page-slot="isDesktop ? 10 : 6"
+      />
     </NSpace>
   </div>
 </template>
@@ -58,13 +62,12 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
 import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
-import axios from 'axios';
 import { Utils } from '@/tools/utils';
 import { useRoute, useRouter } from 'vue-router';
-import { useRewardStore } from '@/stores/reward';
 import moment from 'moment';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
 import { Http } from '@/tools/http';
+import { getComputeNodes } from '@/apis';
 
 type Item = {
   _id: string;
@@ -100,7 +103,6 @@ export default defineComponent({
     const loading = ref(false);
     const route = useRoute();
     const router = useRouter();
-    const http = Http.getInstance();
     const isSmallDesktop = useIsSmallDesktop();
     const isDesktop = useIsDesktop();
 
@@ -116,21 +118,12 @@ export default defineComponent({
       }
     });
 
-    // const allData: any = [];
     const init = async () => {
       loading.value = true;
-      const resp = await http.get({
-        url: '/nodelistsnapshot',
-        data: {
-          page: pageNo.value,
-          size: 10,
-          updatetimebegin: new Date().getTime() - 30 * 86400000,
-          updatetimeend: new Date().getTime()
-        },
-      });
+      const resp = await getComputeNodes({ page: pageNo.value, size: 10 });
       loading.value = false;
       const nodeList: any[] = [];
-      (resp.data || []).forEach((item: any) => {
+      (resp.list || []).forEach((item: any) => {
         item.nodeIdFormat = Utils.formatAddress(item._id, 11);
         item.updateTimeStr = moment(item.updateTime).format('YYYY-MM-DD hh:mm');
         item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);

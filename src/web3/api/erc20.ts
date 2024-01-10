@@ -33,6 +33,10 @@ export class ERC20Api extends Api {
     }
     return { _result: 0, data: this._decimals };
   }
+  
+  totalSupply() {
+    return super.call({ method: 'totalSupply' });
+  }
 
   allowance({ account, spender }: { account: string; spender: string }) {
     return super.call({ method: 'allowance', data: [account, spender] });

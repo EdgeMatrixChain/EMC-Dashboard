@@ -1,0 +1,25 @@
+<template>
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" />
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import {} from 'naive-ui';
+import Icon from './icons/node-rpc.png';
+import { getRPCNodes } from '@/apis';
+import NumericBasic from './basic.vue';
+import { formatNumber } from './format-number';
+const title = ref('RPC Nodes');
+const value = ref('');
+const unit = ref('');
+const tips = ref('');
+const loading = ref(false);
+onMounted(async () => {
+  loading.value = true;
+  const resp = await getRPCNodes({ page: 1, size: 1 });
+  loading.value = false;
+  value.value = formatNumber(resp.total || 0);
+});
+</script>
+
+<style scoped></style>

@@ -70,7 +70,7 @@ export default defineComponent({
       list.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
       const newList = list.map((item: any, index: number) => {
-        const status = indexMap[index] ? 3 : item.status;
+        const status = indexMap[item.merkleIndex] ? 3 : item.status;
         const createTime = moment(item.createdAt).utc().format('MMMM DD HH:mm UTC YYYY');
         return { ...item, status, createTime };
       });

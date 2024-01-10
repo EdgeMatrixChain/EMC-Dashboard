@@ -175,7 +175,6 @@ import { StakeNodeApi } from '@/web3/api/stake-node';
 import { Web3Service } from '@/web3';
 import { getDefaultNetwork } from '@/web3/network';
 
-import ModelsItem from '@/components/models-item.vue';
 
 import ModalChangeOwner from './change-owner/index.vue';
 import ModalStake from './stake/index.vue';
@@ -204,7 +203,6 @@ export default defineComponent({
     NGrid,
     NGridItem,
     NSpin,
-    ModelsItem,
     ModalChangeOwner,
     ModalStake,
     ModalUnstake,

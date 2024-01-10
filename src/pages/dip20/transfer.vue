@@ -96,10 +96,6 @@
                   <NText class="text-white">MetaMask</NText>
                 </NSpace>
                 <NText class="text-xs" depth="3">Connect Metamask and Receive your EMC TOKEN on ARBITRUM</NText>
-                <!-- <NSpace class="h-10 leading-10 px-4 rounded-lg bg-[#463A8E] border border-solid border-[#4248A7] cursor-pointer" :wrap-item="false" justify="center" align="center" :size="[12, 0]">
-                  <img class="w-8 h-8" src="@/assets/wallet_wallet_connect.png" alt="Wallet connect" />
-                  <NText class="text-white">Wallet connect</NText>
-                </NSpace> -->
               </NSpace>
             </template>
             <template v-else>

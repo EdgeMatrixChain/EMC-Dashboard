@@ -13,11 +13,6 @@
             <NText class="xl:text-[18px] xl:leading-[18px] text-white">MetaMask</NText>
           </NSpace>
         </NSpace>
-
-        <!-- <NSpace class="w-full py-[14px] rounded-lg bg-[#463A8E] cursor-pointer" justify="center" align="center" :size="[20, 0]">
-          <img class="w-11 h-11" src="@/assets/wallet_wallet_connect.png" alt="Wallet connect" />
-          <NText class="text-[18px] leading-[18px] text-white">Wallet connect</NText>
-        </NSpace> -->
       </div>
     </template>
     <template v-else>
