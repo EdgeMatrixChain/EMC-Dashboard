@@ -19,7 +19,7 @@ onMounted(async () => {
   loading.value = true;
   const resp = await getComputeNodes({ page: 1, size: 1 });
   loading.value = false;
-  console.info(`computed node ${resp.total}`, resp);
+  console.info(`computed node ${resp.total}`);
   value.value = formatNumber(resp.total || 0);
 });
 </script>

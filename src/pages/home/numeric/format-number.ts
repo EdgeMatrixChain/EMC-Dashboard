@@ -1,7 +1,6 @@
 export function toFixedClip(num: string | number, decimal: number = 4) {
   const str = typeof num === 'number' ? num.toString() : num;
   const matches = str.match(new RegExp(`^\\d+(?:\\.\\d{0,${decimal}})?`));
-  console.info(str, matches);
   return (matches && matches[0]) || '0';
 }
 
