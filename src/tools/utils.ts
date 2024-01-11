@@ -93,41 +93,30 @@ function formatAddress(value = '', width = 10) {
   }
 }
 
-function metaData() {
-  return new Promise((resolve, reject) => {
-    axios
-      .get('/dip20simple', {
-        params: {
-          method: 'getMetadata',
-        },
-      })
-      .then((resp) => {
-        const data = resp.data;
-        if (data._result !== 0) return;
-        const metaData = JSON.parse(data.data);
-        resolve(metaData);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
-function formatDate(date: any) {
-  const time = date / 1000;
-  let beforeTime = '';
-  if (time / 86400 > 1) {
-    beforeTime = Math.trunc(time / 86400) + ' days';
-  } else if (time / 3600 > 1) {
-    beforeTime = Math.trunc(time / 3600) + ' hours';
-  } else if (time / 60 > 1) {
-    beforeTime = Math.trunc(time / 60) + ' min';
-  } else if (time > 1) {
-    beforeTime = Math.trunc(time) + ' sec';
+function formatDate(millseconds: number) {
+  let result = '';
+  const seconds = millseconds / 1000;
+  const days = seconds / 86400;
+  const hours = seconds / 3600;
+  const mins = seconds / 60;
+  if (days >= 1) {
+    const num = Math.trunc(days);
+    const num2 = Math.trunc((days - num) * 24);
+    result = `${num} days ${num2} hours`;
+  } else if (hours >= 1) {
+    const num = Math.trunc(hours);
+    const num2 = Math.trunc((hours - num) * 60);
+    result = `${num} hours ${num2} mins`;
+  } else if (mins >= 1) {
+    const num = Math.trunc(mins);
+    const num2 = Math.trunc((mins - num) * 60);
+    result = `${num} mins ${num2} secs`;
+  } else if (seconds >= 1) {
+    result = Math.trunc(seconds) + ' sec';
   } else {
-    beforeTime = 'less than 1 second';
+    result = 'less than 1 second';
   }
-  return beforeTime;
+  return result;
 }
 
 export const Utils = {
@@ -142,5 +131,4 @@ export const Utils = {
   textOverflow,
   formatAddress,
   formatDate,
-  metaData,
 };

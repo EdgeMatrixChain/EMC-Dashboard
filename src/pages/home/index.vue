@@ -20,10 +20,10 @@
               <NumericValidators />
             </NGridItem>
             <NGridItem class="grid-item">
-              <NumericNodeRouter />
+              <NumericNodeRPC />
             </NGridItem>
             <NGridItem class="grid-item">
-              <NumericNodeRPC />
+              <NumericNodeRelay />
             </NGridItem>
           </NGrid>
         </div>
@@ -99,8 +99,8 @@ import WorldMap from '@/components/world-map/index.vue';
 import { getMapNodes } from '@/apis';
 
 import NumericValidators from './numeric/node-validate.vue';
-import NumericNodeRouter from './numeric/node-router.vue';
 import NumericNodeRPC from './numeric/node-rpc.vue';
+import NumericNodeRelay from './numeric/node-relay.vue';
 import NumericBlocks from './numeric/blocks.vue';
 import NumericApiTxs from './numeric/api-txs.vue';
 import NumericGPU from './numeric/gpus.vue';

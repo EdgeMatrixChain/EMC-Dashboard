@@ -46,7 +46,7 @@ export async function getValidateNodes({ page, size }: NodesOption) {
   return { total: resp.total || 0, list: resp.data || [] };
 }
 
-export async function getRPCNodes({ page, size }: NodesOption) {
+export async function getRelayNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
     url: '/nodelistsnapshot',
@@ -59,7 +59,7 @@ export async function getRPCNodes({ page, size }: NodesOption) {
   return { total: resp.total || 0, list: resp.data || [] };
 }
 
-export async function getRouteNodes({ page, size }: NodesOption) {
+export async function getRPCNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
     url: '/nodelistsnapshot',
