@@ -5,6 +5,11 @@ export const routes = [
     component: () => import('@/pages/staking/index.vue'),
   },
   {
+    name: 'airdrop',
+    path: '/airdrop',
+    component: () => import('@/pages/airdrop/index.vue'),
+  },
+  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),
@@ -65,6 +70,7 @@ export const routes = [
         path: 'claim-node-rewards',
         component: () => import('@/pages/claim-node-rewards/index.vue'),
       },
+     
       // {
       //   name: 'test',
       //   path: 'test',
