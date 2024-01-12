@@ -6,7 +6,9 @@ export function toFixedClip(num: string | number, decimal: number = 4) {
 
 export function formatNumber(num: number | string) {
   const str = typeof num === 'number' ? num.toString() : num;
-  return str.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+  const [n, n1] = str.split('.');
+  const n0 = n.replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+  return n1 ? `${n0}.${n1}` : n0;
 }
 
 export function formatMillion(str: number | string) {

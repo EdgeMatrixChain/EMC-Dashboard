@@ -179,7 +179,9 @@
         </NGrid>
         <NTabs default-value="apis">
           <NTabPane name="apis" tab="Api transactions">
-            <ApiTransactions :node-id="nodeInfo.nodeId" />
+            <template v-if="nodeInfo.nodeId">
+              <ApiTransactions :node-id="nodeInfo.nodeId" />
+            </template>
           </NTabPane>
         </NTabs>
         <template v-if="status === 0 || status === 1 || status === 2">
@@ -284,33 +286,32 @@ const status = computed(() => {
 });
 
 //query node info
-async function queryInfo(nodeId: string) {
+async function queryInfo(_nodeId: string) {
   const resp = await http.get({
     url: '/nodeinfosnapshot',
-    data: { nodeid: nodeId },
+    data: { nodeid: _nodeId },
   });
   let node = resp.data || {};
   if (Object.keys(node).length === 0) {
-    const resp = await http.get({ url: '/nodeinfo', data: { nodeid: nodeId } });
+    const resp = await http.get({ url: '/nodeinfo', data: { nodeid: _nodeId } });
     node = resp.data || {};
   }
+  const nodeId = node._id;
+  const startupTime = node.startupTime ? moment(node.startupTime).utc().format('MMMM DD HH:mm UTC YYYY') : '-';
+  const runTime = node.runTime ? Utils.formatDate(node.runTime) : '-';
   const cpuInfo = Utils.parseJSON(node.cpuInfo) || {};
+  const cpuName = cpuInfo.ModelName || '-';
+  const macAddr = node.macAddr || '-';
   const gpuInfo = Utils.parseJSON(node.gpuInfo) || {};
+  const gpus = gpuInfo.gpus || '-';
   const ipInfo = node.ipInfo || {};
+  const ipAddr = ipInfo.ipAddr || '-';
   const memory = Utils.parseJSON(node.memoryInfo) || {};
   const memoryTotal = Math.round(memory.total / Math.pow(1024, 3));
   const memoryUsedPercent = Utils.toFixed(Number(memory.used_percent));
-  return {
-    nodeId: node._id,
-    startupTime: moment(node.startupTime).utc().format('MMMM DD HH:mm UTC YYYY'),
-    runTime: Utils.formatDate(node.runTime),
-    cpuName: cpuInfo.ModelName,
-    gpus: gpuInfo.gpus,
-    macAddr: node.macAddr,
-    ipAddr: ipInfo.ipAddr,
-    memoryInfo: `${memoryTotal}GB ${memoryUsedPercent}%`,
-    application: node.appOrigin,
-  };
+  const memoryInfo = memoryTotal ? `${memoryTotal}GB ${memoryUsedPercent}%` : '-';
+  const application = node.appOrigin || '-';
+  return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application };
 }
 
 async function queryOwner(nodeId: string) {

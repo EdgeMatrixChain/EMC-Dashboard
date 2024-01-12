@@ -8,7 +8,7 @@ import {} from 'naive-ui';
 import Icon from './icons/token-burned.png';
 import { http } from '@/tools/http';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { toFixedClip, formatNumber } from './format-number';
 import { ethers } from 'ethers';
 const title = ref('Total Burned');
 const value = ref('');
@@ -19,7 +19,7 @@ onMounted(async () => {
   loading.value = true;
   const resp = await http.get({ url: '/emcburns' });
   loading.value = false;
-  value.value = formatNumber(Number(ethers.formatUnits(BigInt(resp.data), 18)) || 0);
+  value.value = formatNumber(Number(toFixedClip(resp.data, 4)) || 0);
 });
 </script>
 
