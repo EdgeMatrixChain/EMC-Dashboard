@@ -14,7 +14,7 @@
         </div>
         <div class="node-list-subtitle">
           <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
-          <span class="node-list-subtitle-span">Last 30days updated node</span>
+          <span class="node-list-subtitle-span">Last 30 days of updates</span>
         </div>
         <NSpin size="small" :show="loading">
           <div class="node-list-table">
@@ -22,8 +22,8 @@
               <div class="node-list-theader-item min-w-[80px]">Node ID</div>
               <!-- <div class="node-list-theader-item">Avg E-Power</div> -->
               <!-- <div class="node-list-theader-item">Today Reward</div> -->
-              <div class="node-list-theader-item hidden xl:block">Last Update</div>
-              <div class="node-list-theader-item hidden xl:block">Run Time</div>
+              <div class="node-list-theader-item hidden xl:block">Last Updated</div>
+              <div class="node-list-theader-item hidden xl:block">Running Time</div>
             </div>
             <div class="node-list-body">
               <template v-for="(item, index) in list" :key="item._id">

@@ -11,7 +11,7 @@ import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
 
-const title = ref('Total Staked');
+const title = ref('Total Stake');
 const value = ref('');
 const unit = ref('EMC');
 const tips = ref('');

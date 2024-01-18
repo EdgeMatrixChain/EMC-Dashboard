@@ -12,7 +12,7 @@
         <div class="switch w-full top-0 left-0 right-0 xl:top-[1px] xl:w-[552px] xl:p-6 pt-16" ref="switchCtn">
           <NSpace class="w-full h-full" vertical :size="[0, 0]" align="center" justify="center" :wrap-item="false">
             <div class="text-[20px] xl:text-[32px] text-center mb-4 xl:mb-[56px]">
-              Convert your $EMC from <br />
+              Migrate your $EMC from <br />
               ICP (DIP20) to Arbitrum (ERC20)
             </div>
             <NSpace class="text-center" vertical :size="[0, 0]">

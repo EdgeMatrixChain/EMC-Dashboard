@@ -14,7 +14,7 @@ import { ethers } from 'ethers';
 import { formatNumber, formatMillion,toFixedClip } from './format-number';
 import { getDexData } from './apis';
 
-const title = ref('Maket Cap');
+const title = ref('Market Cap');
 const value = ref('');
 const unit = ref('');
 const tips = ref('');

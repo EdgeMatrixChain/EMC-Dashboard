@@ -10,7 +10,7 @@ import { http } from '@/tools/http';
 import NumericBasic from './basic.vue';
 import { toFixedClip, formatNumber } from './format-number';
 import { ethers } from 'ethers';
-const title = ref('Total Burned');
+const title = ref('Total Burn');
 const value = ref('');
 const unit = ref('EMC');
 const tips = ref('');

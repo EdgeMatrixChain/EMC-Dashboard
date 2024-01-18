@@ -87,7 +87,7 @@
                 </NText>
               </NSpace> -->
               <!-- <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="3" style="font-size:14px">Total staked</NText>
+                <NText depth="3" style="font-size:14px">Total Stake</NText>
                 <NText class="text-[18px]" strong>{{ nodeInfo.totalStakedStr }} EMC</NText>
               </NSpace> -->
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">

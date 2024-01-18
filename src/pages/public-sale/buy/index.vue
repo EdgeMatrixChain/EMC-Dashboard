@@ -238,6 +238,7 @@ export default defineComponent({
       if (ethUserStore.isInvalidConnect) {
         return { _result: 1, _desc: 'Not connected' };
       }
+
       const resp1 = await publicSaleApi!.onWhitelistMode();
       if (resp1._result !== 0) {
         return { _result: 1, _desc: 'Query white list error' };
@@ -254,12 +255,14 @@ export default defineComponent({
         { data: _fundTokenPriceWei },
         { buyableMax: _tokenBuyableMax, orders: _orders },
         { data: _tokenOnSale },
+        { data: _onSale },
       ] = await Promise.all([
         fundApi!.balanceOf({ account: ethUserStore.account0 }),
         tokenApi!.balanceOf({ account: ethUserStore.account0 }),
         publicSaleApi!.tokenPrice(),
         updateOrders(isWhiteMode),
         publicSaleApi!.tokensOnSale(),
+        publicSaleApi!.onSale(),
       ]);
 
       fundBalance.value = _fundBalance || 0n;
@@ -273,6 +276,9 @@ export default defineComponent({
       const pendding = _orders.find((item: any) => item.status === 0);
       if (pendding) {
         startTimer(isWhiteMode);
+      }
+      if (!_onSale) {
+        return { _result: 1, _desc: 'Has been stopped' };
       }
       return { _result: 0 };
     };
@@ -304,7 +310,7 @@ export default defineComponent({
       }
       timer = setInterval(async () => {
         const { buyableMax: _tokenBuyableMax, orders: _orders } = await updateOrders(isWhiteMode);
-        if (validationError.value) {
+        if (validationError.value && validationError.value !== 'Has been stopped') {
           tokenBuyableMax.value = 0n;
           orders.value = [];
           stopTimer();
@@ -385,9 +391,8 @@ export default defineComponent({
       }
       const allowanceAmount = resp.data;
       const approveAmount = calculator.calc(amountStr);
-      const diffApproveAmount = approveAmount - allowanceAmount;
-      if (approveAmount - allowanceAmount > 0) {
-        const resp = await fundApi!.approve({ amount: diffApproveAmount, spender: publicSaleApi!.contract });
+      if (allowanceAmount < approveAmount) {
+        const resp = await fundApi!.approve({ amount: approveAmount, spender: publicSaleApi!.contract });
         if (resp._result !== 0) {
           return { _result: 1, _desc: 'Approve failed' };
         }

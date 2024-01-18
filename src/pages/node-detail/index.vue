@@ -39,7 +39,7 @@
             <div class="main-table" style="border-left-color: #8f7df8">
               <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
                 <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Run Time</NText>
+                  <NText class="text-[14px] xl:text-[16px]" depth="3">Running Time</NText>
                 </NSpace>
                 <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.runTime }}</NText>

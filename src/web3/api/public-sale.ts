@@ -73,4 +73,10 @@ export class PublicSaleApi extends Api {
       data: [amount],
     });
   }
+  
+  onSale() {
+    return super.call({
+      method: 'onSale',
+    });
+  }
 }

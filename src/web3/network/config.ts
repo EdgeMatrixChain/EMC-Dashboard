@@ -18,7 +18,7 @@ export default [
       nodeStake: { contract: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' },
       nodeReward: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
       nodeUnstakeClaim: { contract: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' },
-      publicSell: { contract: '0xe4B1E55Ccb310D82D12364A2273C62F162424A90' },
+      publicSell: { contract: '0x9E035Dc6DB311d35F1eDca506B41AAec90d9E704' },
     },
   },
   // {

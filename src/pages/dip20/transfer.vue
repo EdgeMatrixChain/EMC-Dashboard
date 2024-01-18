@@ -2,7 +2,7 @@
   <NSpace class="w-full h-full px-4 xl:px-12 bg-[#1a1c34]" vertical :wrap-item="false" align="center">
     <template v-if="!principal">
       <div class="flex flex-col items-center w-full h-full pt-10 pb-5 xl:pt-[80px] xl:pb-0 gap-y-3 xl:gap-y-12">
-        <NText class="text-[20px] xl:text-[40px] leading-[20px] xl:leading-[40px] font-bold text-white">Transfer Your EMC </NText>
+        <NText class="text-[20px] xl:text-[40px] leading-[20px] xl:leading-[40px] font-bold text-white">Migrate Your EMC </NText>
         <NText class="xl:text-xl leading-5 text-white mt-0 mb-2 xl:mb-0 xl:mt-3">Connect ICP Wallet</NText>
         <NCard class="max-w-lg" style="width: 100%; background-color: #1a1c34" :bordered="false" content-style="padding:0">
           <Content bgColor="#463a8e" />

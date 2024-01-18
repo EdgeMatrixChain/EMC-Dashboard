@@ -10,7 +10,7 @@ import { http } from '@/tools/http';
 import { getValidateNodes } from '@/apis';
 import NumericBasic from './basic.vue';
 import { formatNumber } from './format-number';
-const title = ref('Validate Nodes');
+const title = ref('Validator Nodes');
 const value = ref('');
 const unit = ref('');
 const tips = ref('');
