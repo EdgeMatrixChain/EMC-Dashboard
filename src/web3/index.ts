@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract, Wallet, JsonRpcProvider, formatEther } from 'ethers';
+import { BrowserProvider, Contract, Wallet, JsonRpcProvider, formatEther, ContractTransactionResponse } from 'ethers';
 import type { Eip1193Provider } from 'ethers';
 import { Web3Utils } from '@/web3/utils';
 import { getDefaultNetwork, getNetworkConfig } from './network';

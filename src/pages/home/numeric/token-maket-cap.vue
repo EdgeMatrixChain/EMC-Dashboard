@@ -11,7 +11,7 @@ import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
-import { formatNumber, formatMillion } from './format-number';
+import { formatNumber, formatMillion,toFixedClip } from './format-number';
 import { getDexData } from './apis';
 
 const title = ref('Maket Cap');
@@ -25,11 +25,6 @@ const tokenContract = networkConfig.tokens.emc.contract;
 const tokenDecimal = networkConfig.tokens.emc.decimal;
 const apiManager = ApiManager.getInstance();
 const tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: tokenContract });
-
-const v = `0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00`; // Vesting（personal earnings）
-const vv = `0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63`; // Vesting（personal no earnings）
-const vvv = `0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B`; // Vesting（team, one year ）
-const vvvv = `0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD`; // node stake ??
 
 const addresses = [
   { type: 'wallet', address: '0x35626b7bf11c570837d8832ad5b00080b5ff076f' }, //(Ecosystem: Node, Developer, Transaction, 45%)
@@ -48,7 +43,7 @@ const queryTotalLock = async () => {
   results.forEach((resp, i) => {
     const item = addresses[i];
     const v = resp.data || 0n;
-    console.info(`${item.address} ---> ${ethers.formatUnits(v, tokenDecimal)}`);
+    // console.info(`${item.address} ---> ${ethers.formatUnits(v, tokenDecimal)}`);
     total += v;
   });
   return total;
@@ -69,7 +64,7 @@ onMounted(async () => {
   const { value: _value, text, unit: _unit } = formatMillion(Number(circulationInt) * priceUsd);
   value.value = `$${_value}`;
   unit.value = _unit;
-  tips.value = `Circulating supply: ${formatNumber(circulationInt)}`;
+  tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulationInt))}`;
 });
 </script>
 

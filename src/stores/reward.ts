@@ -55,7 +55,7 @@ export const useRewardStore = defineStore('reward', () => {
     const { total, groupList } = await fetchRewardNodes();
     const currList = groupList[page] || [];
     const resp = await http.get({
-      url: '/nodelistsnapshot',
+      url: '/node/list',
       params: { nodeids: currList.map((item: any) => item.nodeID).join(','), page: 1, size: 10 },
     });
     const nodeList = resp.data || [];

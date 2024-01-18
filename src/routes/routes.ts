@@ -60,11 +60,11 @@ export const routes = [
         path: 'strategy-sale',
         component: () => import('@/pages/public-sale/index.vue'),
       },
-      {
-        name: 'stake-node',
-        path: 'stake-node',
-        component: () => import('@/pages/stake-node/index.vue'),
-      },
+      // {
+      //   name: 'stake-node',
+      //   path: 'stake-node',
+      //   component: () => import('@/pages/stake-node/index.vue'),
+      // },
       {
         name: 'claim-node-rewards',
         path: 'claim-node-rewards',

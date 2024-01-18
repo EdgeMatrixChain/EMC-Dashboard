@@ -17,7 +17,7 @@ const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
   const resp = await http.get({
-    url: '/nodestats/cpus',
+    url: '/stats/nodecpus',
   }); 
   loading.value = false;
   const data = resp.data || {};

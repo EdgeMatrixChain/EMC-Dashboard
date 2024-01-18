@@ -11,6 +11,7 @@ export default [
       { internalType: 'address', name: '_feeReceiver', type: 'address' },
       { internalType: 'uint256', name: '_salsFeeRate', type: 'uint256' },
       { internalType: 'uint256', name: '_tokenPrice', type: 'uint256' },
+      { internalType: 'uint256', name: '_lockRatio', type: 'uint256' },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -86,6 +87,7 @@ export default [
     inputs: [
       { internalType: 'uint256', name: '_tokenAmount', type: 'uint256' },
       { internalType: 'string', name: '_nonce', type: 'string' },
+      { internalType: 'uint256', name: '_expireTime', type: 'uint256' },
       { internalType: 'address', name: '_beneficiary', type: 'address' },
       { internalType: 'bytes', name: '_signature', type: 'bytes' },
     ],
@@ -107,6 +109,7 @@ export default [
     type: 'function',
   },
   { inputs: [], name: 'fundToken', outputs: [{ internalType: 'contract IERC20Ext', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'lockRatio', outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'manager', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'maxBuyLimit', outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'minBuyLimit', outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
@@ -137,6 +140,13 @@ export default [
   {
     inputs: [{ internalType: 'address', name: '_feeReceiver', type: 'address' }],
     name: 'setFeeReceiver',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: '_lockRatio', type: 'uint256' }],
+    name: 'setLockRatio',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

@@ -3,7 +3,7 @@ import { http } from '@/tools/http';
 export async function getMapNodes() {
   const now = new Date().getTime();
   const resp = await http.get({
-    url: '/ipmap',
+    url: '/stats/nodemap',
     data: {
       updatetimebegin: now - 360 * 60000,
       updatetimeend: now + 60 * 60000,
@@ -21,7 +21,7 @@ type NodesOption = {
 export async function getComputeNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
-    url: '/nodelistsnapshot',
+    url: '/node/list',
     data: {
       page: page,
       size: size,
@@ -36,7 +36,7 @@ export async function getComputeNodes({ page, size }: NodesOption) {
 export async function getValidateNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
-    url: '/nodelistsnapshot',
+    url: '/node/list',
     data: {
       page: page,
       size: size,
@@ -49,7 +49,7 @@ export async function getValidateNodes({ page, size }: NodesOption) {
 export async function getRelayNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
-    url: '/nodelistsnapshot',
+    url: '/node/list',
     data: {
       page: page,
       size: size,
@@ -62,7 +62,7 @@ export async function getRelayNodes({ page, size }: NodesOption) {
 export async function getRPCNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
   const resp = await http.get({
-    url: '/nodelistsnapshot',
+    url: '/node/list',
     data: {
       page: page,
       size: size,
@@ -70,4 +70,11 @@ export async function getRPCNodes({ page, size }: NodesOption) {
     },
   });
   return { total: resp.total || 0, list: resp.data || [] };
+}
+
+export async function getNodeRewards() {
+  const resp = await http.get({
+    url: '/stats/noderewards',
+  });
+  return { data: resp.data || 0 };
 }

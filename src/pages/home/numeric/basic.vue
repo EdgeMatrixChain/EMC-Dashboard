@@ -5,16 +5,20 @@
     </NSpace>
     <template v-if="loading">
       <NSkeleton :width="80" round size="medium" />
+      <NSpace class="item-footer" align="center" :wrap-item="false" :size="[4, 0]">
+        <NText class="item-footer-text"> </NText>
+      </NSpace>
     </template>
     <template v-else>
       <div class="item-data">
         <NText class="item-data-value">{{ value }}</NText>
         <NText class="item-data-unit">&nbsp;{{ unit }}</NText>
       </div>
+      <NSpace class="item-footer" align="center" :wrap-item="false" :size="[4, 0]">
+        <NText class="item-footer-text">{{ tips }}</NText>
+        <slot name="tips-suffix"></slot>
+      </NSpace>
     </template>
-    <NSpace class="item-footer" vertical justify="center" :wrap-item="false" :size="[0, 0]">
-      <NText class="item-footer-text">{{ tips }}</NText>
-    </NSpace>
     <div class="item-icon">
       <img class="item-icon-img" :src="icon" />
     </div>

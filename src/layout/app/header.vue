@@ -164,6 +164,7 @@ export default defineComponent({
         ethUserStore.switchNetwork();
       },
       onPressUser() {
+        ethUserStore.updateBalance(ethUserStore.account0);
         visibleETHWallet.value = true;
       },
       onDisconnect() {

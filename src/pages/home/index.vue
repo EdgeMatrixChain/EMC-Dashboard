@@ -85,6 +85,16 @@
           </NGridItem> -->
         </NGrid>
       </div>
+      <div class="section w-[100%] max-w-[1440px] m-auto">
+        <div class="section-header">
+          <NText class="text-[24px]" strong>Ecosystem Rewards</NText>
+        </div>
+        <NGrid class="grid" x-gap="48" y-gap="48" cols="400:1 800:2 1200:3" item-responsive>
+          <NGridItem class="grid-item">
+            <NumericNodeReward />
+          </NGridItem>
+        </NGrid>
+      </div>
     </NSpace>
   </div>
 </template>
@@ -115,6 +125,8 @@ import NumericTokenBurned from './numeric/token-burned.vue';
 import NumericTokenFDV from './numeric/token-fdv.vue';
 import NumericTokenMaketCap from './numeric/token-maket-cap.vue';
 import NumericTokenInflation from './numeric/token-inflation.vue';
+
+import NumericNodeReward from './numeric/node-reward.vue';
 
 const mapData = ref<any[]>([]);
 

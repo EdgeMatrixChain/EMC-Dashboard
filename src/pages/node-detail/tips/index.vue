@@ -1,8 +1,8 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard style="max-width: 640px;">
+    <NCard style="max-width: 640px">
       <NSpace vertical :wrap-item="false" :size="[0, 16]">
-        <NAlert :title="title" type="success">
+        <NAlert :title="title" :type="type">
           <NText>{{ message }}</NText>
         </NAlert>
         <NButton @click="onPressClose">Close</NButton>
@@ -10,16 +10,11 @@
     </NCard>
   </NModal>
 </template>
-  
+
 <script lang="ts">
-import { defineComponent, computed, watch, ref } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NModal, NCard, NText, NInput, NSpace, NButton, NAlert, NIcon, NSpin, NSkeleton, useMessage } from 'naive-ui';
 import { Close as IconClose } from '@vicons/ionicons5';
-import { ethers } from 'ethers';
-import { ApiManager } from '@/web3/api';
-import { StakeNodeApi } from '@/web3/api/stake-node';
-import { ERC20Api } from '@/web3/api/erc20';
-import { useETHUserStore } from '@/stores/eth-user';
 
 export default defineComponent({
   name: 'check-out-success',
@@ -27,18 +22,18 @@ export default defineComponent({
   props: {
     visible: { type: Boolean, default: false },
     title: { type: String, default: '' },
+    type: { type: String as PropType<'default' | 'error' | 'info' | 'success' | 'warning' | undefined>, default: 'success' },
     message: { type: String, default: '' },
   },
-  emits: ['update:visible', 'success',],
+  emits: ['update:visible', 'success'],
   setup(props, ctx) {
     return {
       onPressClose() {
         ctx.emit('update:visible', false);
       },
-    }
-  }
+    };
+  },
 });
 </script>
-  
+
 <style scoped></style>
-  

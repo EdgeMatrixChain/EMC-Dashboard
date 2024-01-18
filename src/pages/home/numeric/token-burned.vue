@@ -17,7 +17,7 @@ const tips = ref('');
 const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
-  const resp = await http.get({ url: '/emcburns' });
+  const resp = await http.get({ url: '/stats/emcburns' });
   loading.value = false;
   value.value = formatNumber(Number(toFixedClip(resp.data, 4)) || 0);
 });

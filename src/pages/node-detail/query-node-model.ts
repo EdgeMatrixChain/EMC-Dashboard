@@ -12,7 +12,7 @@
 // };
 
 // const initSdModels = async (nodeId: string) => {
-//   const resp = await http.get('/nodesdmodels', {
+//   const resp = await http.get('/emcnetwork/sdmodels', {
 //     params: { nodeid: nodeId },
 //   });
 //   const modelsData = resp.data;

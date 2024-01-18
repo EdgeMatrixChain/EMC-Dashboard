@@ -18,6 +18,7 @@ export default [
       nodeStake: { contract: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' },
       nodeReward: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
       nodeUnstakeClaim: { contract: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' },
+      publicSell: { contract: '0xe4B1E55Ccb310D82D12364A2273C62F162424A90' },
     },
   },
   // {
@@ -35,6 +36,8 @@ export default [
   //   smarts: {
   //     nodeStake: { contract: '0x4A71EdAeDf64b29F43A6eF1F581d83bc71586D1f' },
   //     nodeReward: { contract: '0xc54BD64a51A9361A6fCeFE6b0f31D7b53619f39f' },
+  //     nodeUnstakeClaim: { contract: '' },
+  //     publicSell: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
   //   },
   // },
 ];

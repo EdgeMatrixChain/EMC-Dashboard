@@ -203,7 +203,7 @@
             @success="onUnstakeSuccess"
           />
         </template>
-        <ModalTips v-model:visible="isVisibleTips" :title="tipsTitle" :message="tipsMessage" />
+        <ModalTips v-model:visible="isVisibleTips" :type="tipsType" :title="tipsTitle" :message="tipsMessage" />
       </NSpace>
     </template>
   </div>
@@ -264,6 +264,7 @@ const isVisibleChangePrincipal = ref(false);
 const isVisibleStake = ref(false);
 const isVisibleUnstake = ref(false);
 const isVisibleTips = ref(false);
+const tipsType = ref<any>('success');
 const tipsTitle = ref('');
 const tipsMessage = ref('');
 
@@ -288,12 +289,12 @@ const status = computed(() => {
 //query node info
 async function queryInfo(_nodeId: string) {
   const resp = await http.get({
-    url: '/nodeinfosnapshot',
+    url: '/node/info',
     data: { nodeid: _nodeId },
   });
   let node = resp.data || {};
   if (Object.keys(node).length === 0) {
-    const resp = await http.get({ url: '/nodeinfo', data: { nodeid: _nodeId } });
+    const resp = await http.get({ url: '/emcnetwork/info', data: { nodeid: _nodeId } });
     node = resp.data || {};
   }
   const nodeId = node._id;
@@ -432,6 +433,7 @@ const handleCheckoutReward = async (amount: bigint) => {
     return;
   }
   init(nodeId);
+  tipsType.value = 'success';
   tipsTitle.value = 'Check out success';
   tipsMessage.value = `The amount of this check out ${ethers.formatUnits(amount, 18)} $EMC. You can click top-right "Claim node reward" for more information`;
   isVisibleTips.value = true;
@@ -442,8 +444,12 @@ function onPressBind() {
 }
 
 function onPressCheckout() {
-  if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
-  handleCheckoutReward(nodeInfo.value.currentReward);
+  tipsType.value = 'info';
+  tipsTitle.value = 'Check out';
+  tipsMessage.value = `The reward contract is currently being audited by Certik, and the withdrawal operation will be officially available after the audit is completed.`;
+  isVisibleTips.value = true;
+  // if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
+  // handleCheckoutReward(nodeInfo.value.currentReward);
 }
 
 function onPressChangeOwner() {
@@ -453,6 +459,7 @@ function onPressChangeOwner() {
 function onChangePrincipalSuccess(inputAddress: string) {
   init(nodeId);
   isVisibleChangePrincipal.value = false;
+  tipsType.value = 'success';
   tipsTitle.value = 'Change owner success';
   tipsMessage.value = `Need to switch to ${inputAddress} account to continue operation.`;
   isVisibleTips.value = true;
@@ -472,6 +479,7 @@ function onPressUnstake() {
 function onUnstakeSuccess() {
   init(nodeId);
   isVisibleUnstake.value = false;
+  tipsType.value = 'success';
   tipsTitle.value = 'Unstake success';
   tipsMessage.value = `$EMC have to wait 30 days for release. You can click top-right "Claim node reward" for more information.`;
   isVisibleTips.value = true;

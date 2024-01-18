@@ -5,7 +5,7 @@
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-supply.png';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { formatNumber, toFixedClip } from './format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
@@ -31,7 +31,7 @@ const addresses = [
 const tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: tokenContract });
 onMounted(async () => {
   loading.value = true;
-  const results = await Promise.all(addresses.map((item) => tokenApi.balanceOf({ account: item.address})));
+  const results = await Promise.all(addresses.map((item) => tokenApi.balanceOf({ account: item.address })));
   loading.value = false;
   let amount = 0n;
   results.forEach((resp, i) => {
@@ -41,7 +41,7 @@ onMounted(async () => {
     amount += v;
   });
   const formatted = ethers.formatUnits(amount, tokenDecimal);
-  const _value = formatNumber(parseInt(formatted));
+  const _value = formatNumber(toFixedClip(formatted, 4));
   value.value = `${_value}`;
 });
 </script>

@@ -106,7 +106,7 @@ import Table from './table.vue';
 import type { Item } from './table.vue';
 import { Utils } from '@/tools/utils';
 export default defineComponent({
-  name: 'public-sale',
+  name: 'cliffs-view',
   components: {
     NSpace,
     NCard,

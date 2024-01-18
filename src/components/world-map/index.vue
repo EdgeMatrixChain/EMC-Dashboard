@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch, PropType } from 'vue';
 import * as echarts from 'echarts';
-import world from './map/js/world';
+import world from './map/world';
 import chartOption from './chart-option';
 
 export type DataItem = { name: string; value: number[]; symbolSize: number };

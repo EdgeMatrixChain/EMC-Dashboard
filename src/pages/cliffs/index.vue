@@ -29,7 +29,10 @@
               <NDescriptions label-placement="top" :column="1">
                 <template #header>
                   <NSpace justify="space-between" :wrap-item="false">
-                    <NText>Information</NText>
+                    <NSpace vertical :wrap-item="false">
+                      <NText>Information</NText>
+                      <NText class="text-[12px]" depth="3">{{ ethUserStore.account0 }}</NText>
+                    </NSpace>
                     <NButton quaternary circle :disabled="infoLoading" @click="onPressRefreshInfo">
                       <template #icon>
                         <NIcon>
@@ -67,6 +70,9 @@
                     <template #label> Releasable Reward Amount </template>
                     {{ releasableAmountRewardStr }}
                   </NDescriptionsItem>
+                  <NDescriptionsItem>
+                    <NButton type="primary" strong ghost style="width: 100%; background-color: var(--n-color)" @click="onPressViewLocks">View locks</NButton>
+                  </NDescriptionsItem>
                 </template>
               </NDescriptions>
             </NSpin>
@@ -74,35 +80,44 @@
         </NGridItem>
         <NGridItem span="24 1000:12">
           <NCard title="Cliffs">
-            <NSpace vertical :wrap-item="false" :size="[16, 16]">
-              <NForm ref="formRef" :model="formData" :show-feedback="false">
-                <NGrid x-gap="16" y-gap="16" cols="24">
-                  <NFormItemGi span="24" path="account" label="Account">
-                    <NInput v-model:value="formData.account" style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24" path="start" label="From Date">
-                    <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler"
-                      style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24" path="cycleUnit" label="Cycle Unit">
-                    <NSelect v-model:value="formData.cycleUnit" :options="cycleUnitOptions" style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24" path="cycles" label="Cycles">
-                    <NInputNumber v-model:value="formData.cycles" min="1" style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24" path="amount" label="Amount">
-                    <NInput v-model:value="formData.amount" min="0" :precision="0" style="width: 100%" />
-                  </NFormItemGi>
-                  <NFormItemGi span="24">
-                    <NButton type="primary" strong :loading="sendLoading"
-                      style="width: 100%; background-color: var(--n-color)" @click="onPressSend">Cliffs</NButton>
-                  </NFormItemGi>
-                </NGrid>
-              </NForm>
-              <template v-if="result">
-                <NCard title="Response">{{ result }}</NCard>
-              </template>
-            </NSpace>
+            <NSpin :show="infoLoading">
+              <NSpace vertical :wrap-item="false" :size="[16, 16]">
+                <NForm ref="formRef" :model="formData" :show-feedback="false">
+                  <NGrid x-gap="16" y-gap="16" cols="24">
+                    <NFormItemGi span="24" path="account" label="Account">
+                      <NInput v-model:value="formData.account" style="width: 100%" />
+                    </NFormItemGi>
+                    <NFormItemGi span="24" path="start" label="From Date">
+                      <NDatePicker v-model:value="formData.start" type="date" :is-date-disabled="dateDisabledHandler" style="width: 100%" />
+                    </NFormItemGi>
+                    <NFormItemGi span="24" path="cycleUnit" label="Cycle Unit">
+                      <NSelect v-model:value="formData.cycleUnit" :options="cycleUnitOptions" style="width: 100%" />
+                    </NFormItemGi>
+                    <NFormItemGi span="24" path="cycles" label="Cycles">
+                      <NInputNumber v-model:value="formData.cycles" min="1" style="width: 100%" />
+                    </NFormItemGi>
+                    <NFormItemGi span="24" path="amount" label="Amount">
+                      <NInput v-model:value="formData.amount" min="0" :precision="0" style="width: 100%" />
+                    </NFormItemGi>
+                    <NFormItemGi span="24">
+                      <template v-if="isSign">
+                        <NButton type="primary" strong :loading="sendLoading" style="width: 100%; background-color: var(--n-color)" @click="onPressSend"
+                          >Cliffs</NButton
+                        >
+                      </template>
+                      <template v-else>
+                        <NButton type="primary" strong :disabled="true" style="width: 100%; background-color: var(--n-color)"
+                          >Please connect wallet first</NButton
+                        >
+                      </template>
+                    </NFormItemGi>
+                  </NGrid>
+                </NForm>
+                <template v-if="result">
+                  <NCard title="Response">{{ result }}</NCard>
+                </template>
+              </NSpace>
+            </NSpin>
           </NCard>
         </NGridItem>
       </NGrid>
@@ -133,7 +148,7 @@ import {
   useMessage,
 } from 'naive-ui';
 import { RefreshSharp as IconRefresh } from '@vicons/ionicons5';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ethers } from 'ethers';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
@@ -173,6 +188,7 @@ export default defineComponent({
   setup() {
     const message = useMessage();
     const route = useRoute();
+    const router = useRouter();
     const ethUserStore = useETHUserStore();
     const cliffContract = ref('');
     const erc20Contract = ref('');
@@ -215,8 +231,8 @@ export default defineComponent({
       const resp = await lockApi.token();
       erc20Contract.value = resp.data || '-';
       erc20Api = apiManager.create(ERC20Api, { address: erc20Contract.value });
-      await initInfoWithUser();
       infoLoading.value = false;
+      await initInfoWithUser();
     };
 
     const initInfoWithUser = async () => {
@@ -227,6 +243,7 @@ export default defineComponent({
         return;
       }
 
+      infoLoading.value = true;
       const [resp0, resp1, resp2, resp3, resp4] = await Promise.all([
         erc20Api!.decimals(),
         erc20Api!.balanceOf({ account: ethUserStore.account0 }),
@@ -234,7 +251,7 @@ export default defineComponent({
         lockApi!.getLockedAmount({ account: ethUserStore.account0 }),
         lockApi!.getReleasableAmount({ account: ethUserStore.account0 }),
       ]);
-
+      infoLoading.value = false;
       const _decimals = resp0.data;
       const _balance = resp1.data;
       const _allowance = resp2.data;
@@ -250,9 +267,9 @@ export default defineComponent({
       releasableAmount.value = _releasableAmount[0] || 0n;
       releasableAmountReward.value = _releasableAmount[1] || 0n;
 
-      if (!formData.value.account) {
-        formData.value.account = ethUserStore.account0;
-      }
+      // if (!formData.value.account) {
+      formData.value.account = ethUserStore.account0;
+      // }
 
       //Utils.stringify(_releasableAmount);
     };
@@ -281,9 +298,15 @@ export default defineComponent({
     };
 
     watch(
-      () => ethUserStore.isInvalidConnect,
+      () => ethUserStore.isInvalidNetwork,
       (invalid) => {
-        if (invalid) return;
+        nextTick(() => initInfoWithUser());
+      }
+    );
+
+    watch(
+      () => ethUserStore.account0,
+      (account) => {
         nextTick(() => initInfoWithUser());
       }
     );
@@ -295,6 +318,7 @@ export default defineComponent({
       //info
       infoLoading,
       sendLoading,
+      ethUserStore,
       isSign: computed(() => ethUserStore.account0),
       chainId: computed(() => ethUserStore.chainId),
       cliffContract,
@@ -316,6 +340,9 @@ export default defineComponent({
       },
       onPressExplorer(contract: string) {
         window.open(`https://arbiscan.io/address/${contract}`);
+      },
+      onPressViewLocks() {
+        router.push({ name: 'cliffs-view', query: { contract: cliffContract.value, address: ethUserStore.account0 } });
       },
       async onPressSend() {
         if (ethUserStore.isInvalidConnect) {
