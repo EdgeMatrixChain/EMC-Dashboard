@@ -118,6 +118,16 @@ function formatDate(millseconds: number) {
   }
   return result;
 }
+/**
+ * 
+ * @param t millseconds
+ * @returns 
+ */
+function wait(t: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, t);
+  });
+}
 
 export const Utils = {
   getLocalStorage,
@@ -131,4 +141,5 @@ export const Utils = {
   textOverflow,
   formatAddress,
   formatDate,
+  wait,
 };

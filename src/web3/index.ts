@@ -10,11 +10,6 @@ export type CallOption = {
   data?: any[];
 };
 
-function wait(t: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, t);
-  });
-}
 
 export class Web3Service {
   public provider: BrowserProvider | null;

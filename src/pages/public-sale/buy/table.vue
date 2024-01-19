@@ -4,15 +4,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, PropType, h } from 'vue';
-import { NDataTable, NEllipsis, NButton, NSpace, NText } from 'naive-ui';
+import { NDataTable, NEllipsis, NButton, NSpace, NTooltip, NIcon, NText } from 'naive-ui';
+import { InformationCircleOutline as IconTips } from '@vicons/ionicons5';
 import { ethers } from 'ethers';
 import moment from 'moment';
-
+import { toFixedClip } from '@/pages/home/numeric/format-number';
 export type Item = {
   createdAt: number;
   account: string;
   receiver: string;
-  amount: bigint;
+  amount: string;
   expireTime: number;
   expireTimeStr: string;
   status: number;
@@ -51,7 +52,25 @@ export default defineComponent({
         key: 'amount',
         align: 'center',
         render(row: Item) {
-          return h('span', {}, { default: () => ethers.formatUnits(row.amount, 18) });
+          const amount = row.amount || '0';
+          return h(
+            NTooltip,
+            { trigger: 'hover' },
+            {
+              trigger: () =>
+                h(
+                  NSpace,
+                  { align: 'center', justify: 'center', wrapItem: false, size: [4, 0] },
+                  {
+                    default: () => [
+                      h('span', {}, { default: () => `${toFixedClip(ethers.formatUnits(amount, 18), 4)} EMC` }),
+                      h(NIcon, { size: 16 }, { default: () => h(IconTips) }),
+                    ],
+                  }
+                ),
+              default: () => `${toFixedClip(ethers.formatUnits((BigInt(amount) * 5n) / 100n, 18), 4)} EMC transfer to receiver`,
+            }
+          );
         },
       },
       {

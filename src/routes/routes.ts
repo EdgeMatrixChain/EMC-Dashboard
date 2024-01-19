@@ -60,6 +60,11 @@ export const routes = [
         path: 'strategy-sale',
         component: () => import('@/pages/public-sale/index.vue'),
       },
+      {
+        name: 'strategy-sale-manage',
+        path: 'strategy-sale-manage',
+        component: () => import('@/pages/public-sale-manage/index.vue'),
+      },
       // {
       //   name: 'stake-node',
       //   path: 'stake-node',
@@ -70,7 +75,7 @@ export const routes = [
         path: 'claim-node-rewards',
         component: () => import('@/pages/claim-node-rewards/index.vue'),
       },
-     
+
       // {
       //   name: 'test',
       //   path: 'test',

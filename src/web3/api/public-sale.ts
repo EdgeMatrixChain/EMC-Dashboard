@@ -60,7 +60,6 @@ export class PublicSaleApi extends Api {
     signature: string;
     expireTime: number;
   }) {
-    console.info([amount, account, signature]);
     return super.call({
       method: 'buyTokensWithSignature',
       data: [amount, nonce, expireTime, account, signature],
@@ -68,15 +67,16 @@ export class PublicSaleApi extends Api {
   }
 
   claimFund({ amount }: { amount: bigint }) {
-    return super.call({
-      method: 'claimFund',
-      data: [amount],
-    });
+    return super.call({ method: 'claimFund', data: [amount] });
   }
-  
+
   onSale() {
     return super.call({
       method: 'onSale',
     });
+  }
+
+  salesRevenue() {
+    return super.call({ method: 'salesRevenue' });
   }
 }

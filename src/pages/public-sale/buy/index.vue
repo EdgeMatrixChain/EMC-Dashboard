@@ -350,7 +350,6 @@ export default defineComponent({
       }
     };
     const inWhiteList = async (publicKey: string) => {
-      console.info(publicKey);
       const resp = await http.postJSON({
         url: '/publicsale/validate',
         data: { publicKey },
@@ -397,6 +396,8 @@ export default defineComponent({
           return { _result: 1, _desc: 'Approve failed' };
         }
         await resp.data.wait();
+
+        await Utils.wait(2000);
       }
       const amount = ethers.parseUnits(amountStr, tokenDecimal.value);
       if (params.isWhiteMode) {
@@ -467,7 +468,7 @@ export default defineComponent({
     });
 
     watch(
-      () => ethUserStore.account0,
+      () => [ethUserStore.account0, ethUserStore.isInvalidNetwork],
       (account) => {
         nextTick(async () => {
           infoLoading.value = true;
