@@ -142,11 +142,17 @@
               </NSpace>
               <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
                 <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">GPUs</NText>
+                  <NText class="text-[14px] xl:text-[16px]" depth="3">GPU</NText>
                 </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.gpus }}</NText>
-                </NSpace>
+                <!-- <NSpace class="flex-1 w-full" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]"> -->
+                <NScrollbar x-scrollable style="flex: 1" content-style="height:100%;">
+                  <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
+                    <template v-for="item in nodeInfo.gpus">
+                      <GpuItem :item="item" />
+                    </template>
+                  </NSpace>
+                </NScrollbar>
+                <!-- </NSpace> -->
               </NSpace>
               <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
                 <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
@@ -212,7 +218,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NSpin, NTabs, NTabPane, useMessage } from 'naive-ui';
+import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, useMessage } from 'naive-ui';
 import { PencilSharp as IconEdit } from '@vicons/ionicons5';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
@@ -232,6 +238,8 @@ import ModalChangeOwner from './change-owner/index.vue';
 import ModalStake from './stake/index.vue';
 import ModalUnstake from './unstake/index.vue';
 import ModalTips from './tips/index.vue';
+
+import GpuItem from './gpu.vue';
 
 const route = useRoute();
 const message = useMessage();
@@ -285,6 +293,20 @@ const status = computed(() => {
     }
   }
 });
+function parseGpuInfo(input: string) {
+  const matches = input.match(/\b(\w+)\s*:\s*'([^']*)'/g);
+  if (!matches) {
+    return null;
+  }
+  const result: any = {};
+  matches.forEach((match) => {
+    const keyValue = match.split(':');
+    const key = keyValue[0].trim();
+    const value = keyValue[1].trim().replace(/'/g, '');
+    result[key] = value;
+  });
+  return result;
+}
 
 //query node info
 async function queryInfo(_nodeId: string) {
@@ -304,7 +326,15 @@ async function queryInfo(_nodeId: string) {
   const cpuName = cpuInfo.ModelName || '-';
   const macAddr = node.macAddr || '-';
   const gpuInfo = Utils.parseJSON(node.gpuInfo) || {};
-  const gpus = gpuInfo.gpus || '-';
+
+  const gpus: any[] = [];
+  (gpuInfo.graphics_card || []).forEach((info: string) => {
+    const gpuInfo = parseGpuInfo(info);
+    if (gpuInfo) {
+      gpus.push(gpuInfo);
+    }
+  });
+
   const ipInfo = node.ipInfo || {};
   const ipAddr = ipInfo.ipAddr || '-';
   const memory = Utils.parseJSON(node.memoryInfo) || {};

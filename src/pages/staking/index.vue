@@ -717,6 +717,7 @@ type tradingItem = {
 };
 const tradingList = ref<tradingItem[]>([]);
 const http = Http.getInstance();
+
 const tradingListInit = async () => {
   const getDaysItemWithId = (() => {
     let map: any = null;
@@ -799,6 +800,7 @@ watch(
   },
   { immediate: true }
 );
+
 watch(
   () => useETHUser.isInvalidConnect,
   (invalid) => {
