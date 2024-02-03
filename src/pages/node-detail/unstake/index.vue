@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard title="Unstake" style="max-width: 640px;">
+    <NCard title="Unstake" style="max-width: 640px">
       <template #header-extra>
         <NButton strong secondary circle :disabled="loadings.submit" @click.stop.prevent="onPressClose">
           <template #icon>
@@ -19,13 +19,17 @@
         </NSpace>
       </template>
       <template v-else>
-        <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height:160px;">
+        <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height: 160px">
           <NSpace vertical :wrap-item="false" :size="[0, 4]">
             <NSpace :wrap-item="false" justify="space-between">
               <NText depth="3" strong style="font-size: 16px">Unstake amount</NText>
             </NSpace>
-            <NInput v-model:value="inputTokenAmount" placeholder=" " size="large"
-              style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
+            <NInput
+              v-model:value="inputTokenAmount"
+              placeholder=" "
+              size="large"
+              style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px"
+            >
             </NInput>
           </NSpace>
 
@@ -42,18 +46,21 @@
             </template>
           </NSpace>
           <template v-if="!ethUserStore.account0">
-            <NButton type="primary" strong size="large" round disabled
-              style="background-color:var(--n-color);width:100%;">Not Connected
-            </NButton>
+            <NButton type="primary" strong size="large" round disabled style="background-color: var(--n-color); width: 100%">Not Connected </NButton>
           </template>
           <template v-else-if="ethUserStore.isInvalidNetwork">
-            <NButton type="primary" strong size="large" round disabled
-              style="background-color:var(--n-color);width:100%;">Switch to arbitrum one
-            </NButton>
+            <NButton type="primary" strong size="large" round disabled style="background-color: var(--n-color); width: 100%">Switch to arbitrum one </NButton>
           </template>
           <template v-else>
-            <NButton type="primary" strong size="large" round :loading="loadings.submit || loadings.info"
-              @click="onPressSubmit" style="background-color:var(--n-color);width:100%;">Submit
+            <NButton
+              type="primary"
+              strong
+              size="large"
+              round
+              :loading="loadings.submit || loadings.info"
+              @click="onPressSubmit"
+              style="background-color: var(--n-color); width: 100%"
+              >Submit
             </NButton>
           </template>
         </NSpace>
@@ -61,7 +68,7 @@
     </NCard>
   </NModal>
 </template>
-  
+
 <script lang="ts">
 import { defineComponent, computed, watch, ref } from 'vue';
 import { NModal, NCard, NText, NInput, NSpace, NButton, NAlert, NIcon, NSpin, NSkeleton, useMessage } from 'naive-ui';
@@ -81,7 +88,7 @@ export default defineComponent({
     stakeContract: { type: String, default: false },
     tokenContract: { type: String, default: false },
   },
-  emits: ['update:visible', 'success',],
+  emits: ['update:visible', 'success'],
   setup(props, ctx) {
     const message = useMessage();
     const ethUserStore = useETHUserStore();
@@ -105,11 +112,7 @@ export default defineComponent({
       stakeNodeApi = apiManager.create<StakeNodeApi>(StakeNodeApi, { address: props.stakeContract });
       tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: props.tokenContract });
 
-      const [
-        { data: _tokenName },
-        { data: _tokenSymbol },
-        { data: _tokenDecimals },
-      ] = await Promise.all([
+      const [{ data: _tokenName }, { data: _tokenSymbol }, { data: _tokenDecimals }] = await Promise.all([
         tokenApi.name(),
         tokenApi.symbol(),
         tokenApi.decimals(),
@@ -131,11 +134,7 @@ export default defineComponent({
         return { _result: 0 };
       }
       loadings.value.info = true;
-      const [
-        { data: _nodeInfo },
-      ] = await Promise.all([
-        stakeNodeApi!.nodeInfo({ nodeId: props.nodeId }),
-      ])
+      const [{ data: _nodeInfo }] = await Promise.all([stakeNodeApi!.nodeInfo({ nodeId: props.nodeId })]);
       const [_bindAccount, _totalStaked, _currentStaked, _totalUnstaked] = _nodeInfo || [];
       loadings.value.info = false;
       stakeTokenBalance.value = _currentStaked || 0n;
@@ -145,7 +144,7 @@ export default defineComponent({
 
     const handlerSubmit = async (nodeId: string, account: string, amount: bigint) => {
       return stakeNodeApi!.withdraw({ nodeId, account, amount });
-    }
+    };
 
     watch(
       () => [ethUserStore.account0, ethUserStore.isInvalidNetwork],
@@ -153,8 +152,8 @@ export default defineComponent({
         if (account || !isInvalidNetwork) {
           initUserInfo();
         }
-      });
-
+      }
+    );
 
     watch(
       () => props.visible,
@@ -162,7 +161,8 @@ export default defineComponent({
         if (val) {
           init();
         }
-      });
+      }
+    );
 
     return {
       error,
@@ -181,13 +181,12 @@ export default defineComponent({
         const amount = ethers.parseUnits(inputTokenAmount.value, tokenDecimal.value);
         loadings.value.submit = true;
         const resp = await handlerSubmit(nodeId, account, amount);
-        loadings.value.submit = false;
         if (resp._result !== 0) {
-          message.warning(resp._desc || 'Stake failed');
+          loadings.value.submit = false;
+          message.warning(resp._desc || 'Unstake failed');
           return;
         }
-        loadings.value.submit = true;
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        await resp.data.wait();
         loadings.value.submit = false;
         ctx.emit('success');
       },
@@ -195,6 +194,5 @@ export default defineComponent({
   },
 });
 </script>
-  
+
 <style scoped></style>
-  

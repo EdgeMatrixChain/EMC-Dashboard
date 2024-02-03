@@ -41,7 +41,7 @@
 import Bg from './bg.vue';
 
 const props = defineProps({
-  earnings: Number,
+  earnings: String,
   totalStaked: String,
 });
 </script>

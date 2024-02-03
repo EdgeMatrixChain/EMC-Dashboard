@@ -13,10 +13,12 @@ export default [
     blockExplorerUrls: ['https://explorer.arbitrum.io'],
     tokens: {
       emc: { contract: '0xDFB8BE6F8c87f74295A87de951974362CedCFA30', symbolName: 'EMC', decimal: 18 },
+      usdt: { contract: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', symbolName: 'USDT', decimal: 6 },
     },
     smarts: {
-      nodeStake: { contract: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' },
-      nodeReward: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
+      rewardStake: { contract: '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00' },
+      nodeStake: { contract: '0xDE79C85dAa8825e108549acECE339B520181fF11' },
+      nodeReward: { contract: '' }, //0x70bbf54454117D30B32eCAbCD16899C545DB14e4
       nodeUnstakeClaim: { contract: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' },
       publicSell: { contract: '0x9E035Dc6DB311d35F1eDca506B41AAec90d9E704' },
     },
@@ -32,10 +34,12 @@ export default [
   //   blockExplorerUrls: ['https://sepolia.arbiscan.io/'],
   //   tokens: {
   //     emc: { contract: '0x20Dcf8106bdC2cCCcf84DD62dc486A7123A41d13', symbolName: 'EMC.t', decimal: 18 },
+  //     usdt: { contract: '', symbolName: 'USDT', decimal: 6 },
   //   },
   //   smarts: {
-  //     nodeStake: { contract: '0x4A71EdAeDf64b29F43A6eF1F581d83bc71586D1f' },
-  //     nodeReward: { contract: '0xc54BD64a51A9361A6fCeFE6b0f31D7b53619f39f' },
+  //     rewardStake: { contract: 'xx' },
+  //     nodeStake: { contract: '' },
+  //     nodeReward: { contract: '' },
   //     nodeUnstakeClaim: { contract: '' },
   //     publicSell: { contract: '0x70bbf54454117D30B32eCAbCD16899C545DB14e4' },
   //   },

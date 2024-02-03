@@ -5,7 +5,7 @@
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-supply.png';
 import NumericBasic from './basic.vue';
-import { formatNumber, toFixedClip } from './format-number';
+import { formatNumber, toFixedClip } from '@/tools/format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
@@ -19,13 +19,15 @@ const loading = ref(false);
 const networkConfig = getDefaultNetwork();
 const tokenContract = networkConfig.tokens.emc.contract;
 const tokenDecimal = networkConfig.tokens.emc.decimal;
+const nodeStakeContract = networkConfig.smarts.nodeStake.contract;
 const apiManager = ApiManager.getInstance();
 
 const addresses = [
   { type: 'contract', address: '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00' }, // Vesting（personal earnings）
   { type: 'contract', address: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' }, // Vesting（personal no earnings）
   { type: 'contract', address: '0xD20c8f4e0f3F21EB29cFF00667E2763D8492791B' }, // Vesting（team, one year ）
-  { type: 'contract', address: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' }, // node stake
+  { type: 'contract', address: '0xC6C6d5ED9c407F0c9d83D13fA345c68C57a90cbD' }, // node stake @deprecated
+  { type: 'contract', address: nodeStakeContract }, // node stake
 ];
 
 const tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: tokenContract });
@@ -37,7 +39,7 @@ onMounted(async () => {
   results.forEach((resp, i) => {
     const item = addresses[i];
     const v = resp.data || 0n;
-    console.info(`${item.address} ---> ${ethers.formatUnits(v, tokenDecimal)}`);
+    // console.info(`${item.address} ---> ${ethers.formatUnits(v, tokenDecimal)}`);
     amount += v;
   });
   const formatted = ethers.formatUnits(amount, tokenDecimal);

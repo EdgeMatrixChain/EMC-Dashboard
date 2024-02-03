@@ -31,10 +31,7 @@ export class LockApi extends Api {
   }
 
   release({ account }: { account: string }) {
-    return super.call({
-      method: 'release',
-      data: [account],
-    });
+    return super.call({method: 'release', data: [account],});
   }
 
   createVestingSchedule({ account, start, cycles, cycleUnit, amount }: StakeOption) {

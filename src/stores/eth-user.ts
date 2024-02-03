@@ -34,6 +34,7 @@ export const useETHUserStore = defineStore('ethuser', () => {
 
   const balance = ref<Balance>({
     emc: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n, symbolName: networkConfig.tokens.emc.symbolName },
+    usdt: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n, symbolName: networkConfig.tokens.usdt.symbolName },
   });
 
   watch(
@@ -107,10 +108,22 @@ export const useETHUserStore = defineStore('ethuser', () => {
   const updateBalance = async (account: string) => {
     //emc contract
     const emcTokenConfig = networkConfig.tokens.emc;
-    const contract = emcTokenConfig.contract;
-    const erc20Api: null | ERC20Api = apiManager.create(ERC20Api, { address: contract });
-    const { data: emc } = await erc20Api.balanceOf({ account });
-    balance.value = { emc: formatBalance(emc, emcTokenConfig.decimal, emcTokenConfig.symbolName) };
+    const emcContract = emcTokenConfig.contract;
+    const emcApi: null | ERC20Api = apiManager.create(ERC20Api, { address: emcContract });
+    const { data: _emcBalance } = await emcApi.balanceOf({ account });
+    const emc = _emcBalance || 0n;
+
+    const usdtTokenConfig = networkConfig.tokens.usdt;
+    const usdtContract = usdtTokenConfig.contract;
+    const usdtApi: null | ERC20Api = apiManager.create(ERC20Api, { address: usdtContract });
+    const { data: _usdtBalance } = await usdtApi.balanceOf({ account });
+    const usdt = _usdtBalance || 0n;
+
+    balance.value = {
+      emc: formatBalance(emc, emcTokenConfig.decimal, emcTokenConfig.symbolName),
+      usdt: formatBalance(usdt, usdtTokenConfig.decimal, usdtTokenConfig.symbolName),
+    };
+    return balance.value;
   };
   return {
     isConnected,

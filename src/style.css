@@ -33,6 +33,12 @@ html {
   width: 100%;
 }
 
+/* cover tailwind css default */
+button,
+[type='button'] {
+  background-color: var(--n-color);
+}
+
 .router-link-active,
 a {
   text-decoration: none;
@@ -66,8 +72,8 @@ a {
 .n-input {
   background: transparent !important;
   border-radius: 8px !important;
-  border: 2px solid rgba(255, 255, 255, 0.20) !important;
-  transition: .3s;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  transition: 0.3s;
 }
 
 .n-input input {
@@ -76,6 +82,11 @@ a {
 
 .n-input:not(.n-input--disabled).n-input--focus {
   background: transparent !important;
-  border: 2px solid #FFB017 !important;
-  transition: .3s;
+  border: 2px solid #ffb017 !important;
+  transition: 0.3s;
+}
+
+@font-face {
+  font-family: 'JJRoboto';
+  src: url('@/assets/fonts/Roboto-Regular.ttf') format('truetype');
 }

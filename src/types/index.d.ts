@@ -16,4 +16,5 @@ type Resp = {
   _result: number;
   _desc?: string;
   data?: any;
+  err?: any;
 };

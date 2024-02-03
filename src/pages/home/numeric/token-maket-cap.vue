@@ -11,8 +11,8 @@ import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
-import { formatNumber, formatMillion, toFixedClip } from './format-number';
-import { getDexData } from './apis';
+import { formatNumber, formatMillion, toFixedClip } from '@/tools/format-number';
+import { getDexData } from '@/apis';
 
 const title = ref('Market Cap');
 const value = ref('');

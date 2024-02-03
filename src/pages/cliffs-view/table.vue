@@ -1,8 +1,7 @@
 <template>
-  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="300"
-    striped />
+  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="300" striped />
 </template>
-  
+
 <script lang="ts">
 import { defineComponent, ref, PropType, h } from 'vue';
 import { NDataTable, NEllipsis } from 'naive-ui';
@@ -35,27 +34,51 @@ export default defineComponent({
       //     },
       // },
       {
-        title: 'Start Time', key: 'start', align: 'center', render(row: Item) {
-          return h('span', {}, { default: () => moment(row.start * 1000).utc().format('YYYY-MM-DD') });
+        title: 'Start Time',
+        key: 'start',
+        align: 'center',
+        render(row: Item) {
+          return h(
+            'span',
+            {},
+            {
+              default: () =>
+                moment(row.start * 1000)
+                  .utc()
+                  .format('YYYY-MM-DD'),
+            }
+          );
         },
       },
       {
-        title: 'Duration Unit', key: 'cycleUnit', align: 'center', render(row: Item) {
+        title: 'Duration Unit',
+        key: 'cycleUnit',
+        align: 'center',
+        render(row: Item) {
           return h('span', {}, { default: () => cycleUnitMap[row.cycleUnit].label });
         },
       },
       {
-        title: 'Duration', key: 'cycles', align: 'center', render(row: Item) {
+        title: 'Duration',
+        key: 'cycles',
+        align: 'center',
+        render(row: Item) {
           return h('span', {}, { default: () => row.cycles });
         },
       },
       {
-        title: 'Total Amount', key: 'amount', align: 'center', render(row: Item) {
+        title: 'Locked Amount',
+        key: 'amount',
+        align: 'center',
+        render(row: Item) {
           return h('span', {}, { default: () => ethers.formatUnits(row.amount, 18) });
         },
       },
       {
-        title: 'Released Amount', key: 'released', align: 'center', render(row: Item) {
+        title: 'Claimed Amount',
+        key: 'released',
+        align: 'center',
+        render(row: Item) {
           return h('span', {}, { default: () => ethers.formatUnits(row.released, 18) });
         },
       },

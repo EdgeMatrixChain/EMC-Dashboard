@@ -8,7 +8,7 @@ import {} from 'naive-ui';
 import Icon from './icons/task-pending.png';
 import { http } from '@/tools/http';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { formatNumber } from '@/tools/format-number';
 const title = ref('API Pending');
 const value = ref('');
 const unit = ref('txs');

@@ -7,7 +7,7 @@ import { ref, onMounted } from 'vue';
 import Icon from './icons/node-relay.png';
 import { getNodeRewards } from '@/apis';
 import NumericBasic from './basic.vue';
-import { toFixedClip } from './format-number';
+import { toFixedClip } from '@/tools/format-number';
 const title = ref('Total Node Rewards');
 const value = ref('');
 const unit = ref('');

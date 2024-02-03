@@ -88,7 +88,7 @@ const columns: any = ref([
   },
 ]);
 
-const StatusText = ['Wait', 'Pendding', 'Complete', 'Failed'];
+const StatusText = ['Wait', 'Pending', 'Complete', 'Failed'];
 const APIs = [
   { application: 'LLM', method: 'Chat', path: '/hubapi/v1/llm/chat/completions' },
   { application: 'StableDiffsuion', method: 'TextToImage', path: null },

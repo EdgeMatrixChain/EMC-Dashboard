@@ -16,11 +16,22 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { NLoadingBarProvider, NMessageProvider, NNotificationProvider, NDialogProvider, NGlobalStyle, NThemeEditor, darkTheme, NConfigProvider } from 'naive-ui';
+import {
+  NLoadingBarProvider,
+  NMessageProvider,
+  NNotificationProvider,
+  NDialogProvider,
+  NGlobalStyle,
+  NThemeEditor,
+  darkTheme,
+  NConfigProvider,
+} from 'naive-ui';
 
 // import { useRouter, useRoute } from 'vue-router';
 // import { initRouter, siteSetup } from './store'
 import App from './App.vue';
+import CustomThemeDark from './theme-dark';
+
 export default defineComponent({
   name: 'AppSetup',
   components: {
@@ -36,29 +47,9 @@ export default defineComponent({
   setup() {
     //const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null);
     const theme = darkTheme;
-    const lightThemeOverrides = {
-      common: {
-        // primaryColor: '#000000',
-      },
-    };
+    const lightThemeOverrides = CustomThemeDark;
 
-    const darkThemeOverrides = {
-      common: {
-        // primaryColor: '#FFFF00',
-      },
-      Pagination: {
-        itemBorder: 'none',
-        itemColor: '#1C2025',
-        itemTextColor: '#fff',
-        itemBorderHover: 'none',
-        itemColorHover: '#ABA9FF',
-        itemTextColorHover: '#5C1AE5',
-        itemBorderActive: 'none',
-        itemColorActive: '#5C1AE5',
-        itemTextColorActive: '#fff',
-        itemColorActiveHover: '#5C1AE5',
-      },
-    };
+    const darkThemeOverrides = CustomThemeDark;
 
     const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);
 

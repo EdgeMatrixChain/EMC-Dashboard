@@ -14,11 +14,13 @@ defineProps({ item: { type: Object, default: () => ({}) } });
   background-color: #76b900;
   width: 120px;
   height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .gpu-item-name {
   width: 120px;
-  height: 40px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;

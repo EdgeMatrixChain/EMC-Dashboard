@@ -6,8 +6,8 @@ export class StakeNodeApi extends Api {
     return ABI;
   }
 
-  bindNode({ nodeId, nonce, signature }: { nodeId: string; nonce: string; signature: string }) {
-    return super.call({ method: 'bindNode', data: [nodeId, nonce, signature] });
+  bindNode({ nodeId, account, nonce, signature }: { nodeId: string; account: string; nonce: string; signature: string }) {
+    return super.call({ method: 'bindNode', data: [nodeId, account, nonce, signature] });
   }
 
   deposit({ nodeId, amount }: { nodeId: string; amount: bigint }) {
@@ -28,5 +28,9 @@ export class StakeNodeApi extends Api {
 
   nodeInfo({ nodeId }: { nodeId: string }) {
     return super.call({ method: 'nodeInfo', data: [nodeId] });
+  }
+
+  claimWithSignature({ amount, account, nodeId, nonce, signature }: { amount: bigint; account: string; nodeId: string; nonce: string; signature: string }) {
+    return super.call({ method: 'ClaimWithSignature', data: [amount, account, nodeId, nonce, signature] });
   }
 }

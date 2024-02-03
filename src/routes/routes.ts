@@ -55,27 +55,26 @@ export const routes = [
         path: 'cliffs-view',
         component: () => import('@/pages/cliffs-view/index.vue'),
       },
-      {
-        name: 'strategy-sale',
-        path: 'strategy-sale',
-        component: () => import('@/pages/public-sale/index.vue'),
-      },
-      {
-        name: 'strategy-sale-manage',
-        path: 'strategy-sale-manage',
-        component: () => import('@/pages/public-sale-manage/index.vue'),
-      },
+      // {
+      //   name: 'strategy-sale',
+      //   path: 'strategy-sale',
+      //   component: () => import('@/pages/public-sale/index.vue'),
+      // },
+      // {
+      //   name: 'strategy-sale-manage',
+      //   path: 'strategy-sale-manage',
+      //   component: () => import('@/pages/public-sale-manage/index.vue'),
+      // },
       // {
       //   name: 'stake-node',
       //   path: 'stake-node',
       //   component: () => import('@/pages/stake-node/index.vue'),
       // },
-      {
-        name: 'claim-node-rewards',
-        path: 'claim-node-rewards',
-        component: () => import('@/pages/claim-node-rewards/index.vue'),
-      },
-
+      // {
+      //   name: 'claim-node-rewards',
+      //   path: 'claim-node-rewards',
+      //   component: () => import('@/pages/claim-node-rewards/index.vue'),
+      // },
       // {
       //   name: 'test',
       //   path: 'test',

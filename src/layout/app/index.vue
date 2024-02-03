@@ -25,43 +25,27 @@
   </NSpin>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted, defineComponent } from 'vue';
 import { NLayout, NLayoutHeader, NLayoutContent, NSpin } from 'naive-ui';
 import Header from '@/layout/app/header.vue';
 import { router } from '@/routes/index';
-
-export default defineComponent({
-  name: 'layout',
-  components: { NLayout, NLayoutHeader, NLayoutContent, Header, NSpin },
-  setup() {
-    const ready = ref(false);
-    const cacheRoutes = ref<string[]>([]);
-    const routes = router?.options?.routes || [];
-    const layoutRoute = routes.find((i: any) => i.name === 'layout');
-
-    const show = ref(false);
-    layoutRoute?.children?.forEach((i: any) => {
-      if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
-    });
-    console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
-
-    onMounted(async () => {
-      ready.value = true;
-    });
-
-    const isLoading = (val: boolean) => {
-      show.value = val;
-    };
-
-    return {
-      ready,
-      cacheRoutes,
-      show,
-      isLoading,
-    };
-  },
+const ready = ref(false);
+const cacheRoutes = ref<string[]>([]);
+const routes = router?.options?.routes || [];
+const layoutRoute = routes.find((i: any) => i.name === 'layout');
+const show = ref(false);
+layoutRoute?.children?.forEach((i: any) => {
+  if (i?.meta?.keepAlive && typeof i?.name === 'string') cacheRoutes.value.push(i.name);
 });
+
+onMounted(async () => {
+  ready.value = true;
+});
+
+const isLoading = (val: boolean) => {
+  show.value = val;
+};
 </script>
 <style scoped>
 .loading {

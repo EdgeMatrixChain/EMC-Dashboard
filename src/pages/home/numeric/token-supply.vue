@@ -6,7 +6,7 @@
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-supply.png';
 import NumericBasic from './basic.vue';
-import { formatNumber, toFixedClip } from './format-number';
+import { formatNumber, toFixedClip } from '@/tools/format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';

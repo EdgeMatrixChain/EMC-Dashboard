@@ -20,10 +20,12 @@ export default [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'address', name: '_operator', type: 'address' },
-      { indexed: false, internalType: 'bool', name: '_canDeposit', type: 'bool' },
+      { indexed: false, internalType: 'address', name: 'holder', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { indexed: false, internalType: 'string', name: 'nodeId', type: 'string' },
+      { indexed: false, internalType: 'string', name: 'nonce', type: 'string' },
     ],
-    name: 'CanDepositUpdated',
+    name: 'Claimed',
     type: 'event',
   },
   {
@@ -47,6 +49,28 @@ export default [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: 'address', name: 'holder', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+    ],
+    name: 'WithdrawedForEmergency',
+    type: 'event',
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_tokenAmount', type: 'uint256' },
+      { internalType: 'address', name: '_beneficiary', type: 'address' },
+      { internalType: 'string', name: '_nodeId', type: 'string' },
+      { internalType: 'string', name: '_nonce', type: 'string' },
+      { internalType: 'bytes', name: '_signature', type: 'bytes' },
+    ],
+    name: 'ClaimWithSignature',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'address', name: '_beneficiary', type: 'address' }],
     name: 'balanceOf',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
@@ -63,6 +87,7 @@ export default [
   {
     inputs: [
       { internalType: 'string', name: '_nodeId', type: 'string' },
+      { internalType: 'address', name: '_beneficiary', type: 'address' },
       { internalType: 'string', name: '_nonce', type: 'string' },
       { internalType: 'bytes', name: '_signature', type: 'bytes' },
     ],
@@ -71,6 +96,7 @@ export default [
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  { inputs: [], name: 'canClaim', outputs: [{ internalType: 'bool', name: '', type: 'bool' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'canDeposit', outputs: [{ internalType: 'bool', name: '', type: 'bool' }], stateMutability: 'view', type: 'function' },
   {
     inputs: [
@@ -97,7 +123,10 @@ export default [
     stateMutability: 'view',
     type: 'function',
   },
+  { inputs: [], name: 'owner', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
   { inputs: [], name: 'releaseContract', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
+  { inputs: [{ internalType: 'string', name: '_nonce', type: 'string' }], name: 'revoke', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  { inputs: [{ internalType: 'bool', name: '_canClaim', type: 'bool' }], name: 'setCanClaim', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   {
     inputs: [{ internalType: 'bool', name: '_canDeposit', type: 'bool' }],
     name: 'setCanDeposit',
@@ -131,6 +160,13 @@ export default [
       { internalType: 'uint256', name: '_amount', type: 'uint256' },
     ],
     name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: '_tokenAmount', type: 'uint256' }],
+    name: 'withdrawRewardForEmergency',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

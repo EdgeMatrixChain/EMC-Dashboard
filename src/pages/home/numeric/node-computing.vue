@@ -7,7 +7,7 @@ import { ref, onMounted } from 'vue';
 import {} from 'naive-ui';
 import Icon from './icons/node-compute.png';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { formatNumber } from '@/tools/format-number';
 import { getMapNodes, getComputeNodes } from '@/apis';
 const title = ref('Computing Nodes');
 const value = ref('');

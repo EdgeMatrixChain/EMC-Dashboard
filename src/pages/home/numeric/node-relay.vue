@@ -8,7 +8,7 @@ import {} from 'naive-ui';
 import Icon from './icons/node-relay.png';
 import { getRelayNodes } from '@/apis';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { formatNumber } from '@/tools/format-number';
 const title = ref('Relay Nodes');
 const value = ref('');
 const unit = ref('');

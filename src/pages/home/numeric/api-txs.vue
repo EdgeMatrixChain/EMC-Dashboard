@@ -8,7 +8,7 @@ import {} from 'naive-ui';
 import Icon from './icons/transactions.png';
 import { http } from '@/tools/http';
 import NumericBasic from './basic.vue';
-import { formatNumber } from './format-number';
+import { formatNumber } from '@/tools/format-number';
 const title = ref('API Transactions');
 const value = ref('');
 const unit = ref('txs');

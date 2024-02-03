@@ -12,23 +12,21 @@
     </template>
     <template v-else>
       <NSpace vertical :wrap-item="false">
-        <template v-if="status === 1 || status === 2">
+        <template v-if="status === 1">
           <NAlert class="mb-[4px]" title="Warning" type="warning">
             <NSpace align="center" :wrap-item="false" :size="[8, 8]">
-              <template v-if="status === 1">
-                <NText>Nodes need to be bound before stake</NText>
-                <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind" style="background-color: var(--n-color); width: auto"
-                  >Bind</NButton
-                >
-              </template>
-              <template v-if="status === 2">
-                <NText>Need to be rebind after change owner</NText>
-                <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind" style="background-color: var(--n-color); width: auto"
-                  >Rebind</NButton
-                >
-              </template>
+              <NText>Nodes need to be bound before stake</NText>
+              <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind" style="background-color: var(--n-color); width: auto"
+                >Bind</NButton
+              >
             </NSpace>
           </NAlert>
+        </template>
+        <template v-else-if="status === 2">
+          <AlertSyncOwner :node-id="nodeInfo.nodeId" :bind-stake-account="nodeInfo.bindStakeAccount" @finish="onSyncOwnerFinish" />
+        </template>
+        <template v-if="status === 0 || status === 1 || status === 2">
+          <AlertUnstake :node-id="nodeInfo.nodeId" />
         </template>
         <div class="leading-normal mb-[4px]">
           <NText class="header-text text-[20px] mr-[8px]">Node</NText>
@@ -61,7 +59,7 @@
                 </NSpace>
                 <NSpace class="flex-1" align="center" :wrap-item="false" :size="[8, 0]">
                   <NText class="text-[12px] xl:text-[13px]"> {{ nodeInfo.principal || '--' }}</NText>
-                  <template v-if="status === 0 || status === 1 || status === 2">
+                  <template v-if="status === 0 || status === 1">
                     <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
                       <template #icon>
                         <NIcon size="18">
@@ -86,10 +84,10 @@
                       size="small"
                       round
                       :loading="loadings.checkout"
-                      @click="onPressCheckout"
-                      :disabled="nodeInfo.currentReward === 0n || !nodeInfo.currentReward"
+                      @click="onPressClaim"
+                      :disabled="!nodeInfo.currentReward || nodeInfo.currentReward < minClaimReward"
                       style="background-color: var(--n-color); width: auto"
-                      >Check out rewards
+                      >Claim rewards
                     </NButton>
                   </template>
                 </NSpace>
@@ -189,9 +187,14 @@
               <ApiTransactions :node-id="nodeInfo.nodeId" />
             </template>
           </NTabPane>
+          <template v-if="status === 0">
+            <NTabPane name="claims" tab="Reward claims">
+              <RewardClaims :node-id="nodeInfo.nodeId" />
+            </NTabPane>
+          </template>
         </NTabs>
-        <template v-if="status === 0 || status === 1 || status === 2">
-          <ModalChangeOwner v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId" @success="onChangePrincipalSuccess" />
+        <template v-if="status === 0 || status === 1">
+          <ModalChangeOwner v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId" @success="onChangeOwnerSuccess" />
         </template>
         <template v-if="status === 0">
           <ModalStake
@@ -216,9 +219,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, useMessage } from 'naive-ui';
+import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, useMessage, useDialog } from 'naive-ui';
 import { PencilSharp as IconEdit } from '@vicons/ionicons5';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
@@ -232,7 +235,13 @@ import { StakeNodeApi } from '@/web3/api/stake-node';
 import { Web3Service } from '@/web3';
 import { getDefaultNetwork } from '@/web3/network';
 
+import { nodeBind } from './bind-node';
+
+import AlertSyncOwner from './alert-sync-owner.vue';
+import AlertUnstake from './alert-unstake.vue';
+
 import ApiTransactions from './api-transactions/index.vue';
+import RewardClaims from './reward-claims/index.vue';
 
 import ModalChangeOwner from './change-owner/index.vue';
 import ModalStake from './stake/index.vue';
@@ -241,8 +250,11 @@ import ModalTips from './tips/index.vue';
 
 import GpuItem from './gpu.vue';
 
+import { queryNodeOwner } from '@/apis';
+
 const route = useRoute();
 const message = useMessage();
+const dialog = useDialog();
 
 const http = Http.getInstance();
 const apiManager = ApiManager.getInstance();
@@ -275,7 +287,11 @@ const isVisibleTips = ref(false);
 const tipsType = ref<any>('success');
 const tipsTitle = ref('');
 const tipsMessage = ref('');
-
+const minClaimReward = ref(BigInt(100 * 1e18));
+const nodeRewardTimerConfig = {
+  interval: 3000,
+  stop: false,
+};
 const status = computed(() => {
   if (!ethUserStore.account0) {
     return 11; // Not connected
@@ -287,12 +303,13 @@ const status = computed(() => {
     if (!nodeInfo.value.bindStakeAccount || nodeInfo.value.bindStakeAccount === '0x0000000000000000000000000000000000000000') {
       return 1; // Node binding
     } else if (!Web3Utils.eq(nodeInfo.value.bindStakeAccount, nodeInfo.value.principal)) {
-      return 2; // Update binding
+      return 2; // owner not same
     } else {
       return 0; // Stake、Unstake、Change binding
     }
   }
 });
+
 function parseGpuInfo(input: string) {
   const matches = input.match(/\b(\w+)\s*:\s*'([^']*)'/g);
   if (!matches) {
@@ -345,17 +362,6 @@ async function queryInfo(_nodeId: string) {
   return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application };
 }
 
-async function queryOwner(nodeId: string) {
-  const resp = await http.get({
-    url: '/nodesign/query',
-    data: { nodeId },
-  });
-  const signInfo = resp.data || {};
-  return {
-    principal: signInfo.principal,
-  };
-}
-
 async function queryStake(nodeId: string) {
   const { data: _stakeInfo } = await stakeNodeApi!.nodeInfo({ nodeId });
   const [_bindStakeAccount, _totalStaked, _currentStaked, _totalUnstaked] = _stakeInfo || [];
@@ -369,16 +375,31 @@ async function queryStake(nodeId: string) {
 
 async function queryReward(nodeId: string) {
   const resp = await http.get({
-    url: '/nodebill/summary',
+    url: '/nodebill/summarynew',
     data: { nodeId: nodeId },
   });
   const data = resp.data || {};
   const totalReward = data.billTotal || 0;
-  const totalClaim = data.withdrawTotal || 0;
+  const totalClaim = data.claimedTotal || 0;
   return {
     currentReward: BigInt(totalReward) - BigInt(totalClaim),
     totalReward: totalReward,
   };
+}
+
+async function handleNodeRewardTimer() {
+  const before = new Date().getTime();
+  const { currentReward } = await queryReward(nodeId);
+  const end = new Date().getTime();
+  nodeInfo.value.currentReward = currentReward;
+  const diff = nodeRewardTimerConfig.interval - (end - before);
+  if (diff > 0) {
+    // console.info(`wait ${diff} ms`);
+    await new Promise((resolve) => setTimeout(resolve, diff));
+  }
+  if (!nodeRewardTimerConfig.stop) {
+    handleNodeRewardTimer();
+  }
 }
 
 const init = async (nodeId: string) => {
@@ -392,7 +413,7 @@ const init = async (nodeId: string) => {
 
   const [_nodeInfo, { principal }, { bindStakeAccount, currentStaked }, { currentReward }] = await Promise.all([
     queryInfo(nodeId),
-    queryOwner(nodeId),
+    queryNodeOwner(nodeId),
     queryStake(nodeId),
     queryReward(nodeId),
   ]);
@@ -404,89 +425,179 @@ const init = async (nodeId: string) => {
     currentStaked,
     currentReward,
   };
-
+  setTimeout(() => handleNodeRewardTimer(), 3000);
   error.value = 0;
-};
-
-const preNodeBind = async (params: { account: string; nodeId: string }) => {
-  const nodeId = params.nodeId;
-  const signatureRaw = `Node bind ${nodeId}`;
-  const resp1 = await w3s.signMessage(signatureRaw);
-  if (resp1._result !== 0) {
-    return resp1;
-  }
-  const signature = resp1.data!.signature;
-  return http.postJSON({
-    url: '/nodestake/bindsign',
-    data: { nodeId, signatureRaw, signature },
-    noAutoHint: true,
-  });
-};
-
-const nodeBind = async (params: { account: string; nodeId: string }) => {
-  const nodeId = params.nodeId;
-  const resp = await preNodeBind(params);
-  if (resp._result !== 0) return resp;
-  const data = resp.data || {};
-  const nonce = data.nonce;
-  const signature = data.signature;
-  return stakeNodeApi!.bindNode({ nodeId, nonce, signature });
 };
 
 const handleBind = async () => {
   const account = ethUserStore.account0;
   const nodeId = nodeInfo.value.nodeId;
+  const chainId = ethUserStore.chainId as number;
   loadings.value.bind = true;
-  const resp = await nodeBind({ account, nodeId });
+  const resp = await nodeBind({ account, chainId, nodeId });
   loadings.value.bind = false;
   if (resp._result !== 0) {
     message.warning(resp._desc);
     return;
   }
-  loadings.value.bind = true;
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  loadings.value.bind = false;
-
-  message.success('Successful, and the transaction may be delayed');
-  init(nodeId);
-};
-
-const handleCheckoutReward = async (amount: bigint) => {
-  loadings.value.checkout = true;
-  const resp = await http.postJSON({
-    url: '/nodebill/withdraw',
-    data: { nodeId, amount: amount.toString() },
-  });
-  loadings.value.checkout = false;
-  if (resp._result !== 0) {
-    message.warning(resp._desc);
-    return;
-  }
-  init(nodeId);
   tipsType.value = 'success';
-  tipsTitle.value = 'Check out success';
-  tipsMessage.value = `The amount of this check out ${ethers.formatUnits(amount, 18)} $EMC. You can click top-right "Claim node reward" for more information`;
+  tipsTitle.value = 'Bind node success';
+  tipsMessage.value = `bind ${account} to ${nodeId}`;
   isVisibleTips.value = true;
+  init(nodeId);
 };
+
+const preClaimReward = async (params: { amount: string; nodeId: string; chainId: number }) => {
+  const nodeId = params.nodeId;
+  const amount = params.amount;
+  const chainId = params.chainId;
+  const signatureRaw = `${nodeId} claim reward`;
+  const resp1 = await w3s.signMessage(signatureRaw);
+  if (resp1._result !== 0) {
+    if (resp1.err && resp1.err.code === 'ACTION_REJECTED') {
+      return { _result: 2, _desc: 'Message signature cancel' };
+    }
+    return resp1;
+  }
+  if (!resp1.data) {
+    return { _result: 1, _desc: 'Message signature failed' };
+  }
+  const signature = resp1.data.signature;
+  return http.postJSON({
+    url: '/nodebill/preclaim',
+    data: { nodeId, amount, chainId, signature, signatureRaw },
+    noAutoHint: true,
+  });
+};
+
+const claimReward = async (params: { amount: bigint; account: string; nodeId: string; nonce: string; signature: string }) => {
+  const resp = await stakeNodeApi!.claimWithSignature(params);
+  if (resp._result !== 0) {
+    return resp;
+  }
+  await resp.data.wait();
+  return resp;
+};
+
+type DialogOption = {
+  title: string;
+  content: string;
+  confirmText: string;
+  cancelText: string;
+  onConfirm: () => Promise<any>;
+};
+
+const handleDialog = (option: DialogOption): Promise<{ type: string; data?: Resp }> => {
+  return new Promise((resolve) => {
+    const d = dialog.warning({
+      title: option.title,
+      content: option.content,
+      positiveText: option.confirmText,
+      negativeText: option.cancelText,
+      positiveButtonProps: { type: 'primary' },
+      closable: false,
+      maskClosable: false,
+      onPositiveClick: async () => {
+        d.loading = true;
+        const resp = await option.onConfirm();
+        d.loading = false;
+        d.destroy();
+        resolve({ type: 'confirm', data: resp });
+        return false;
+      },
+      onNegativeClick: () => {
+        resolve({ type: 'cancel' });
+      },
+    });
+  });
+};
+
+const handleClaimReward = async (params: { amount: bigint; nodeId: string; chainId: number }) => {
+  const nodeId = params.nodeId;
+  const amount = params.amount;
+  const chainId = params.chainId;
+  const resp = await preClaimReward({ amount: amount.toString(), nodeId, chainId });
+  if (resp._result !== 0 && resp._result !== 11) {
+    return resp;
+  }
+  const data = resp.data || {};
+  const sign = data.sign;
+  const nonce = data.nonce;
+  const owner = data.owner;
+  if (!sign || !nonce || !owner) {
+    return { _result: 1, _desc: 'Claim error' };
+  }
+
+  let claimResp: any = null;
+  if (resp._result === 11) {
+    const historyAmount = ethers.formatUnits(data.amount || '0', 18);
+    const dialogResp = await handleDialog({
+      title: 'Tips',
+      content: `You have an unfinished claim amounting to ${historyAmount}EMC. This operation will prioritize completing this claim.`,
+      confirmText: 'Continue',
+      cancelText: 'Cancel',
+      onConfirm: () => claimReward({ amount, account: owner, nodeId, nonce, signature: sign }),
+    });
+    if (dialogResp.type === 'cancel') {
+      return { _result: 3, _desc: 'Claim cancel' };
+    } else {
+      claimResp = dialogResp.data;
+    }
+  } else {
+    claimResp = await claimReward({ amount, account: owner, nodeId, nonce, signature: sign });
+  }
+  if (claimResp._result !== 0) {
+    if (claimResp.err && claimResp.err.code === 'ACTION_REJECTED') {
+      return { _result: 3, _desc: 'Claim cancel' };
+    } else {
+      return { _result: 2, _desc: 'Claim failed' };
+    }
+  }
+  return { _result: 0, _desc: 'Claim success' };
+};
+
+function onSyncOwnerFinish() {
+  init(nodeId);
+}
 
 function onPressBind() {
   handleBind();
 }
 
-function onPressCheckout() {
-  tipsType.value = 'info';
-  tipsTitle.value = 'Check out';
-  tipsMessage.value = `The reward contract is currently being audited by Certik, and the withdrawal operation will be officially available after the audit is completed.`;
+async function onPressClaim() {
+  // tipsType.value = 'info';
+  // tipsTitle.value = 'Check out';
+  // tipsMessage.value = `The reward contract is currently being audited by Certik, and the withdrawal operation will be officially available after the audit is completed.`;
+  // isVisibleTips.value = true;
+  if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
+  const nodeId = nodeInfo.value.nodeId;
+  const amount = nodeInfo.value.currentReward;
+  const chainId = ethUserStore.chainId as number;
+  if (typeof chainId !== 'number') return;
+
+  loadings.value.checkout = true;
+  const resp = await handleClaimReward({ nodeId, amount, chainId });
+  loadings.value.checkout = false;
+  if (resp._result !== 0) {
+    message.warning(resp._desc);
+    if (resp._result === 2) {
+      init(nodeId);
+    }
+    return;
+  }
+  init(nodeId);
+  tipsType.value = 'success';
+  tipsTitle.value = 'Claim success';
+  tipsMessage.value = `Received ${ethers.formatUnits(amount, 18)} $EMC`;
   isVisibleTips.value = true;
-  // if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
-  // handleCheckoutReward(nodeInfo.value.currentReward);
+  loadings.value.checkout = false;
 }
 
 function onPressChangeOwner() {
   isVisibleChangePrincipal.value = true;
 }
 
-function onChangePrincipalSuccess(inputAddress: string) {
+function onChangeOwnerSuccess(inputAddress: string) {
   init(nodeId);
   isVisibleChangePrincipal.value = false;
   tipsType.value = 'success';
@@ -498,6 +609,7 @@ function onChangePrincipalSuccess(inputAddress: string) {
 function onPressStake() {
   isVisibleStake.value = true;
 }
+
 function onStakeSuccess() {
   init(nodeId);
   isVisibleStake.value = false;
@@ -506,6 +618,7 @@ function onStakeSuccess() {
 function onPressUnstake() {
   isVisibleUnstake.value = true;
 }
+
 function onUnstakeSuccess() {
   init(nodeId);
   isVisibleUnstake.value = false;
@@ -522,7 +635,12 @@ onMounted(async () => {
   stakeNodeApi = apiManager.create(StakeNodeApi, { address: stakeContract.value });
   const { data: _tokenContract } = await stakeNodeApi!.token();
   tokenContract.value = _tokenContract || '';
+  nodeRewardTimerConfig.stop = false;
   await init(nodeId);
+});
+
+onUnmounted(() => {
+  nodeRewardTimerConfig.stop = true;
 });
 </script>
 

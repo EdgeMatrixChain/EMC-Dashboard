@@ -8,7 +8,7 @@ import {} from 'naive-ui';
 import Icon from './icons/token-burned.png';
 import { http } from '@/tools/http';
 import NumericBasic from './basic.vue';
-import { toFixedClip, formatNumber } from './format-number';
+import { toFixedClip, formatNumber } from '@/tools/format-number';
 import { ethers } from 'ethers';
 const title = ref('Total Burn');
 const value = ref('');

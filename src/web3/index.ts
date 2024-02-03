@@ -10,7 +10,6 @@ export type CallOption = {
   data?: any[];
 };
 
-
 export class Web3Service {
   public provider: BrowserProvider | null;
   public defaultProvider: JsonRpcProvider;
@@ -174,7 +173,7 @@ export class Web3Service {
     }
     const [err, signature] = await Web3Utils.to(signer.signMessage(message));
     if (err) {
-      return { _result: 1, _desc: `Sign message failed` };
+      return { _result: 1, _desc: `Sign message failed`, err: { ...err } };
     }
     return { _result: 0, data: { signature } };
   }
@@ -200,6 +199,13 @@ export class Web3Service {
 
   async #call(contract: any, method: string, data: any[]) {
     const [err, resp] = await Web3Utils.to(contract[method].apply(contract, data));
-    return { _result: err ? 1 : 0, _desc: `${err}`, data: resp };
+    if (err) {
+      return { _result: 1, _desc: `${err}`, data: resp, err: { ...err } };
+    } else {
+      return { _result: 0, _desc: '', data: resp };
+    }
   }
 }
+
+
+export const w3s = Web3Service.getInstance();
