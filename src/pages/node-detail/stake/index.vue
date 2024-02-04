@@ -22,7 +22,7 @@
         <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height: 160px">
           <NAlert title="Warning" type="warning">
             <NSpace align="center" :wrap-item="false" :size="[8, 8]">
-              <NText>If you want to withdraw your collateral, you  need to wait for a month to receive the corresponding EMC.</NText>
+              <NText>If you want to withdraw, you need to wait for 30-day claim your staked EMC.</NText>
             </NSpace>
           </NAlert>
           <NSpace vertical :wrap-item="false" :size="[0, 4]">
@@ -195,13 +195,12 @@ export default defineComponent({
         const amount = ethers.parseUnits(inputTokenAmount.value, tokenDecimal.value);
         loadings.value.submit = true;
         const resp = await handlerSubmit(nodeId, account, amount);
-        loadings.value.submit = false;
         if (resp._result !== 0) {
+          loadings.value.submit = false;
           message.warning(resp._desc || 'Stake failed');
           return;
         }
-        loadings.value.submit = true;
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        await resp.data.wait();
         loadings.value.submit = false;
         ctx.emit('success');
       },

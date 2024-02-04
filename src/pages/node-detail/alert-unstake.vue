@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <template v-if="currentStaked > 0n">
-      <NAlert class="mb-[4px]" title="Stake migration" type="info">
-        <NSpace align="center" :wrap-item="false" :size="[8, 8]">
-          <NText
-            >We have noticed that you have staked {{ ethers.formatUnits(currentStaked, 18) }}EMC in the old contract. Please un-stake as soon as possible. After
-            un-staking, there will be a 30-day lockup period. Once this period ends, please use the address {{ bindStakeAccount }} to claim your staked EMC.
-            During this process, your staked amount will still be factored into the node reward calculation formula.</NText
-          >
-          <NButton type="primary" :loading="loading" @click="onPressUnstake">Unstake</NButton>
-        </NSpace>
-      </NAlert>
-    </template>
-  </div>
+  <template v-if="currentStaked > 0n">
+    <NAlert class="mb-[4px]" title="Stake migration" type="info">
+      <NSpace align="center" :wrap-item="false" :size="[8, 8]">
+        <NText
+          >We have noticed that you have staked {{ ethers.formatUnits(currentStaked, 18) }}EMC in the old contract. Please un-stake as soon as possible. After
+          un-staking, there will be a 30-day lockup period. Once this period ends, please use the address {{ bindStakeAccount }} to claim your staked EMC.
+          During this process, your staked amount will still be factored into the node reward calculation formula.</NText
+        >
+        <NButton type="primary" :loading="loading" @click="onPressUnstake">Unstake</NButton>
+      </NSpace>
+    </NAlert>
+  </template>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed } from 'vue';

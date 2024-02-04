@@ -59,7 +59,7 @@
                 </NSpace>
                 <NSpace class="flex-1" align="center" :wrap-item="false" :size="[8, 0]">
                   <NText class="text-[12px] xl:text-[13px]"> {{ nodeInfo.principal || '--' }}</NText>
-                  <template v-if="status === 0 || status === 1">
+                  <template v-if="status === 0">
                     <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
                       <template #icon>
                         <NIcon size="18">
@@ -76,7 +76,17 @@
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Reward</NText>
                 </NSpace>
                 <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentReward || 0n, 18) }} EMC </NText>
+                  <NSpace class="flex-1" align="center" :wrap-item="false" :size="[4, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentReward || 0n, 18) }} EMC </NText>
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                      </template>
+                      <div>
+                        <p>Min Claim: 100EMC</p>
+                      </div>
+                    </NTooltip>
+                  </NSpace>
                   <template v-if="status === 0">
                     <NButton
                       type="primary"
@@ -98,7 +108,18 @@
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Staked</NText>
                 </NSpace>
                 <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </NText>
+                  <NSpace class="flex-1" align="center" :wrap-item="false" :size="[4, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </NText>
+                    <NTooltip trigger="hover">
+                      <template #trigger>
+                        <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                      </template>
+                      <div>
+                        <p>Min Stake: 10EMC</p>
+                        <p>Max Stake: 1000EMC</p>
+                      </div>
+                    </NTooltip>
+                  </NSpace>
                   <template v-if="status === 0">
                     <NSpace align="center" :wrap-item="false" :size="[8, 0]">
                       <NButton
@@ -221,8 +242,8 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, useMessage, useDialog } from 'naive-ui';
-import { PencilSharp as IconEdit } from '@vicons/ionicons5';
+import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, NTooltip, useMessage, useDialog } from 'naive-ui';
+import { PencilSharp as IconEdit, InformationCircleOutline as IconTips } from '@vicons/ionicons5';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
@@ -550,7 +571,9 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
     if (claimResp.err && claimResp.err.code === 'ACTION_REJECTED') {
       return { _result: 3, _desc: 'Claim cancel' };
     } else {
-      return { _result: 2, _desc: 'Claim failed' };
+      //ClaimWithSignature: balance of tokens is not enough
+      const message = claimResp.err && claimResp.err.reason ? claimResp.err.reason : 'ClaimWithSignature: unknow error';
+      return { _result: 2, _desc: `${message}` };
     }
   }
   return { _result: 0, _desc: 'Claim success' };

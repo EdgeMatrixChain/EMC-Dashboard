@@ -3,6 +3,7 @@ import { w3s } from '@/web3';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { StakeNodeApi } from '@/web3/api/stake-node';
+
 export const preNodeBind = async (params: { account: string; chainId: number; nodeId: string }) => {
   const nodeId = params.nodeId;
   const account = params.account;
@@ -49,7 +50,6 @@ export const nodeBind = async (params: { account: string; chainId: number; nodeI
       return { _result: 2, _desc: 'Bind failed' };
     }
   }
-
   await bindResp.data.wait();
   return bindResp;
 };
