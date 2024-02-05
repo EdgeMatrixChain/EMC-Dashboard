@@ -58,7 +58,7 @@ async function onPressUnstake() {
   }
   dialog.success({
     title: 'Successful',
-    content: `After 30 days, use the address ${bindStakeAccount.value} and click on the 'View Locks' button in the top right. Claim your staked EMC`,
+    content: `After 30 days, use the address ${account} and click on the 'View Locks' button in the top right. Claim your staked EMC`,
     closable: false,
     closeOnEsc: false,
     maskClosable: false,

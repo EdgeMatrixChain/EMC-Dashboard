@@ -55,6 +55,11 @@ export const routes = [
         path: 'cliffs-view',
         component: () => import('@/pages/cliffs-view/index.vue'),
       },
+      {
+        name: 'node-unstake',
+        path: 'node-unstake',
+        component: () => import('@/pages/node-unstake/index.vue'),
+      },
       // {
       //   name: 'strategy-sale',
       //   path: 'strategy-sale',

@@ -559,7 +559,7 @@ const queryTradingList = async (account: string): Promise<Array<TradingItem>> =>
 
   return (resp.data || []).map((item: any) => {
     const dayItem: DayItem = getDaysItemWithId(item.durationUnits);
-    const days = dayItem.day * item.duration;
+    const days = dayItem.day;
     const start = item.start * 1000;
     const amount = ethers.formatUnits(item.amountTotal, 18);
     const apr = dayItem.nAPR;

@@ -273,6 +273,8 @@ import GpuItem from './gpu.vue';
 
 import { queryNodeOwner } from '@/apis';
 
+import { useNodeService } from './use-node-service';
+
 const route = useRoute();
 const message = useMessage();
 const dialog = useDialog();
@@ -282,7 +284,7 @@ const apiManager = ApiManager.getInstance();
 
 const w3s = Web3Service.getInstance();
 const ethUserStore = useETHUserStore();
-
+const nodeService = useNodeService();
 let stakeNodeApi: StakeNodeApi | null = null;
 let nodeId = '';
 
@@ -383,17 +385,6 @@ async function queryInfo(_nodeId: string) {
   return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application };
 }
 
-async function queryStake(nodeId: string) {
-  const { data: _stakeInfo } = await stakeNodeApi!.nodeInfo({ nodeId });
-  const [_bindStakeAccount, _totalStaked, _currentStaked, _totalUnstaked] = _stakeInfo || [];
-  return {
-    bindStakeAccount: _bindStakeAccount || '', //contract bind wallet address
-    totalStaked: _totalStaked || 0n,
-    currentStaked: _currentStaked || 0n,
-    totalUnstaked: _totalUnstaked || 0n,
-  };
-}
-
 async function queryReward(nodeId: string) {
   const resp = await http.get({
     url: '/nodebill/summarynew',
@@ -432,13 +423,15 @@ const init = async (nodeId: string) => {
     return;
   }
 
-  const [_nodeInfo, { principal }, { bindStakeAccount, currentStaked }, { currentReward }] = await Promise.all([
+  const [_nodeInfo, { principal }, _stakeInfo, { currentReward }] = await Promise.all([
     queryInfo(nodeId),
     queryNodeOwner(nodeId),
-    queryStake(nodeId),
+    nodeService.queryStake(nodeId),
     queryReward(nodeId),
   ]);
-
+  const bindStakeAccount = (_stakeInfo && _stakeInfo.bindStakeAccount) || '';
+  const currentStaked = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
+  
   nodeInfo.value = {
     ..._nodeInfo,
     principal,
@@ -656,6 +649,7 @@ onMounted(async () => {
   const networkConfig = getDefaultNetwork();
   stakeContract.value = networkConfig.smarts.nodeStake.contract;
   stakeNodeApi = apiManager.create(StakeNodeApi, { address: stakeContract.value });
+  nodeService.setStakeNodeApi(stakeNodeApi);
   const { data: _tokenContract } = await stakeNodeApi!.token();
   tokenContract.value = _tokenContract || '';
   nodeRewardTimerConfig.stop = false;
