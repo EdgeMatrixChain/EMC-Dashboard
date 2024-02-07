@@ -77,13 +77,14 @@
 <script lang="ts">
 import { defineComponent, computed, watch, ref } from 'vue';
 import { NModal, NCard, NText, NInput, NSpace, NButton, NAlert, NIcon, NSpin, NSkeleton, useMessage } from 'naive-ui';
+import { useRoute } from 'vue-router';
 import { Close as IconClose } from '@vicons/ionicons5';
 import { ethers } from 'ethers';
 import { ApiManager } from '@/web3/api';
 import { StakeNodeApi } from '@/web3/api/stake-node';
 import { ERC20Api } from '@/web3/api/erc20';
 import { useETHUserStore } from '@/stores/eth-user';
-
+import { useNodeService } from '../use-node-service';
 export default defineComponent({
   name: 'stake',
   components: { NModal, NCard, NText, NInput, NSpace, NButton, NAlert, NIcon, NSpin, NSkeleton, IconClose },
@@ -98,6 +99,8 @@ export default defineComponent({
     const message = useMessage();
     const ethUserStore = useETHUserStore();
     const apiManager = ApiManager.getInstance();
+    const nodeService = useNodeService();
+    const route = useRoute();
     let stakeNodeApi: StakeNodeApi | null = null;
     let tokenApi: ERC20Api | null = null;
     const error = ref(-1);
@@ -115,6 +118,7 @@ export default defineComponent({
       inputTokenAmount.value = '';
 
       stakeNodeApi = apiManager.create<StakeNodeApi>(StakeNodeApi, { address: props.stakeContract });
+      nodeService.setStakeNodeApi(stakeNodeApi);
       tokenApi = apiManager.create<ERC20Api>(ERC20Api, { address: props.tokenContract });
 
       const [{ data: _tokenName }, { data: _tokenSymbol }, { data: _tokenDecimals }] = await Promise.all([
@@ -193,6 +197,17 @@ export default defineComponent({
         const nodeId = props.nodeId;
         const account = ethUserStore.account0;
         const amount = ethers.parseUnits(inputTokenAmount.value, tokenDecimal.value);
+        //if (nodeId !== '16Uiu2HAm2UjtoWVgP2AdmUjNKwRR5fhXZWB6xRtDgQZQc4P13KEn' && nodeId !== '16Uiu2HAmSxxpWWqkkNDSC9oQkgeAoEagTQzaXSXv1G6ExvMwgLt6') {
+        if (!route.query || route.query.type !== 'validator') {
+          loadings.value.submit = true;
+          const _stakeInfo = await nodeService.queryStake(nodeId);
+          loadings.value.submit = false;
+          const currentStaked = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
+          if (amount + currentStaked > BigInt(1000 * 1e18)) {
+            message.warning('Max Stake: 1000EMC');
+            return;
+          }
+        }
         loadings.value.submit = true;
         const resp = await handlerSubmit(nodeId, account, amount);
         if (resp._result !== 0) {

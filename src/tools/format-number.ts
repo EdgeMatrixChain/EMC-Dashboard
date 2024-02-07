@@ -20,12 +20,12 @@ export function formatMillion(str: number | string) {
   ];
   const decimal = units.find((u) => num > u.d);
   if (!decimal) {
-    const value = toFixedClip(num, 1);
+    const value = toFixedClip(num, 2);
     const unit = '';
     const text = `${value}${unit}`;
     return { value, unit, text };
   } else {
-    const value = toFixedClip(num / decimal.d, 1);
+    const value = toFixedClip(num / decimal.d, 2);
     const unit = decimal.u;
     const text = `${value}${unit}`;
     return { value, unit, text };

@@ -48,12 +48,10 @@ export default defineComponent({
     //const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null);
     const theme = darkTheme;
     const lightThemeOverrides = CustomThemeDark;
-
     const darkThemeOverrides = CustomThemeDark;
+    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
 
-    const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : null);
-
-    return { theme, themeOverrides, lightThemeOverrides, darkThemeOverrides };
+    return { theme, themeOverrides };
   },
 });
 </script>
