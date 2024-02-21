@@ -18,20 +18,21 @@ const loading = ref(false);
 
 const queryCirculation = async () => {
   const resp = await http.get({
-    url: '/stats/emccirculation',
+    url: '/stats/circulating-supply',
+    data: { fmt: 'num' },
     noAutoHint: true,
   });
-  return resp.data || { raw: '0', formartted: '0.0', text: '0.0' };
+  return resp || 0;
 };
 
 onMounted(async () => {
   loading.value = true;
   const [circulation, { fdv, priceUsd }] = await Promise.all([queryCirculation(), getDexData()]);
   loading.value = false;
-  const { value: _value, text, unit: _unit } = formatMillion(circulation.formartted * priceUsd);
+  const { value: _value, text, unit: _unit } = formatMillion(circulation * priceUsd);
   value.value = `$${_value}`;
   unit.value = _unit;
-  tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulation.formartted))}`;
+  tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulation))}`;
 });
 </script>
 

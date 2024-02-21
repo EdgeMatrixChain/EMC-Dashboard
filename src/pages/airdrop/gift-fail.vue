@@ -1,21 +1,19 @@
 <template>
-  <NModal v-model:show="dialogVisible" :block-scroll="true" :close-on-esc="false" :mask-closable="false">
-    <div class="dailog">
-      <div class="dailog-background"></div>
-      <div class="dailog-body">
-        <div class="dailog-main">
-          <img class="dailog-img" src="@/assets/airdrop/gift-fail.svg" />
-          <img class="dailog-img-close" src="@/assets/airdrop/icon_gift_close.svg" width="24" height="24" @click="handleClose" />
-          <div class="dailog-content">
-            <div class="dailog-title">You're not in the whitelist</div>
-            <div class="dailog-subtitle">
-              Follow
-              <span style="color: #fff">EMC twitter</span>
-              for more upcoming <br />giveaway activities!
-            </div>
-            <div class="dailog-button" @click="handleFollow">Follow</div>
-            <img class="dailog-content-background" src="@/assets/airdrop/back-emc.svg" />
+  <NModal :show="isVisible" :block-scroll="true" :close-on-esc="false" :mask-closable="false" transform-origin="center">
+    <div class="dialog">
+      <div class="dialog-background"></div>
+      <div class="dialog-body">
+        <img class="dialog-face" src="@/assets/airdrop/fail.svg" />
+        <img class="dialog-close" src="@/assets/airdrop/close.svg" width="24" height="24" @click="handleClose" />
+        <div class="dialog-content">
+          <div class="dialog-title" :style="titleStyle">You're not in the whitelist</div>
+          <div class="dialog-tips">
+            Follow
+            <span style="color: #fff">EMC twitter</span>
+            for more upcoming <br />giveaway activities!
           </div>
+          <div class="dialog-button" @click="handleFollow">Follow</div>
+          <img class="dialog-footer" src="@/assets/airdrop/footer.svg" />
         </div>
       </div>
     </div>
@@ -23,134 +21,125 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, h, watch } from 'vue';
+import { computed } from 'vue';
 import { NModal } from 'naive-ui';
-const props = defineProps(['isvisible']);
-const emits = defineEmits();
-
-const dialogVisible = ref(false);
-
+import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+const props = defineProps({
+  isVisible: Boolean,
+});
+const emits = defineEmits(['close']);
+const isMobile = useIsMobile();
+const isTablet = useIsTablet();
+const titleStyle = computed(() => {
+  let fontSize = '32px';
+  if (isMobile.value) {
+    fontSize = '24px';
+  } else if (isTablet.value) {
+    fontSize = '28px';
+  }
+  return { fontSize };
+});
 const handleFollow = () => {
   window.open('https://twitter.com/EMCprotocol', '_blank');
   handleClose();
 };
 
 const handleClose = () => {
-  dialogVisible.value = false;
-  emits('onClose');
+  emits('close');
 };
-
-watch(
-  () => props.isvisible,
-  (newVal) => {
-    dialogVisible.value = newVal;
-  }
-);
 </script>
 <style scoped>
-.dailog {
+.dialog {
   position: relative;
-  width: 32.6875rem;
-  height: 27.5rem;
+  width: 80%;
+  max-width: 480px;
 }
-.dailog-background {
+
+.dialog-background {
   position: absolute;
-  top: 0rem;
-  left: 0rem;
-  right: 0rem;
-  bottom: 0rem;
-  border-radius: 1.5rem;
-  padding: 1rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
   opacity: 0.6;
   background: radial-gradient(34.55% 46.58% at 5.73% 3.11%, #f2a3ff 0%, rgba(231, 227, 248, 0) 100%),
     radial-gradient(37.58% 30.08% at 5.42% 91.67%, #a687ff 0.2%, rgba(192, 177, 255, 0.7) 99.15%), #43eccd;
   mix-blend-mode: screen;
-  filter: blur(2.5rem);
+  filter: blur(32px);
 }
-.dailog-body {
-  position: relative;
-  width: 32.6875rem;
-  height: 27.5rem;
-  margin: 0 auto;
-  border-radius: 1.5rem;
-  padding: 1rem;
-  top: 0;
-  left: 0;
-}
-.dailog-main {
+.dialog-body {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 1.5rem;
+  border-radius: 20px;
   background: radial-gradient(34.55% 46.58% at 5.73% 3.11%, #e3fbe0 0%, rgba(231, 227, 248, 0) 100%),
     radial-gradient(37.58% 30.08% at 5.42% 91.67%, #a687ff 0.2%, rgba(192, 177, 255, 0.7) 99.15%), #84b7ff;
-  padding: 1rem;
+  padding: 16px;
 }
-.dailog-img-close {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 16px;
-  min-height: 16px;
+.dialog-close {
   position: absolute;
-  top: -2.5rem;
-  right: -2.5rem;
+  top: -40px;
+  right: -40px;
+  height: 40px;
+  width: 40px;
   cursor: pointer;
 }
-.dailog-img {
+
+.dialog-face {
   position: absolute;
-  top: calc(0% - 3.5rem);
-  left: calc(50% - 4.25rem);
-  width: 8.5rem;
-  height: 8.5rem;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 136px;
+  height: 136px;
   z-index: 10;
 }
-.dailog-content {
+
+.dialog-content {
   position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.75rem;
+  border-radius: 20px;
   background: linear-gradient(150deg, #f6faef 1.86%, #a19ff1 97.1%);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
-  padding-bottom: 2.25rem;
+  padding: 64px 48px 46px 48px;
+  gap: 16px 0;
+  box-sizing: border-box;
 }
-.dailog-title {
+.dialog-title {
+  font-family: monospace;
   color: #7e52fb;
   text-align: center;
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 500;
-  line-height: 2rem;
 }
 
-.dailog-subtitle {
+.dialog-tips {
   color: #5267fb;
   text-align: center;
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.75rem;
-  margin: 2rem 0 2.5rem;
+  line-height: 1.6;
 }
-.dailog-button {
+.dialog-button {
   position: relative;
-  width: 9.625rem;
-  padding: 0.875rem 1.75rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 0.25rem;
+  width: 160px;
+  height: 44px;
+  border-radius: 6px;
   background: linear-gradient(90deg, #0bfefe 0%, #1a75fe 99.99%, #4a0684 100%);
-  box-shadow: 0rem 0rem 1rem 0rem rgba(255, 255, 255, 0.88) inset, 0rem 0.125rem 0.5rem 0rem rgba(0, 234, 255, 0.3);
-  color: #fff;
-  font-size: 1rem;
+  box-shadow: 0 0 16px 0 rgba(255, 255, 255, 0.88) inset, 0 4px 8px 0 rgba(0, 234, 255, 0.3);
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 1rem;
   cursor: pointer;
   z-index: 10;
 }
-.dailog-content-background {
-  width: 12rem;
+.dialog-footer {
+  width: 188px;
   position: absolute;
   left: 0;
   bottom: 0;

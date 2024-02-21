@@ -33,4 +33,8 @@ export class StakeNodeApi extends Api {
   claimWithSignature({ amount, account, nodeId, nonce, signature }: { amount: bigint; account: string; nodeId: string; nonce: string; signature: string }) {
     return super.call({ method: 'ClaimWithSignature', data: [amount, account, nodeId, nonce, signature] });
   }
+
+  tokenInPool() {
+    return super.call({ method: 'tokenInPool' });
+  }
 }

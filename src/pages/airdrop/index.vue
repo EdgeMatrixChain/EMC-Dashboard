@@ -1,47 +1,41 @@
 <template>
   <div class="page">
-    <img class="banner-background" src="@/assets/airdrop/back-airdrop.png" />
-    <div class="header">
-      <div class="header-container">
-        <RouterLink :to="{ name: 'home' }"> <img src="~@/assets/airdrop/logo.png" class="header-logo" /></RouterLink>
-        <template v-if="ethPrincipal">
-          <div class="header-nav-button" @click="onPressUnConnect">{{ ethPrincipalStr }}</div>
-        </template>
-        <template v-else>
-          <div class="header-nav-button" @click="onPressConnect">Connect Wallet</div>
-        </template>
+    <img class="background" src="@/assets/airdrop/bg.jpg" />
+    <Header />
+    <NSpace class="body" vertical align="center" :wrap-item="false" :size="[0, 24]">
+      <div class="banner" :style="bannerStyle">
+        <div class="banner-text">
+          EMC is a decentralized GPU computing network supported by <br />
+          EVM and multi-chain, serving as the gateway for <br />
+          Computing Power and Web3 in the Al era.
+        </div>
       </div>
-    </div>
-    <div class="banner">
-      <div class="banner-title">
-        EMC is a decentralized GPU computing network supported by <br />
-        EVM and multi-chain, serving as the gateway for <br />
-        Computing Power and Web3 in the Al era.
+
+      <div class="widget">
+        <img class="widget-header" src="@/assets/airdrop/box-header.svg" />
+        <div class="widget-body">
+          <img class="widget-body-img" src="@/assets/airdrop/box.svg" @click="onPressBox" />
+        </div>
       </div>
-    </div>
-    <div class="main"></div>
-    <Gift @press="onPressBox" />
-    <GiftSuccess :isvisible="isvisibleSuccess" :amount="giftSuccessAmount" @onClaim="onPressClaim" @onClose="onCloseSuccess" />
-    <GiftFail :isvisible="isvisibleFail" @onClose="onCloseFail" />
-    <GiftBackground />
-    <!-- <PageFooter /> -->
+    </NSpace>
+    <GiftLoading :is-visible="isVisibleLoading" />
+    <GiftSuccess :is-visible="isVisibleSuccess" :item="claimItem" @claim="onPressClaim" @close="onClaimClose" />
+    <GiftFail :is-visible="isVisibleFail" @close="onCloseFail" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, h, watch } from 'vue';
-import { useMessage } from 'naive-ui';
-import { RouterLink } from 'vue-router';
-import { ethers } from 'ethers';
+import { computed, ref } from 'vue';
+import { useMessage, NSpace } from 'naive-ui';
 import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Http } from '@/tools/http';
-import { Utils } from '@/tools/utils';
-import Gift from './gift.vue';
+import Header from '@/layout/app/header.vue';
+import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import GiftLoading from './gift-loading.vue';
 import GiftSuccess from './gift-success.vue';
 import GiftFail from './gift-fail.vue';
-import GiftBackground from './gift-background.vue';
 
 type Airdrop = {
   alias: string;
@@ -55,6 +49,21 @@ type Airdrop = {
   updatedAt: string;
 };
 
+const isMobile = useIsMobile();
+const isTablet = useIsTablet();
+const bannerStyle = computed(() => {
+  let fontSize = '40px';
+  let marginTop = '24px';
+  if (isMobile.value) {
+    fontSize = '24px';
+    marginTop = '0';
+  } else if (isTablet.value) {
+    fontSize = '32px';
+    marginTop = '0';
+  }
+  return { fontSize, marginTop };
+});
+
 const ADDRESS = '0x9eFbF50306fc75BF11683A1933b7E0b7f54E252E';
 const message = useMessage();
 const http = Http.getInstance();
@@ -62,45 +71,39 @@ const apiManager = ApiManager.getInstance();
 const merkleClaimApi = apiManager.create(MerkleClaimApi, { address: ADDRESS });
 const ethUserStore = useETHUserStore();
 
-const isvisibleSuccess = ref(false);
-const giftSuccessAmount = ref('');
-const isvisibleFail = ref(false);
-const list = ref<Airdrop[]>([]);
-// const pageNo = ref(1);
+const isVisibleLoading = ref(false);
+const isVisibleSuccess = ref(false);
+const isVisibleFail = ref(false);
 
-const init = async (ethPrincipal: string) => {
-  const resp = await http.get({
-    url: '/merkle/list',
-    data: { contract: ADDRESS, account: ethPrincipal },
-  });
-  list.value = resp.data || [];
-};
+const claimItem = ref<Airdrop>();
 
-const onPressBox = () => {
-  if (!ethPrincipal.value) {
-    onPressConnect();
+const onPressBox = async () => {
+  if (!ethUserStore.account0) {
+    ethUserStore.signIn();
     return;
   }
-  if (list.value.length !== 0) {
-    isvisibleSuccess.value = true;
-    const item = list.value[list.value.length - 1];
-    const amount = ethers.formatUnits(item.amount, 18);
-    giftSuccessAmount.value = String(Math.trunc(Number(amount) * 10000) / 10000);
+  isVisibleLoading.value = true;
+  const resp = await http.get({
+    url: '/merkle/list',
+    data: { contract: ADDRESS, account: ethUserStore.account0 },
+  });
+  isVisibleLoading.value = false;
+  const list = resp.data || [];
+  const item = list[list.length - 1];
+  if (item) {
+    claimItem.value = item;
+    isVisibleSuccess.value = true;
   } else {
-    isvisibleFail.value = true;
+    isVisibleFail.value = true;
   }
 };
 
-const onPressClaim = async () => {
-  const item = list.value[list.value.length - 1];
-
+const onPressClaim = async (item: Airdrop) => {
   const resp1 = await http.postJSON({
     url: '/merkle/preclaim',
     data: { contract: ADDRESS, id: item._id },
   });
-
   const { proofIndex, proof } = resp1.data;
-
   const resp = await merkleClaimApi.claim({
     index: proofIndex,
     account: item.account,
@@ -121,85 +124,37 @@ const onPressClaim = async () => {
     message.info('Claimed successfully');
   }
 
-  onCloseSuccess();
+  onClaimClose();
 };
 
 const onCloseFail = () => {
-  isvisibleFail.value = false;
+  isVisibleFail.value = false;
 };
 
-const onCloseSuccess = () => {
-  isvisibleSuccess.value = false;
-  giftSuccessAmount.value = '';
+const onClaimClose = () => {
+  isVisibleSuccess.value = false;
+  claimItem.value = undefined;
 };
-
-const onPressConnect = async () => {
-  ethUserStore.signIn();
-};
-
-const onPressUnConnect = () => {
-  ethUserStore.signOut();
-  list.value = [];
-  message.info('Disconnect successfully');
-};
-
-const ethPrincipal = computed(() => ethUserStore.account0);
-const ethPrincipalStr = computed(() => Utils.formatAddress(ethUserStore.account0, 6));
-
-watch(
-  () => ethUserStore.account0,
-  (ethPrincipal) => {
-    if (ethPrincipal) {
-      init(ethPrincipal);
-      onCloseFail();
-      onCloseSuccess();
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
 
 <style scoped>
-.header {
-  width: 100vw;
-  height: 7.5rem;
-  position: fixed;
-  top: 0rem;
-  right: 0rem;
-  left: 0rem;
-  background: rgba(217, 217, 217, 0.02) !important;
-  backdrop-filter: blur(0.4rem);
-  color: #fff;
-  z-index: 99;
-  overflow: hidden;
-}
-
-.header-container {
-  width: 80rem;
-  height: 100%;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-logo {
-  width: 14rem;
-}
 .page {
-  height: 100%;
-  position: relative;
+  min-height: 800px;
   background-color: #000121;
-  min-height: 100vh;
-  overflow-x: hidden;
 }
-.banner-background {
+
+.background {
+  position: fixed;
   width: 100%;
-  height: 98rem;
-  position: absolute;
+  height: 100vh;
+  min-height: 800px;
+  left: 0;
+  top: 0;
   object-fit: cover;
+}
+
+.body {
+  padding: 24px 0;
 }
 
 .banner {
@@ -207,35 +162,52 @@ watch(
   flex-direction: column;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 7.5rem 2rem;
-  height: 33.25rem;
   box-sizing: content-box;
-}
-.banner::after {
-  position: absolute;
-  top: 7.5rem;
-  left: 0;
-  content: '';
-  width: 100%;
-  height: 33.25rem;
-  background-image: linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 100px),
-    linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 100px);
-  background-size: 50px 50px;
-  opacity: 0.1;
+  padding: 32px;
+  border-radius: 32px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.8;
+  text-align: center;
+  font-family: monospace;
+  position: relative;
   z-index: 1;
 }
 
-.banner-title {
-  position: relative;
-  text-align: center;
-  font-size: 3rem;
-  font-weight: 500;
-  line-height: 4.25rem;
+.banner-text {
   background: linear-gradient(90deg, #fff 0.23%, #c9f8ff 104.57%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  z-index: 22;
+}
+
+.widget {
+  width: 300px;
+  height: 604px;
+  position: relative;
+}
+
+.widget-header {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+}
+
+.widget-body {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  width: 100%;
+  padding-top: calc(100% / 1.118);
+  cursor: pointer;
+}
+
+.widget-body-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .main {

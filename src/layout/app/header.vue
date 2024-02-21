@@ -139,7 +139,6 @@ function onWalletClose() {
 </script>
 <style scoped>
 .header {
-  --header-height: 84px;
   height: var(--header-height);
 }
 

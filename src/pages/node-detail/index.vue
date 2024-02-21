@@ -389,6 +389,7 @@ async function queryReward(nodeId: string) {
   const resp = await http.get({
     url: '/nodebill/summarynew',
     data: { nodeId: nodeId },
+    noAutoHint: true,
   });
   const data = resp.data || {};
   const totalReward = data.billTotal || 0;
@@ -431,7 +432,7 @@ const init = async (nodeId: string) => {
   ]);
   const bindStakeAccount = (_stakeInfo && _stakeInfo.bindStakeAccount) || '';
   const currentStaked = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
-  
+
   nodeInfo.value = {
     ..._nodeInfo,
     principal,
@@ -544,10 +545,11 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
 
   let claimResp: any = null;
   if (resp._result === 11) {
-    const historyAmount = ethers.formatUnits(data.amount || '0', 18);
+    const historyAmount = data.amount || '0';
+    const amount = BigInt(historyAmount);
     const dialogResp = await handleDialog({
       title: 'Tips',
-      content: `You have an unfinished claim amounting to ${historyAmount}EMC. This operation will prioritize completing this claim.`,
+      content: `You have an unfinished claim amounting to ${ethers.formatUnits(amount, 18)}EMC. This operation will prioritize completing this claim.`,
       confirmText: 'Continue',
       cancelText: 'Cancel',
       onConfirm: () => claimReward({ amount, account: owner, nodeId, nonce, signature: sign }),
