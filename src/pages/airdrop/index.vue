@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <img class="background" src="@/assets/airdrop/bg.jpg" />
+    <Bg />
     <Header />
     <NSpace class="body" vertical align="center" :wrap-item="false" :size="[0, 24]">
       <div class="banner" :style="bannerStyle">
@@ -33,6 +33,7 @@ import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Http } from '@/tools/http';
 import Header from '@/layout/app/header.vue';
 import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import Bg from './bg.vue';
 import GiftLoading from './gift-loading.vue';
 import GiftSuccess from './gift-success.vue';
 import GiftFail from './gift-fail.vue';
@@ -139,7 +140,7 @@ const onClaimClose = () => {
 
 <style scoped>
 .page {
-  min-height: 800px;
+  min-height: 100vh;
   background-color: #000121;
 }
 

@@ -28,37 +28,38 @@
         <template v-if="status === 0 || status === 1 || status === 2">
           <AlertUnstake :node-id="nodeInfo.nodeId" />
         </template>
-        <div class="leading-normal mb-[4px]">
+        <div class="leading-normal mb-[4px] whitespace-nowrap text-ellipsis overflow-hidden">
           <NText class="header-text text-[20px] mr-[8px]">Node</NText>
           <NText class="header-text text-[14px]">{{ nodeInfo.nodeId }}</NText>
         </div>
-        <NGrid x-gap="48" y-gap="48" :cols="24" item-responsive>
-          <NGridItem span="24 1000:12">
+
+        <NGrid x-gap="24" y-gap="16" cols="1 1000:2" item-responsive>
+          <NGridItem>
             <div class="main-table" style="border-left-color: #8f7df8">
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Running Time</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.runTime }}</NText>
-                </NSpace>
-              </NSpace>
-
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                </template>
+              </LabelWithValue>
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Startup Time</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.startupTime }}</NText>
-                </NSpace>
-              </NSpace>
-
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                </template>
+              </LabelWithValue>
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Owner</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" :wrap-item="false" :size="[8, 0]">
-                  <NText class="text-[12px] xl:text-[13px]"> {{ nodeInfo.principal || '--' }}</NText>
+                </template>
+                <template #value>
+                  <div class="flex-1 w-[0] whitespace-nowrap text-ellipsis overflow-hidden">
+                    <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal || '--' }}</NText>
+                  </div>
                   <template v-if="status === 0">
                     <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
                       <template #icon>
@@ -68,16 +69,16 @@
                       </template>
                     </NButton>
                   </template>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
 
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Reward</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-                  <NSpace class="flex-1" align="center" :wrap-item="false" :size="[4, 0]">
-                    <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentReward || 0n, 18) }} EMC </NText>
+                </template>
+                <template #value>
+                  <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
+                    <NText class="text-[14px] xl:text-[16px]">{{ toFixedClip(ethers.formatUnits(nodeInfo.currentReward || 0n, 18), 6) }} EMC </NText>
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
@@ -97,41 +98,31 @@
                       @click="onPressClaim"
                       :disabled="!nodeInfo.currentReward || nodeInfo.currentReward < minClaimReward"
                       style="background-color: var(--n-color); width: auto"
-                      >Claim rewards
+                      >Claim
                     </NButton>
                   </template>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
 
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Staked</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
-                  <NSpace class="flex-1" align="center" :wrap-item="false" :size="[4, 0]">
+                </template>
+                <template #value>
+                  <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
                     <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </NText>
                     <NTooltip trigger="hover">
                       <template #trigger>
                         <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
                       </template>
                       <div>
-                        <p>Min Stake: 10EMC</p>
-                        <p>Max Stake: 1000EMC</p>
+                        <p>Maximum limit: {{ ethers.formatUnits(nodeInfo.maxStakeAmount || 0n, 18) }}EMC</p>
                       </div>
                     </NTooltip>
                   </NSpace>
                   <template v-if="status === 0">
-                    <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-                      <NButton
-                        type="primary"
-                        strong
-                        size="small"
-                        round
-                        :loading="loadings.stake"
-                        @click="onPressStake"
-                        style="background-color: var(--n-color); width: auto"
-                        >Stake</NButton
-                      >
+                    <NSpace align="center" :wrap-item="false" :size="[8, 4]">
+                      <NButton type="primary" strong size="small" round :loading="loadings.stake" @click="onPressStake" style="width: 80px">Stake</NButton>
                       <NButton
                         type="primary"
                         strong
@@ -140,68 +131,69 @@
                         :loading="loadings.unstake"
                         :disabled="nodeInfo.currentStaked === 0n || !nodeInfo.currentStaked"
                         @click="onPressUnstake"
-                        style="background-color: var(--n-color); width: auto"
+                        style="width: 80px"
                         >Unstake</NButton
                       >
                     </NSpace>
                   </template>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
             </div>
           </NGridItem>
-          <NGridItem span="24 1000:12">
+          <NGridItem>
             <div class="main-table" style="border-left-color: #5554fe">
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">CPU</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.cpuName }}</NText>
-                </NSpace>
-              </NSpace>
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                </template>
+              </LabelWithValue>
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">GPU</NText>
-                </NSpace>
-                <!-- <NSpace class="flex-1 w-full" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]"> -->
-                <NScrollbar x-scrollable style="flex: 1" content-style="height:100%;">
-                  <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
-                    <template v-for="item in nodeInfo.gpus">
-                      <GpuItem :item="item" />
-                    </template>
-                  </NSpace>
-                </NScrollbar>
-                <!-- </NSpace> -->
-              </NSpace>
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
+                  <NScrollbar x-scrollable style="flex: 1; width: 0;" content-style="height:100%;">
+                    <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
+                      <template v-for="item in nodeInfo.gpus">
+                        <GpuItem :item="item" />
+                      </template>
+                    </NSpace>
+                  </NScrollbar>
+                </template>
+              </LabelWithValue>
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Mac Address</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.macAddr }}</NText>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
 
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">IP Address</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.ipAddr }}</NText>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
 
-              <NSpace class="main-table-item" align="center" :wrap-item="false" :size="[0, 0]">
-                <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+              <LabelWithValue>
+                <template #label>
                   <NText class="text-[14px] xl:text-[16px]" depth="3">Memory</NText>
-                </NSpace>
-                <NSpace class="flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+                </template>
+                <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.memoryInfo }}</NText>
-                </NSpace>
-              </NSpace>
+                </template>
+              </LabelWithValue>
             </div>
           </NGridItem>
         </NGrid>
+
         <NTabs default-value="apis">
           <NTabPane name="apis" tab="Api transactions">
             <template v-if="nodeInfo.nodeId">
@@ -223,6 +215,7 @@
             :stake-contract="stakeContract"
             :token-contract="tokenContract"
             :node-id="nodeInfo.nodeId"
+            :node-status="nodeInfo.status"
             @success="onStakeSuccess"
           />
           <ModalUnstake
@@ -271,9 +264,12 @@ import ModalTips from './tips/index.vue';
 
 import GpuItem from './gpu.vue';
 
-import { queryNodeOwner } from '@/apis';
+import { queryNodeOwner, queryReward } from '@/apis';
 
 import { useNodeService } from './use-node-service';
+import { toFixedClip } from '@/tools/format-number';
+
+import LabelWithValue from './label-with-value.vue';
 
 const route = useRoute();
 const message = useMessage();
@@ -302,7 +298,6 @@ const stakeContract = ref('');
 const tokenContract = ref('');
 
 const nodeInfo = ref<any>({});
-
 const isVisibleChangePrincipal = ref(false);
 const isVisibleStake = ref(false);
 const isVisibleUnstake = ref(false);
@@ -312,7 +307,7 @@ const tipsTitle = ref('');
 const tipsMessage = ref('');
 const minClaimReward = ref(BigInt(100 * 1e18));
 const nodeRewardTimerConfig = {
-  interval: 3000,
+  interval: 15000,
   stop: false,
 };
 const status = computed(() => {
@@ -382,22 +377,12 @@ async function queryInfo(_nodeId: string) {
   const memoryUsedPercent = Utils.toFixed(Number(memory.used_percent));
   const memoryInfo = memoryTotal ? `${memoryTotal}GB ${memoryUsedPercent}%` : '-';
   const application = node.appOrigin || '-';
-  return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application };
-}
+  const status = node.status;
 
-async function queryReward(nodeId: string) {
-  const resp = await http.get({
-    url: '/nodebill/summarynew',
-    data: { nodeId: nodeId },
-    noAutoHint: true,
-  });
-  const data = resp.data || {};
-  const totalReward = data.billTotal || 0;
-  const totalClaim = data.claimedTotal || 0;
-  return {
-    currentReward: BigInt(totalReward) - BigInt(totalClaim),
-    totalReward: totalReward,
-  };
+  const metadata = nodeService.getNodeMetadata(status);
+  const maxStakeAmount = metadata ? metadata.maxStakeAmount : 0n;
+
+  return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application, status, maxStakeAmount };
 }
 
 async function handleNodeRewardTimer() {

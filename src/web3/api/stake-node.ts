@@ -37,4 +37,7 @@ export class StakeNodeApi extends Api {
   tokenInPool() {
     return super.call({ method: 'tokenInPool' });
   }
+  minLimit() {
+    return super.call({ method: 'minLimit' });
+  }
 }

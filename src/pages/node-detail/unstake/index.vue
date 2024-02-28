@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard title="Unstake" style="max-width: 640px">
+    <NCard title="Node Unstake" style="max-width: 640px">
       <template #header-extra>
         <NButton strong secondary circle :disabled="loadings.submit" @click.stop.prevent="onPressClose">
           <template #icon>
@@ -21,9 +21,6 @@
       <template v-else>
         <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height: 160px">
           <NSpace vertical :wrap-item="false" :size="[0, 4]">
-            <NSpace :wrap-item="false" justify="space-between">
-              <NText depth="3" strong style="font-size: 16px">Unstake amount</NText>
-            </NSpace>
             <NInput
               v-model:value="inputTokenAmount"
               placeholder=" "
@@ -34,7 +31,7 @@
           </NSpace>
 
           <NSpace align="center" :wrap-item="false" :size="[8, 0]">
-            <NText depth="3" strong>Your stake balance:</NText>
+            <NText depth="3" strong>Node staked</NText>
             <template v-if="!loadings.info">
               <NSpace align="center" :wrap-item="false" :size="[4, 0]">
                 <img src="@/assets/token/emc.svg" style="width: 20px; height: 20px" />

@@ -1,5 +1,5 @@
 <template>
-  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="300" striped />
+  <NDataTable :columns="columns" :data="data" :loading="loading" size="small" :pagination="false" :max-height="560" striped />
 </template>
 
 <script lang="ts">
@@ -34,52 +34,45 @@ export default defineComponent({
       //     },
       // },
       {
-        title: 'Start Time',
+        title: 'Release Time',
         key: 'start',
         align: 'center',
+        minWidth: 120,
         render(row: Item) {
           return h(
             'span',
             {},
             {
-              default: () =>
-                moment(row.start * 1000)
+              default: () => {
+                // const begin = moment(row.start * 1000)
+                //   .utc()
+                //   .format('YYYY-MM-DD');
+                const end = moment(row.start * 1000)
+                  .add(row.cycles * cycleUnitMap[row.cycleUnit].days, 'days')
                   .utc()
-                  .format('YYYY-MM-DD'),
+                  .format('YYYY-MM-DD');
+                return `${end}`;
+              },
             }
           );
         },
       },
       {
-        title: 'Duration Unit',
-        key: 'cycleUnit',
-        align: 'center',
-        render(row: Item) {
-          return h('span', {}, { default: () => cycleUnitMap[row.cycleUnit].label });
-        },
-      },
-      {
-        title: 'Duration',
-        key: 'cycles',
-        align: 'center',
-        render(row: Item) {
-          return h('span', {}, { default: () => row.cycles });
-        },
-      },
-      {
-        title: 'Locked Amount',
+        title: 'Locked',
         key: 'amount',
         align: 'center',
+        minWidth: 72,
         render(row: Item) {
-          return h('span', {}, { default: () => ethers.formatUnits(row.amount, 18) });
+          return h('span', {}, { default: () => `${ethers.formatUnits(row.amount, 18)} EMC` });
         },
       },
       {
-        title: 'Claimed Amount',
+        title: 'Claimed',
         key: 'released',
         align: 'center',
+        minWidth: 72,
         render(row: Item) {
-          return h('span', {}, { default: () => ethers.formatUnits(row.released, 18) });
+          return h('span', {}, { default: () => `${ethers.formatUnits(row.released, 18)} EMC` });
         },
       },
     ]);

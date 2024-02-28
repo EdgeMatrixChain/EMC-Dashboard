@@ -94,7 +94,7 @@ export default defineComponent({
     return {
       Utils,
       account: computed(() => ethUserStore.account0),
-      emcBalance: computed(() => ethUserStore.balance.emc.short),
+      emcBalance: computed(() => ethUserStore.tokens.emc.short),
       onPressMask,
       onPressLogout,
       onPressClaimReward,

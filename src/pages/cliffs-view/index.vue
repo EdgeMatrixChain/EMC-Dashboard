@@ -12,93 +12,90 @@
       </NSpace>
     </template>
     <template v-else>
-      <NSpace vertical :wrap-item="false" align="center" :size="[16, 16]">
-        <NCard title="$EMC Locks" style="max-width: 880px">
-          <template #header>
-            <NSpace justify="space-between" :wrap-item="false" :size="[4, 4]">
-              <NText>$EMC Locks</NText>
-              <NButton text tag="a" type="primary" icon-placement="right" @click="onPressExplorer(cliffsContract)">
-                {{ cliffsContractFormatted }}
-                <template #icon>
-                  <NIcon size="18">
-                    <IconLink />
-                  </NIcon>
-                </template>
-              </NButton>
-            </NSpace>
-          </template>
-          <NInput
-            v-model:value="inputAccount"
-            size="large"
-            :round="true"
-            placeholder="Address"
-            style="width: 100%; max-width: 880px; border-radius: 99px !important"
-          >
-            <template #suffix>
-              <NButton type="primary" strong round @click="onPressSearch" style="background-color: var(--n-color)">
-                <NIcon size="24">
-                  <IconRefresh />
-                </NIcon>
-              </NButton>
-            </template>
-          </NInput>
-        </NCard>
-        <!-- <NInput v-model:value="inputAccount" size="large" :round="true" placeholder="Address"
-          style="width:100%;max-width:880px; border-radius: 99px !important;">
-          <template #suffix>
-            <NButton type="primary" strong round @click="onPressSearch" style="background-color:var(--n-color)">
-              <NIcon size="24">
-                <IconRefresh />
-              </NIcon>
-            </NButton>
-          </template>
-        </NInput> -->
+      <NSpace vertical :wrap-item="false" align="center" justify="center" :size="[16, 16]">
         <NSpin :show="currentLoading">
           <NCard title="Strategy Sale" style="max-width: 880px">
             <template #header>
-              <NSpace vertical justify="space-between" :wrap-item="false" :size="[4, 4]">
-                <NText>{{ currentAccount }}</NText>
-                <!-- <NText depth="3" style="font-size:14px;">{{ currentAccount }}</NText> -->
+              <NSpace justify="space-between" :wrap-item="false" :size="[4, 4]">
+                <NSpace vertical justify="space-between" :wrap-item="false" :size="[4, 4]">
+                  <NSpace :wrap-item="false" :size="[16, 4]">
+                    <NText>{{ title }}</NText>
+                    <NButton text tag="a" type="default" icon-placement="right" @click="onPressExplorer(cliffsContract)">
+                      {{ Utils.formatAddress(cliffsContract, 6) }}
+                      <template #icon>
+                        <NIcon size="18">
+                          <IconLink />
+                        </NIcon>
+                      </template>
+                    </NButton>
+                  </NSpace>
+                  <div class="w-[200px] whitespace-nowrap text-ellipsis overflow-hidden">
+                    <NText style="font-size: 14px">{{ currentAccount }}</NText>
+                  </div>
+                  <!-- <NText depth="3" style="font-size:14px;">{{ currentAccount }}</NText> -->
+                </NSpace>
+                <template v-if="isFilterMode">
+                  <NButton type="primary" strong circle @click="onPressClearFilter" style="background-color: var(--n-color)">
+                    <NIcon size="16">
+                      <IconClose />
+                    </NIcon>
+                  </NButton>
+                </template>
+                <template v-else>
+                  <NButton type="primary" strong circle @click="onPressOpenFilter" style="background-color: var(--n-color)">
+                    <NIcon size="16">
+                      <IconRefresh />
+                    </NIcon>
+                  </NButton>
+                </template>
               </NSpace>
             </template>
             <NSpace vertical justify="center" :wrap-item="false" :size="[16, 16]">
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
                 <NText depth="2" style="font-size: 14px">Total locked</NText>
-                <NText class="text-[18px]" strong>{{ totalLockedAmountStr }} EMC</NText>
+                <NText class="text-[18px]" strong>{{ ethers.formatUnits(totalLockedAmount, 18) }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
                 <NText depth="2" style="font-size: 14px">Current locked</NText>
-                <NText class="text-[18px]" strong>{{ currentStakeAmountStr }} EMC</NText>
+                <NText class="text-[18px]" strong>{{ ethers.formatUnits(currentStakeAmount, 18) }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
                 <NText depth="2" style="font-size: 14px">Eligible for claiming</NText>
-                <NText class="text-[18px]" strong>{{ currentClaimAmountStr }} EMC</NText>
+                <NText class="text-[18px]" strong>{{ ethers.formatUnits(currentClaimAmount, 18) }} EMC</NText>
               </NSpace>
-              <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="2" style="font-size: 14px">Vesting schedules</NText>
-                <Table :data="currentSchedule" />
-              </NSpace>
-              <NButton
-                type="primary"
-                strong
-                size="large"
-                :loading="claimLoading"
-                :disabled="!currentCanWithdraw"
-                round
-                @click="onPressClaim"
-                style="background-color: var(--n-color); width: 100%"
-                >Claim Now</NButton
-              >
+              <NButton type="primary" strong size="large" :loading="claimLoading" :disabled="!currentCanWithdraw" round @click="onPressClaim">
+                Claim Now
+              </NButton>
             </NSpace>
+          </NCard>
+          <NCard class="mt-[24px]" title="Vesting schedules" style="max-width: 880px">
+            <Table :data="currentSchedule" />
           </NCard>
         </NSpin>
       </NSpace>
+      <NModal :show="isVisibleFilter" :block-scroll="true" :close-on-esc="false" :mask-closable="false" transform-origin="center">
+        <NCard title="$EMC Locks" style="max-width: 480px">
+          <template #header>
+            <NSpace justify="space-between" :wrap-item="false" :size="[4, 4]">
+              <NText>Filter</NText>
+            </NSpace>
+          </template>
+          <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
+            <NText depth="2" style="font-size: 14px">Holder Address</NText>
+            <NInput v-model:value="filterAccount" size="large" style="width: 100%; max-width: 880px"> </NInput>
+          </NSpace>
+          <NSpace class="mt-[16px]" align="center" justify="end" :wrap-item="false" :size="[16, 0]">
+            <NButton type="default" round @click="onPressFilterCancel">Cancel</NButton>
+            <NButton type="primary" round @click="onPressFilterSubmit">Submit</NButton>
+          </NSpace>
+        </NCard>
+      </NModal>
     </template>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue';
+<script lang="ts" setup>
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { NSpace, NCard, NText, NInput, NButton, NIcon, NSpin, NModal, useMessage } from 'naive-ui';
 import { SearchSharp as IconRefresh, Close as IconClose, LinkOutline as IconLink } from '@vicons/ionicons5';
 import { useRoute, useRouter } from 'vue-router';
@@ -106,151 +103,151 @@ import { ethers } from 'ethers';
 import { ApiManager } from '@/web3/api';
 import { useETHUserStore } from '@/stores/eth-user';
 import { LockApi } from '@/web3/api/lock';
+import { getDefaultNetwork } from '@/web3/network';
 import Table from './table.vue';
 import type { Item } from './table.vue';
 import { Utils } from '@/tools/utils';
-export default defineComponent({
-  name: 'cliffs-view',
-  components: {
-    NSpace,
-    NCard,
-    NText,
-    NInput,
-    NButton,
-    NIcon,
-    NSpin,
-    NModal,
-    IconRefresh,
-    IconClose,
-    IconLink,
-    Table,
-  },
-  setup() {
-    const message = useMessage();
-    const route = useRoute();
-    const ethUserStore = useETHUserStore();
-    const error = ref(-1);
-    const errorText = ref('');
-    const cliffsContract = ref('');
-    const inputAccount = ref('');
-    const currentLoading = ref(false);
-    const currentAccount = ref('');
-    const totalLockedAmount = ref(0n);
-    const currentStakeAmount = ref(0n);
-    const currentClaimAmount = ref(0n);
-    const currentSchedule = ref<Item[]>([]);
-    const claimLoading = ref(false);
-    const apiManager = ApiManager.getInstance();
-    let lockApi: LockApi | null = null;
 
-    onMounted(async () => {
-      cliffsContract.value = (route.query.contract as string) || '';
-      inputAccount.value = (route.query.address as string) || '';
-      lockApi = apiManager.create(LockApi, { address: cliffsContract.value });
-      error.value = -1;
-      if (inputAccount.value) {
-        await init(inputAccount.value);
-      }
-      error.value = 0;
-    });
+const message = useMessage();
+const route = useRoute();
+const ethUserStore = useETHUserStore();
+const error = ref(-1);
+const errorText = ref('');
+const cliffsContract = ref('');
 
-    const init = async (account: string) => {
-      currentLoading.value = true;
-      const [{ data: _amountInfo }, { data: _currentStaked }, { data: _currentClaim }, { data: _currentSchedule }] = await Promise.all([
-        lockApi!.getAmount({ account }),
-        lockApi!.getLockedAmount({ account }),
-        lockApi!.getReleasableAmount({ account }),
-        lockApi!.getVestingSchedule({ account }),
-      ]);
-      const [_totalLockedAmount, _totalClaimedAmount] = _amountInfo || [];
-      totalLockedAmount.value = _totalLockedAmount || 0n;
-      currentStakeAmount.value = _currentStaked || 0n;
-      currentClaimAmount.value = _currentClaim || 0n;
-      currentSchedule.value = (_currentSchedule || []).map((row: any[]) => {
-        const start = Number((row[1] as bigint) || 0n);
-        const cycles = Number((row[2] as bigint) || 0n);
-        const amount = (row[4] as bigint) || 0n;
-        const released = (row[5] as bigint) || 0n;
-        return {
-          account: row[0],
-          start: start,
-          cycleUnit: row[3],
-          cycles: cycles,
-          amount: amount,
-          released: released,
-        };
-      });
-      currentAccount.value = account;
-      currentLoading.value = false;
-    };
-
-    watch(
-      () => ethUserStore.isInvalidConnect,
-      (invalid) => {
-        if (invalid) return;
-        if (!currentAccount.value) {
-          nextTick(() => {
-            init(ethUserStore.account0);
-            inputAccount.value = ethUserStore.account0;
-          });
-        }
-      }
-    );
-
-    return {
-      error,
-      errorText,
-      isSign: computed(() => !ethUserStore.isInvalidConnect),
-      chainId: computed(() => ethUserStore.chainId),
-      cliffsContract,
-      inputAccount,
-      currentLoading,
-      currentAccount,
-      cliffsContractFormatted: computed(() => Utils.formatAddress(cliffsContract.value, 6)),
-      totalLockedAmountStr: computed(() => ethers.formatUnits(totalLockedAmount.value, 18)),
-      currentStakeAmountStr: computed(() => ethers.formatUnits(currentStakeAmount.value, 18)),
-      currentClaimAmountStr: computed(() => ethers.formatUnits(currentClaimAmount.value, 18)),
-      currentCanWithdraw: computed(() => currentClaimAmount.value > 0n),
-      currentSchedule,
-      claimLoading,
-      onPressTry() {
-        location.reload();
-      },
-      onPressExplorer(contract: string) {
-        window.open(`https://arbiscan.io/address/${contract}`);
-      },
-      onPressSearch() {
-        if (!ethers.isAddress(inputAccount.value)) {
-          message.error('Invalid address');
-          return;
-        }
-        init(inputAccount.value);
-      },
-      async onPressClaim() {
-        if (!currentAccount.value) {
-          message.warning('Address is none');
-          return;
-        }
-        claimLoading.value = true;
-        const resp = await lockApi!.release({ account: currentAccount.value });
-        if (resp._result !== 0) {
-          claimLoading.value = false;
-          message.warning(resp._desc || 'Claim failed');
-          return;
-        }
-        await resp.data.wait();
-        claimLoading.value = false;
-        init(currentAccount.value);
-      },
-    };
-  },
+const currentLoading = ref(false);
+const currentAccount = ref('');
+const totalLockedAmount = ref(0n);
+const currentStakeAmount = ref(0n);
+const currentClaimAmount = ref(0n);
+const currentSchedule = ref<Item[]>([]);
+const claimLoading = ref(false);
+const apiManager = ApiManager.getInstance();
+const networkConfig = getDefaultNetwork();
+const nodeUnstakeClaimContract = networkConfig.smarts.nodeUnstakeClaim.contract;
+const isVisibleFilter = ref(false);
+const isFilterMode = ref(false);
+const filterAccount = ref('');
+const title = computed(() => {
+  return cliffsContract.value === nodeUnstakeClaimContract ? 'Staking Status' : '$EMC Locks';
 });
+const currentCanWithdraw = computed(() => currentClaimAmount.value > 0n);
+let lockApi: LockApi | null = null;
+
+onMounted(async () => {
+  cliffsContract.value = (route.query.contract as string) || nodeUnstakeClaimContract;
+  lockApi = apiManager.create(LockApi, { address: cliffsContract.value });
+  init();
+});
+
+async function init() {
+  const account = (route.query.address as string) || ethUserStore.account0 || '';
+  error.value = -1;
+
+  isVisibleFilter.value = false;
+  isFilterMode.value = false;
+  filterAccount.value = '';
+
+  totalLockedAmount.value = 0n;
+  currentStakeAmount.value = 0n;
+  currentClaimAmount.value = 0n;
+  currentSchedule.value = [];
+  currentAccount.value = '';
+  currentLoading.value = false;
+
+  if (account) {
+    await initHolderInfo(account);
+  }
+
+  error.value = 0;
+}
+
+const initHolderInfo = async (account: string) => {
+  currentLoading.value = true;
+  const [{ data: _amountInfo }, { data: _currentStaked }, { data: _currentClaim }, { data: _currentSchedule }] = await Promise.all([
+    lockApi!.getAmount({ account }),
+    lockApi!.getLockedAmount({ account }),
+    lockApi!.getReleasableAmount({ account }),
+    lockApi!.getVestingSchedule({ account }),
+  ]);
+  const [_totalLockedAmount, _totalClaimedAmount] = _amountInfo || [];
+  totalLockedAmount.value = _totalLockedAmount || 0n;
+  currentStakeAmount.value = _currentStaked || 0n;
+  currentClaimAmount.value = _currentClaim || 0n;
+  currentSchedule.value = (_currentSchedule || []).map((row: any[]) => {
+    const start = Number((row[1] as bigint) || 0n);
+    const cycles = Number((row[2] as bigint) || 0n);
+    const amount = (row[4] as bigint) || 0n;
+    const released = (row[5] as bigint) || 0n;
+    return {
+      account: row[0],
+      start: start,
+      cycleUnit: row[3],
+      cycles: cycles,
+      amount: amount,
+      released: released,
+    };
+  });
+  currentAccount.value = account;
+  currentLoading.value = false;
+};
+
+watch<[string, boolean]>(
+  () => [ethUserStore.account0, ethUserStore.isInvalidNetwork],
+  ([account, isInvalidNetwork]) => {
+    if (account || !isInvalidNetwork) {
+      nextTick(() => init());
+    }
+  }
+);
+
+function onPressTry() {
+  location.reload();
+}
+
+function onPressExplorer(contract: string) {
+  window.open(`https://arbiscan.io/address/${contract}`);
+}
+
+function onPressOpenFilter() {
+  filterAccount.value = '';
+  isVisibleFilter.value = true;
+}
+
+function onPressClearFilter() {
+  init();
+}
+
+function onPressFilterCancel() {
+  isVisibleFilter.value = false;
+}
+
+function onPressFilterSubmit() {
+  if (!ethers.isAddress(filterAccount.value)) {
+    message.error('Invalid address');
+    return;
+  }
+  initHolderInfo(filterAccount.value);
+  isFilterMode.value = true;
+  isVisibleFilter.value = false;
+}
+
+async function onPressClaim() {
+  if (!currentAccount.value) {
+    message.warning('Address is none');
+    return;
+  }
+  claimLoading.value = true;
+  const resp = await lockApi!.release({ account: currentAccount.value });
+  if (resp._result !== 0) {
+    claimLoading.value = false;
+    message.warning(resp._desc || 'Claim failed');
+    return;
+  }
+  await resp.data.wait();
+  claimLoading.value = false;
+  initHolderInfo(currentAccount.value);
+}
 </script>
 
-<style scoped>
-.input-group {
-  padding: 2px;
-  border: solid 1px #e7e7e7;
-  border-radius: 99px;
-}
-</style>
+<style scoped></style>

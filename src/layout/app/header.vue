@@ -42,8 +42,8 @@
         <div class="header-user" @click="onPressUser">
           <span class="header-user-text">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
           <div class="text-[12px]">
-            <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right: 4px">{{ ethUserStore.balance.emc.short }}</span>
-            <span class="mr-[4px]">{{ ethUserStore.balance.emc.symbolName }}</span>
+            <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right: 4px">{{ ethUserStore.tokens.emc.short }}</span>
+            <span class="mr-[4px]">{{ ethUserStore.tokens.emc.symbolName }}</span>
           </div>
         </div>
         <NDrawer
@@ -217,7 +217,7 @@ function onWalletClose() {
 
 @media screen and (max-width: 1280px) {
   .header-cell {
-    padding: 0 12px;
+    padding: 0 16px;
   }
 
   .header-icon {
@@ -225,6 +225,7 @@ function onWalletClose() {
     height: 36px;
     /* content: url('@/assets/logo.light.png'); */
     content: url('@/assets/icon_coin_emc.png');
+    margin-left: 16px;
   }
 }
 </style>

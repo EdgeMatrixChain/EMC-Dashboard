@@ -9,17 +9,11 @@
   <body>
     <main id="app"></main>
     <script type="module" src="/src/main.ts"></script>
-    <script>
-      window.global = window;
-    </script>
     <script type="module">
-      import process from 'process';
       import { Buffer } from 'buffer';
-      import EventEmitter from 'events';
-
-      window.Buffer = Buffer;
-      window.process = process;
-      window.EventEmitter = EventEmitter;
+      if (!window.Buffer) {
+        window.Buffer = Buffer;
+      }
     </script>
   </body>
 </html>

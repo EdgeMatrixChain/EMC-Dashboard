@@ -1,7 +1,7 @@
 <template>
   <NSpin :show="show">
     <NLayout content-style="padding-top: 84px;">
-      <NLayoutHeader class="n-header bg-[#ffffff20] xl:bg-[#18181c]">
+      <NLayoutHeader class="n-header bg-[#18181c] xl:bg-[#18181c]">
         <Header @isLoading="isLoading" />
       </NLayoutHeader>
       <!-- class="xl:w-[1440px]" -->

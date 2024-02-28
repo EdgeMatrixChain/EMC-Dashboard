@@ -34,18 +34,23 @@
         </NSpace>
       </NSpace>
       <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressDex"
-        >EMC DEX
+        >Trade on DEXs
         <template #icon>
           <NIcon><img src="@/assets/icon_link.svg" /></NIcon>
         </template>
       </NButton>
-      <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressLocks">View Locks </NButton>
+      <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressLocks">Staking Status</NButton>
     </NSpace>
     <NSpace class="px-[16px] mt-[8px]" vertical align="center" justify="center" :size="[0, 8]" :wrap-item="false" :wrap="false">
       <NTabs type="bar" animated>
         <NTabPane name="tokens" tab="Tokens">
           <template v-if="!loadings.priceUsd">
             <Tokens :price-usd="priceUsd" />
+          </template>
+        </NTabPane>
+        <NTabPane name="nodes" tab="Nodes">
+          <template v-if="!loadings.priceUsd">
+            <Nodes @press-item="onPressNode" />
           </template>
         </NTabPane>
         <!-- <NTabPane name="nodes" tab="Nodes"> Hey Jude </NTabPane> -->
@@ -55,19 +60,18 @@
   </NSpace>
 </template>
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { NSpace, useMessage, NSkeleton, NButton, NIcon, NTabs, NTabPane } from 'naive-ui';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import copy from 'copy-to-clipboard';
 import { Utils } from '@/tools/utils';
 import { useETHUserStore } from '@/stores/eth-user';
-import ETHWallet from './eth-wallet.vue';
-import { MenuSharp as IconMenu } from '@vicons/ionicons5';
-import { useIsMobile, useIsTablet } from '@/composables/use-screen';
 import { getDefaultNetwork } from '@/web3/network';
 import { getDexData } from '@/apis';
-import Tokens from './tokens.vue';
+
 import { toFixedClip } from '@/tools/format-number';
+import Tokens from './tokens.vue';
+import Nodes from './nodes/index.vue';
 
 //[disconnect] emit parent to close self
 const emtis = defineEmits(['close', 'disconnect']);
@@ -89,8 +93,7 @@ function onPressDex() {
 }
 
 function onPressLocks() {
-  const contract = networkConfig.smarts.nodeUnstakeClaim.contract;
-  router.push({ name: 'cliffs-view', query: { contract: contract, address: ethUserStore.account0 } });
+  router.push({ name: 'cliffs-view' });
   emtis('close');
 }
 
@@ -98,6 +101,9 @@ async function onPressDisconnect() {
   emtis('disconnect');
 }
 
+function onPressNode(nodeId: string) {
+  emtis('close');
+}
 async function init() {
   loadings.value.priceUsd = true;
   const { priceUsd: _priceUsd } = await getDexData();

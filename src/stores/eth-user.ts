@@ -7,20 +7,27 @@ import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { Web3Utils } from '@/web3/utils';
 import { ethers } from 'ethers';
+import IconEMC from '@/assets/token/emc.white.png';
+import IconUSDT from '@/assets/token/usdt.svg';
 
-type Balance = { [k: string]: { formatted: string; short: string; value: bigint; symbolName: string } };
-const BALANCE_NONE = '';
+export type Token = { address: string; formatted: string; short: string; value: bigint; symbolName: string; decimal: number; icon: string; name: string };
 
-function formatBalance(value: bigint, unit: number, symbolName: string) {
+type Tokens = {
+  [k: string]: Token;
+};
+
+const BALANCE_NONE = '0.0';
+
+function formatBalance(value: bigint, unit: number) {
   value = value || 0n;
   const formatted = ethers.formatUnits(value, unit);
   return {
     formatted: formatted,
     short: Web3Utils.shortAmount(formatted),
     value: value,
-    symbolName,
   };
 }
+
 export const useETHUserStore = defineStore('ethuser', () => {
   const networkConfig = getDefaultNetwork();
   const CHAIN_ID = networkConfig.chainId;
@@ -32,10 +39,27 @@ export const useETHUserStore = defineStore('ethuser', () => {
   const { walletProvider } = useWeb3ModalProvider();
   const { disconnect } = useDisconnect();
 
-  const balance = ref<Balance>({
-    emc: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n, symbolName: networkConfig.tokens.emc.symbolName },
-    usdt: { formatted: BALANCE_NONE, short: BALANCE_NONE, value: 0n, symbolName: networkConfig.tokens.usdt.symbolName },
-  });
+  //init balance metadata, exclude value.
+  const initTokens = () => {
+    const result: Tokens = {};
+    const tokenIcons: any = { emc: IconEMC, usdt: IconUSDT };
+    Object.entries(networkConfig.tokens).map(([k, tokenConfig]) => {
+      const tokenIcon = tokenIcons[k];
+      result[k] = {
+        name: tokenConfig.name,
+        address: tokenConfig.contract,
+        decimal: tokenConfig.decimal,
+        symbolName: tokenConfig.symbolName,
+        icon: tokenIcon,
+        formatted: BALANCE_NONE,
+        short: BALANCE_NONE,
+        value: 0n,
+      };
+    });
+    return result;
+  };
+
+  const tokens = ref<Tokens>(initTokens());
 
   watch(
     () => isConnected.value,
@@ -95,7 +119,7 @@ export const useETHUserStore = defineStore('ethuser', () => {
   };
 
   const signOut = async () => {
-    Object.entries(balance.value).forEach(([k, v]) => {
+    Object.entries(tokens.value).forEach(([k, v]) => {
       v.formatted = BALANCE_NONE;
       v.short = BALANCE_NONE;
       v.value = 0n;
@@ -105,33 +129,39 @@ export const useETHUserStore = defineStore('ethuser', () => {
     return { _result: 0 };
   };
 
-  const updateBalance = async (account: string) => {
-    //emc contract
-    const emcTokenConfig = networkConfig.tokens.emc;
-    const emcContract = emcTokenConfig.contract;
-    const emcApi: null | ERC20Api = apiManager.create(ERC20Api, { address: emcContract });
-    const { data: _emcBalance } = await emcApi.balanceOf({ account });
-    const emc = _emcBalance || 0n;
-
-    const usdtTokenConfig = networkConfig.tokens.usdt;
-    const usdtContract = usdtTokenConfig.contract;
-    const usdtApi: null | ERC20Api = apiManager.create(ERC20Api, { address: usdtContract });
-    const { data: _usdtBalance } = await usdtApi.balanceOf({ account });
-    const usdt = _usdtBalance || 0n;
-
-    balance.value = {
-      emc: formatBalance(emc, emcTokenConfig.decimal, emcTokenConfig.symbolName),
-      usdt: formatBalance(usdt, usdtTokenConfig.decimal, usdtTokenConfig.symbolName),
-    };
-    return balance.value;
+  const queryBalance = async (target: string, address: string) => {
+    const api: null | ERC20Api = apiManager.create(ERC20Api, { address });
+    const [{ data: _balance }, { data: _decimal }] = await Promise.all([api.balanceOf({ account: target }), api.decimals()]);
+    const balance = _balance || 0n;
+    const decimal = Number(_decimal) || 0;
+    return formatBalance(balance, decimal);
   };
+
+  const updateBalance = async (account: string) => {
+    const _tokens = { ...tokens.value };
+    const promises = Object.entries(tokens.value).map(async ([key, tokenConfig]) => {
+      const data = await queryBalance(account, tokenConfig.address);
+      return { key, data };
+    });
+    const balances = await Promise.all(promises);
+
+    const result: any = {};
+    balances.forEach((item) => {
+      const key = item.key;
+      const token = _tokens[key];
+      result[key] = Object.assign({}, token, item.data);
+    });
+    tokens.value = result;
+    return tokens.value;
+  };
+
   return {
     isConnected,
     isInvalidNetwork: computed(() => chainId.value !== CHAIN_ID),
     isInvalidConnect: computed(() => !address.value || chainId.value !== CHAIN_ID),
     account0: computed(() => address.value || ''),
     chainId,
-    balance,
+    tokens,
     signIn,
     signOut,
     updateBalance,

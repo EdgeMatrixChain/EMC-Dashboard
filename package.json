@@ -11,6 +11,7 @@
     "generate": "dfx generate",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
+    "deploy": "npm run deploy:ic",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
     "deploy:server": "npm run build && bash ./deploy/deploy.sh"
@@ -18,7 +19,7 @@
   "dependencies": {
     "@connect2ic/core": "0.2.0-beta.23",
     "@connect2ic/vue": "0.2.0-beta.23",
-    "@dfinity/agent": "^0.15.4", 
+    "@dfinity/agent": "^0.15.4",
     "@dfinity/auth-client": "^0.15.4",
     "@dfinity/candid": "^0.15.4",
     "@dfinity/principal": "^0.15.4",
@@ -41,20 +42,15 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",
-    "assert": "2.0.0",
     "autoprefixer": "^10.4.16",
-    "buffer": "6.0.3",
-    "crypto-browserify": "^3.12.0",
     "dotenv": "^16.0.3",
-    "events": "3.3.0",
     "postcss": "^8.4.31",
     "process": "0.11.10",
-    "stream-browserify": "3.0.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
-    "util": "0.12.4",
     "vite": "^4.3.9",
     "vite-plugin-mock": "^3.0.0",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "vue-tsc": "^1.4.2"
   },
   "engines": {

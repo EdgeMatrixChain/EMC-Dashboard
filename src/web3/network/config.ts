@@ -12,8 +12,8 @@ export default [
     symbolName: 'ETH',
     blockExplorerUrls: ['https://explorer.arbitrum.io'],
     tokens: {
-      emc: { contract: '0xDFB8BE6F8c87f74295A87de951974362CedCFA30', symbolName: 'EMC', decimal: 18 },
-      usdt: { contract: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', symbolName: 'USDT', decimal: 6 },
+      emc: { contract: '0xDFB8BE6F8c87f74295A87de951974362CedCFA30', symbolName: 'EMC', decimal: 18, name: 'EdgeMatrix Computing Network' },
+      usdt: { contract: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', symbolName: 'USDT', decimal: 6, name: 'Tether USD' },
     },
     smarts: {
       rewardStake: { contract: '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00' },

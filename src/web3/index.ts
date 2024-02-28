@@ -67,8 +67,8 @@ export class Web3Service {
     return { _result: 0, accounts };
   }
 
-  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string; tokenId?: string }) {
-    const { type, address, symbol, decimals, image, tokenId } = config;
+  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string;}) {
+    const { type, address, symbol, decimals, image } = config;
     if (!this.provider) {
       return { _result: 2, _desc: 'Please connect wallet first' };
     }

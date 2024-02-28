@@ -102,3 +102,18 @@ export async function queryNodeOwner(nodeId: string) {
     principal: signInfo.principal || '',
   };
 }
+
+export async function queryReward(nodeId: string) {
+  const resp = await http.get({
+    url: '/nodebill/summarynew',
+    data: { nodeId: nodeId },
+    noAutoHint: true,
+  });
+  const data = resp.data || {};
+  const totalReward = data.billTotal || 0;
+  const totalClaim = data.claimedTotal || 0;
+  return {
+    currentReward: BigInt(totalReward) - BigInt(totalClaim),
+    totalReward: totalReward,
+  };
+}
