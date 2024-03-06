@@ -1,6 +1,8 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
+  /* font-weight support value 300 400 500 700 */
+  /* font link https://fonts.googleapis.com/css?family=Roboto:300,400,500,700 */
   font-weight: 400;
 
   color-scheme: light dark;
@@ -88,7 +90,7 @@ a {
   transition: 0.3s;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'JJRoboto';
   src: url('@/assets/fonts/Roboto-Regular.ttf') format('truetype');
-}
+} */

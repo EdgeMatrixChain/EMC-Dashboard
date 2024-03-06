@@ -1,7 +1,7 @@
 export default {
   common: {
     // primaryColor: '#9A37FA',
-    fontFamily: 'JJRoboto, Helvetica, Tahoma, Arial',
+    fontFamily: 'Roboto, Helvetica, Tahoma, Arial',
   },
   Button: {
     textColorPrimary: '#FFFFFF',

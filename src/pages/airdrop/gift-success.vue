@@ -152,7 +152,7 @@ const handleClose = () => {
   text-align: center;
   color: #ffffff;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 56px;
 }
 

@@ -205,7 +205,7 @@ function onWalletClose() {
 
 .header-user-text {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 @media (prefers-color-scheme: light) {

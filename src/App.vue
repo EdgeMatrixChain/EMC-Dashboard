@@ -26,11 +26,12 @@ export default defineComponent({
 
     console.info(`cache routes: ${cacheRoutes.value.join(', ')}`);
 
-    WalletConnect.init();
+    
 
     onMounted(() => {
       window.$message = message;
       window.$loadingBar = loadingBar;
+      WalletConnect.init();
       ready.value = true;
     });
 
