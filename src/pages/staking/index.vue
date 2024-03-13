@@ -517,14 +517,15 @@ async function onDecompression() {
     return;
   }
   if (!userInfo.value.releasable) {
-    message.error(`There is no EMC to decompress`);
+    message.error(`Insufficient balance for withdraw`);
     return;
   }
   decompressionLoading.value = true;
   const resp = await stakeApi!.release({ address: useETHUser.account0 });
   if (resp._result !== 0) {
+    console.info(resp);
     decompressionLoading.value = false;
-    message.error(`Decompression Error`);
+    message.error(`Withdraw failed`);
     return;
   }
   await resp.data.wait();
