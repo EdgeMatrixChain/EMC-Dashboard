@@ -26,9 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, defineComponent } from 'vue';
+import { ref, onMounted } from 'vue';
 import { NLayout, NLayoutHeader, NLayoutContent, NSpin } from 'naive-ui';
-import Header from '@/layout/app/header.vue';
+import Header from '@/layout/app/header/index.vue';
 import { router } from '@/routes/index';
 const ready = ref(false);
 const cacheRoutes = ref<string[]>([]);

@@ -276,7 +276,7 @@ import { NPopover, NInputNumber, NDatePicker, NSpin, NModal, NCard, useMessage }
 import Star from './components/star.vue';
 import Ask from './components/ask.vue';
 // import Header from './components/header.vue';
-import Header from '@/layout/app/header.vue';
+import Header from '@/layout/app/header/index.vue';
 import EnterAddress from './components/enter-address.vue';
 
 import Banner from './components/banner.vue';

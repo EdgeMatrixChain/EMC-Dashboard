@@ -17,6 +17,9 @@
 
   --header-height: 84px;
 }
+/* ::-webkit-scrollbar {
+  display: none;
+} */
 
 html {
   font-size: 16px;

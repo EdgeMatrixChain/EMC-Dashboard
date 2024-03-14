@@ -52,12 +52,4 @@ export default defineComponent({
   justify-content: center;
 }
 
-.n-header {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 84px;
-  z-index: 99;
-}
 </style>

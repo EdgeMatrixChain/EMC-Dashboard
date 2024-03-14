@@ -31,7 +31,7 @@ import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Http } from '@/tools/http';
-import Header from '@/layout/app/header.vue';
+import Header from '@/layout/app/header/index.vue';
 import { useIsMobile, useIsTablet } from '@/composables/use-screen';
 import Bg from './bg.vue';
 import GiftLoading from './gift-loading.vue';

@@ -105,4 +105,7 @@ export default {
   DataTable: {
     loadingColor: '#821BE6FF',
   },
+  Dropdown: {
+    color: '#18181c',
+  },
 };

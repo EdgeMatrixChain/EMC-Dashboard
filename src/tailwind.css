@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer utilities {
+  .bg-color1 {
+    background-color: #18181c;
+  }
+  .bg-color2 {
+    background-color: #212121;
+  }
+
   .shadow-all {
     box-shadow: 0px 3px 5px 1px rgba(153, 153, 153, 0.35);
   }

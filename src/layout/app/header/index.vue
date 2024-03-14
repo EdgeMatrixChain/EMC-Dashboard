@@ -1,10 +1,10 @@
 <template>
   <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
-    <NSpace class="header-cell" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
-      <RouterLink :to="{ path: '/' }">
-        <img class="header-icon" />
-      </RouterLink>
-      <template v-if="!isTablet && !isMobile">
+    <template v-if="!isTablet && !isMobile">
+      <NSpace class="header-cell" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
+        <RouterLink :to="{ path: '/' }">
+          <img class="header-icon" />
+        </RouterLink>
         <NSpace class="header-tabs" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
           <template v-for="item in tabs">
             <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
@@ -14,19 +14,16 @@
             </RouterLink>
           </template>
         </NSpace>
-      </template>
-      <template v-else>
-        <NDropdown :options="tabs" size="large" @select="onDropdownMenuSelect" trigger="click">
-          <NButton type="default" circle strong quaternary size="large">
-            <template #icon>
-              <NIcon size="28">
-                <IconMenu />
-              </NIcon>
-            </template>
-          </NButton>
-        </NDropdown>
-      </template>
-    </NSpace>
+      </NSpace>
+    </template>
+    <template v-else>
+      <NSpace class="header-cell" align="center" :size="[8, 0]" :wrap-item="false" :wrap="false">
+        <RouterLink class="p-[16px]" :to="{ path: '/' }">
+          <img class="header-icon-small" />
+        </RouterLink>
+        <PopupMenu :configs="tabConfigs" />
+      </NSpace>
+    </template>
     <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
       <template v-if="!ethUserStore.isConnected">
         <div class="header-user" @click="onPressConnect">
@@ -62,13 +59,13 @@
 </template>
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue';
-import { NSpace, NDropdown, NButton, NIcon, NDrawer, NDrawerContent } from 'naive-ui';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { NSpace, NDrawer, NDrawerContent } from 'naive-ui';
+import { useRoute, RouterLink } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useETHUserStore } from '@/stores/eth-user';
-import Wallet from './wallet/index.vue';
-import { MenuSharp as IconMenu } from '@vicons/ionicons5';
 import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import PopupMenu from './popup-menu.vue';
+import Wallet from './wallet/index.vue';
 type tabkey = number;
 
 type TabItem = {
@@ -89,7 +86,6 @@ const initTabKey = -1;
 const emits = defineEmits(['isLoading']);
 
 const ethUserStore = useETHUserStore();
-const router = useRouter();
 const route = useRoute();
 const isMobile = useIsMobile();
 const isTablet = useIsTablet();
@@ -107,14 +103,6 @@ watch(
   },
   { immediate: true }
 );
-
-function onDropdownMenuSelect(path: string) {
-  if (path.startsWith('http')) {
-    window.open(path);
-  } else {
-    router.push(path);
-  }
-}
 
 async function onPressConnect() {
   ethUserStore.signIn();
@@ -148,9 +136,16 @@ function onWalletClose() {
 }
 
 .header-icon {
-  width: 244px;
+  width: 120px;
   object-fit: cover;
   content: url('@/assets/logo.png');
+}
+
+.header-icon-small {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  content: url('@/assets/icon_coin_emc.png');
 }
 
 .header-tabs {
@@ -213,19 +208,14 @@ function onWalletClose() {
     /* content: url('@/assets/logo.light.png'); */
     content: url('@/assets/logo.png');
   }
+  .header-icon-small {
+    content: url('@/assets/icon_coin_emc.png');
+  }
 }
 
 @media screen and (max-width: 1280px) {
   .header-cell {
     padding: 0 16px;
-  }
-
-  .header-icon {
-    width: 36px;
-    height: 36px;
-    /* content: url('@/assets/logo.light.png'); */
-    content: url('@/assets/icon_coin_emc.png');
-    margin-left: 16px;
   }
 }
 </style>
