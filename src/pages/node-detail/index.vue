@@ -58,7 +58,12 @@
                 </template>
                 <template #value>
                   <div class="flex-1 w-[0] whitespace-nowrap text-ellipsis overflow-hidden">
-                    <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal || '--' }}</NText>
+                    <template v-if="status === 0 || status === 1 || status === 2">
+                      <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal || '--' }}</NText>
+                    </template>
+                    <template v-else>
+                      <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal ? Utils.textOverflow(nodeInfo.principal) : '--' }}</NText>
+                    </template>
                   </div>
                   <template v-if="status === 0">
                     <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
@@ -155,7 +160,7 @@
                   <NText class="text-[14px] xl:text-[16px]" depth="3">GPU</NText>
                 </template>
                 <template #value>
-                  <NScrollbar x-scrollable style="flex: 1; width: 0;" content-style="height:100%;">
+                  <NScrollbar x-scrollable style="flex: 1; width: 0" content-style="height:100%;">
                     <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
                       <template v-for="item in nodeInfo.gpus">
                         <GpuItem :item="item" />
