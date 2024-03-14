@@ -10,6 +10,11 @@ export const routes = [
     component: () => import('@/pages/airdrop/index.vue'),
   },
   {
+    name: 'home',
+    path: '/home',
+    component: () => import('@/pages/home/index.vue'),
+  },
+  {
     name: 'layout',
     path: '/',
     component: () => import('@/layout/app/index.vue'),
@@ -17,11 +22,6 @@ export const routes = [
       name: 'home',
     },
     children: [
-      {
-        name: 'home',
-        path: 'home',
-        component: () => import('@/pages/home/index.vue'),
-      },
       {
         name: 'nodes',
         path: 'nodes',

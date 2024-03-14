@@ -10,7 +10,7 @@ import { formatNumber } from '@/tools/format-number';
 import { getTotalHardwares } from '@/apis';
 const title = ref('Total Memory');
 const value = ref('');
-const unit = ref('');
+const unit = ref('GB');
 const tips = ref('');
 const loading = ref(false);
 onMounted(async () => {
