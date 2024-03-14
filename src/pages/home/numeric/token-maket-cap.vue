@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-maket-cap.png';
-import NumericBasic from './basic.vue';
+import NumericBasic from './basic-simple.vue';
 import { formatNumber, formatMillion, toFixedClip } from '@/tools/format-number';
 import { getDexData } from '@/apis';
 import { http } from '@/tools/http';

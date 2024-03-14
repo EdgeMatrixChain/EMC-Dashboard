@@ -6,7 +6,7 @@
     <NSpace vertical :wrap-item="false" :size="[0, 40]">
       <NSpace class="w-[100%] max-w-[1440px] m-auto" vertical :wrap-item="false" :size="[0, 24]">
         <div class="section">
-          <NGrid class="grid" x-gap="48" y-gap="48" cols="400:1 800:2 1200:3" item-responsive>
+          <NGrid class="grid" x-gap="48" y-gap="48" cols="400:2 800:2 1200:4" item-responsive>
             <NGridItem class="grid-item">
               <NumericBlocks />
             </NGridItem>
@@ -14,6 +14,26 @@
               <NumericApiTxs />
             </NGridItem>
             <NGridItem class="grid-item">
+              <NumericTaskPending />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NumericCredits />
+            </NGridItem>
+
+            <NGridItem class="grid-item">
+              <NumericNodeComputing />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NumericGPU />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NumericCPU />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NumericMemory />
+            </NGridItem>
+
+            <!-- <NGridItem class="grid-item">
               <NumericNodeComputing />
             </NGridItem>
             <NGridItem class="grid-item">
@@ -24,7 +44,7 @@
             </NGridItem>
             <NGridItem class="grid-item">
               <NumericNodeRelay />
-            </NGridItem>
+            </NGridItem> -->
           </NGrid>
         </div>
       </NSpace>
@@ -49,7 +69,7 @@
             <NumericGPU />
           </NGridItem>
           <NGridItem class="grid-item">
-            <NumericComputePower />
+            <NumericCredits />
           </NGridItem>
           <NGridItem class="grid-item">
             <NumericTaskPending />
@@ -108,15 +128,20 @@ import { http } from '@/tools/http';
 import WorldMap from '@/components/world-map/index.vue';
 import { getMapNodes } from '@/apis';
 
+import NumericBlocks from './numeric/blocks.vue';
+import NumericApiTxs from './numeric/api-txs.vue';
+import NumericTaskPending from './numeric/task-pending.vue';
+import NumericCredits from './numeric/credits.vue';
+
+import NumericNodeComputing from './numeric/node-computing.vue';
+import NumericGPU from './numeric/gpus.vue';
+import NumericCPU from './numeric/cpus.vue';
+import NumericMemory from './numeric/memories.vue';
+
 import NumericValidators from './numeric/node-validate.vue';
 import NumericNodeRPC from './numeric/node-rpc.vue';
 import NumericNodeRelay from './numeric/node-relay.vue';
-import NumericBlocks from './numeric/blocks.vue';
-import NumericApiTxs from './numeric/api-txs.vue';
-import NumericGPU from './numeric/gpus.vue';
-import NumericTaskPending from './numeric/task-pending.vue';
-import NumericNodeComputing from './numeric/node-computing.vue';
-import NumericComputePower from './numeric/compute-power.vue';
+
 import NumericSockets from './numeric/sockets.vue';
 
 import NumericTokenSupply from './numeric/token-supply.vue';
@@ -187,7 +212,6 @@ onMounted(async () => {
 
 .grid-item {
   position: relative;
-  height: 180px;
   box-sizing: border-box;
 }
 </style>

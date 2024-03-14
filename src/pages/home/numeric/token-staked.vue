@@ -4,7 +4,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-supply.png';
-import NumericBasic from './basic.vue';
+import NumericBasic from './basic-simple.vue';
 import { formatNumber, toFixedClip } from '@/tools/format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';

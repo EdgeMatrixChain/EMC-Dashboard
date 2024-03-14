@@ -4,12 +4,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import {} from 'naive-ui';
+
 import Icon from './icons/cpu.png';
 import { http } from '@/tools/http';
-import NumericBasic from './basic.vue';
+import NumericBasic from './basic-simple.vue';
 import { formatNumber } from '@/tools/format-number';
-const title = ref('GPUs');
+const title = ref('Total GPUs');
 const value = ref('');
 const unit = ref('');
 const tips = ref('');

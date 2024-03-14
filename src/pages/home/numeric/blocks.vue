@@ -4,14 +4,13 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import {} from 'naive-ui';
 import Icon from './icons/blocks.png';
 import { http } from '@/tools/http';
-import NumericBasic from './basic.vue';
+import NumericBasic from './basic-simple.vue';
 import { formatNumber } from '@/tools/format-number';
 const title = ref('Blocks');
 const value = ref('');
-const unit = ref('Blocks');
+const unit = ref('');
 const tips = ref('');
 const loading = ref(false);
 onMounted(async () => {
