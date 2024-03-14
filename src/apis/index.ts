@@ -5,8 +5,8 @@ export async function getMapNodes() {
   const resp = await http.get({
     url: '/stats/nodemap',
     data: {
-      updatetimebegin: now - 360 * 60000,
-      updatetimeend: now + 60 * 60000,
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
     },
   });
   const list = resp.data || [];
@@ -25,12 +25,24 @@ export async function getComputeNodes({ page, size }: NodesOption) {
     data: {
       page: page,
       size: size,
-      updatetimebegin: now - 360 * 60000,
-      updatetimeend: now + 60 * 60000,
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
       status: '0,1',
     },
   });
   return { total: resp.total || 0, list: resp.data || [] };
+}
+
+export async function getTotalHardwares() {
+  const now = new Date().getTime();
+  const resp = await http.get({
+    url: '/stats/nodecpus',
+    data: {
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
+    },
+  });
+  return resp.data || { cpu: 0, gpu: 0, memory: 0 };
 }
 
 export async function getValidateNodes({ page, size }: NodesOption) {
