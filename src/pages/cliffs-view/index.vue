@@ -30,7 +30,12 @@
                     </NButton>
                   </NSpace>
                   <div class="w-[200px] whitespace-nowrap text-ellipsis overflow-hidden">
-                    <NText style="font-size: 14px">{{ currentAccount }}</NText>
+                    <NPopover>
+                      <template #trigger>
+                        <NText style="font-size: 14px">{{ Utils.formatAddress(currentAccount, 6) }}</NText>
+                      </template>
+                      <NText style="font-size: 14px">{{ currentAccount }}</NText>
+                    </NPopover>
                   </div>
                   <!-- <NText depth="3" style="font-size:14px;">{{ currentAccount }}</NText> -->
                 </NSpace>
@@ -96,7 +101,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
-import { NSpace, NCard, NText, NInput, NButton, NIcon, NSpin, NModal, useMessage } from 'naive-ui';
+import { NSpace, NPopover, NCard, NText, NInput, NButton, NIcon, NSpin, NModal, useMessage } from 'naive-ui';
 import { SearchSharp as IconRefresh, Close as IconClose, LinkOutline as IconLink } from '@vicons/ionicons5';
 import { useRoute, useRouter } from 'vue-router';
 import { ethers } from 'ethers';

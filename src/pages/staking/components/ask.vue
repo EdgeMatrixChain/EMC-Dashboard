@@ -12,7 +12,7 @@
           <p class="md:text-[20px] text-[16px] font-semibold text-[#fff]">1.Earn EMC Ecosystem Rewards.</p>
           <p
             class="text-[#fff]/70 group-hover:mt-[15px] md:text-[16px] text-[13px] leading-[24px] h-[0] opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 duration-300">
-            A simple way to increase your holdings: staking your EMC tokens provides an opportunity to earn additional EMC tokens. Comd and actively participate in the growth of ourecosystem.</p>
+            A simple way to increase your holdings: staking your EMC tokens provides an opportunity to earn additional EMC tokens. Come and actively participate in the growth of our ecosystem.</p>
         </div>
       </div>
 

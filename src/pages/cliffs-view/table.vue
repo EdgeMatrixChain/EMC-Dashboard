@@ -34,7 +34,7 @@ export default defineComponent({
       //     },
       // },
       {
-        title: 'Release Time',
+        title: 'Release Time (UTC)',
         key: 'start',
         align: 'center',
         minWidth: 120,
@@ -50,7 +50,7 @@ export default defineComponent({
                 const end = moment(row.start * 1000)
                   .add(row.cycles * cycleUnitMap[row.cycleUnit].days, 'days')
                   .utc()
-                  .format('YYYY-MM-DD');
+                  .format('YYYY-MM-DD HH:mm');
                 return `${end}`;
               },
             }
