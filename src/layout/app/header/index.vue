@@ -83,7 +83,6 @@ const tabConfigs: TabItem[] = [
 ];
 
 const initTabKey = -1;
-const emits = defineEmits(['isLoading']);
 
 const ethUserStore = useETHUserStore();
 const route = useRoute();

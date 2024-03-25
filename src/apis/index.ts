@@ -1,5 +1,5 @@
 import { http } from '@/tools/http';
-
+import moment from 'moment';
 export async function getMapNodes() {
   const now = new Date().getTime();
   const resp = await http.get({
@@ -128,4 +128,14 @@ export async function queryReward(nodeId: string) {
     currentReward: BigInt(totalReward) - BigInt(totalClaim),
     totalReward: totalReward,
   };
+}
+
+export async function getDAN() {
+  const begin = moment().subtract(15, 'day').utc().format('YYYY-MM-DD');
+  const end = moment().utc().format('YYYY-MM-DD');
+  const resp = await http.get({
+    url: '/stats/dan',
+    data: { begin, end },
+  });
+  return resp.data || [];
 }

@@ -4,7 +4,7 @@
       <Header class="header" :style="headerStyle" />
 
       <NSpace vertical :wrap-item="false" :size="[0, 40]">
-        <NSpace class="w-[100%] max-w-[1440px] m-auto" vertical :wrap-item="false" :size="[0, 24]">
+        <NSpace class="w-[100%] max-w-[1200px] m-auto" vertical :wrap-item="false" :size="[0, 24]">
           <div class="section">
             <NGrid class="grid" x-gap="48" y-gap="48" cols="400:2 800:2 1200:4" item-responsive>
               <NGridItem class="grid-item">
@@ -48,39 +48,28 @@
             </NGrid>
           </div>
         </NSpace>
-        <div class="w-[100%] max-w-[1440px] m-auto">
+        <div class="w-[100%] max-w-[1200px] m-auto">
           <WorldMap :data="mapData" />
         </div>
-        <div class="section w-[100%] max-w-[1440px] m-auto">
-          <div class="section-header">
-            <NText class="text-[24px]" strong>EMC Network</NText>
-          </div>
-          <NGrid class="grid" x-gap="48" y-gap="48" cols="400:1 800:2 1200:3" item-responsive>
-            <!-- <NGridItem class="grid-item">
-            <NumericBlocks />
-          </NGridItem>
-          <NGridItem class="grid-item">
-            <NumericApiTxs />
-          </NGridItem>
-          <NGridItem class="grid-item">
-            <NumericNodeComputing />
-          </NGridItem> -->
-            <NGridItem class="grid-item">
-              <NumericGPU />
-            </NGridItem>
-            <NGridItem class="grid-item">
-              <NumericCredits />
-            </NGridItem>
-            <NGridItem class="grid-item">
-              <NumericTaskPending />
-            </NGridItem>
-
-            <!-- <NGridItem class="grid-item">
-            <NumericSockets />
-          </NGridItem> -->
-          </NGrid>
+        <div class="w-[100%] max-w-[1200px] m-auto">
+          <NSpace :wrap="false" :wrap-item="false" :size="[0, 0]">
+            <div class="w-[420px]">
+              <TokenDistribution />
+            </div>
+            <div class="divider-h w-[48px]"></div>
+            <div class="flex-1 w-[0px]">
+              <Tokenomics />
+            </div>
+          </NSpace>
         </div>
-        <div class="section w-[100%] max-w-[1440px] m-auto">
+        <div class="w-[100%] max-w-[1200px] m-auto">
+          <Dan />
+        </div>
+        <div class="w-[100%] max-w-[1200px] m-auto">
+          <NodeReward />
+        </div>
+
+        <!-- <div class="section w-[100%] max-w-[1200px] m-auto">
           <div class="section-header">
             <NText class="text-[24px]" strong>EMC Tokenomics</NText>
           </div>
@@ -100,12 +89,12 @@
             <NGridItem class="grid-item">
               <NumericTokenMaketCap />
             </NGridItem>
-            <!-- <NGridItem class="grid-item">
+            <NGridItem class="grid-item">
             <NumericTokenInflation />
-          </NGridItem> -->
+          </NGridItem> 
           </NGrid>
-        </div>
-        <div class="section w-[100%] max-w-[1440px] m-auto">
+        </div> -->
+        <!-- <div class="section w-[100%] max-w-[1200px] m-auto">
           <div class="section-header">
             <NText class="text-[24px]" strong>Ecosystem Rewards</NText>
           </div>
@@ -114,8 +103,9 @@
               <NumericNodeReward />
             </NGridItem>
           </NGrid>
-        </div>
+        </div> -->
       </NSpace>
+      <Footer class="footer" />
     </div>
   </Background>
 </template>
@@ -124,11 +114,13 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { NSpace, NText, NGrid, NGridItem } from 'naive-ui';
 import Header from '@/layout/app/header/index.vue';
-import moment from 'moment';
-import { Utils } from '@/tools/utils';
-import { http } from '@/tools/http';
+import Footer from '@/layout/app/footer/index.vue';
 import Background from './bg/index.vue';
-import WorldMap from '@/components/world-map/index.vue';
+import WorldMap from './world-map/index.vue';
+import TokenDistribution from './token-distribution/index.vue';
+import Tokenomics from './tokenomics/index.vue';
+import Dan from './dan/index.vue';
+import NodeReward from './node-reward/index.vue';
 import { getMapNodes } from '@/apis';
 
 import NumericBlocks from './numeric/blocks.vue';
@@ -199,6 +191,10 @@ onUnmounted(() => {
 .page {
   position: relative;
   padding-top: calc(var(--header-height) + 16px);
+  z-index: 1;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: calc(var(--footer-height) + 48px);
 }
 
 .header {
@@ -208,6 +204,16 @@ onUnmounted(() => {
   width: 100%;
   z-index: 1;
   transition: background-color 0.3s;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  transition: background-color 0.3s;
+  background-color: rgba(24, 24, 28, 0.4);
 }
 
 .mask-bgcolor-center {
@@ -231,5 +237,20 @@ onUnmounted(() => {
 .grid-item {
   position: relative;
   box-sizing: border-box;
+}
+.divider-h {
+  position: relative;
+}
+
+.divider-h::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 1px;
+  left: 50%;
+  top: 48px;
+  bottom: 0;
+  position: absolute;
+  background-image: linear-gradient(180deg, rgba(127, 58, 185, 0) 0%, #391a53 50%, rgba(127, 58, 185, 0) 99%);
 }
 </style>

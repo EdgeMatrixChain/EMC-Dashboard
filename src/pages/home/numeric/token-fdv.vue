@@ -1,5 +1,5 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" />
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small"/>
 </template>
 
 <script lang="ts" setup>

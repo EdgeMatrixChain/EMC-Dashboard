@@ -1,16 +1,15 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small"/>
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-maket-cap.png';
 import NumericBasic from './basic-simple.vue';
-import { formatNumber, formatMillion, toFixedClip } from '@/tools/format-number';
-import { getDexData } from '@/apis';
+import { formatNumber, toFixedClip } from '@/tools/format-number';
 import { http } from '@/tools/http';
 
-const title = ref('Market Cap');
+const title = ref('Circulating Supply');
 const value = ref('');
 const unit = ref('');
 const tips = ref('');
@@ -27,12 +26,10 @@ const queryCirculation = async () => {
 
 onMounted(async () => {
   loading.value = true;
-  const [circulation, { fdv, priceUsd }] = await Promise.all([queryCirculation(), getDexData()]);
+  const [circulation] = await Promise.all([queryCirculation()]);
   loading.value = false;
-  const { value: _value, text, unit: _unit } = formatMillion(circulation * priceUsd);
-  value.value = `$${_value}`;
-  unit.value = _unit;
-  tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulation))}`;
+  value.value = formatNumber(toFixedClip(circulation));
+  unit.value = 'EMC';
 });
 </script>
 

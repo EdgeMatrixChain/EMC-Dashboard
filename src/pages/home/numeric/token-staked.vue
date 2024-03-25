@@ -1,5 +1,5 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" />
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small" />
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
@@ -31,7 +31,7 @@ const addresses = [
     address: '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00',
     getBalance: async (address: string) => {
       const { data: _balance } = await tokenApi.balanceOf({ account: address });
-      const balance = _balance || 0n
+      const balance = _balance || 0n;
       const stakeApi = apiManager.create<StakeApi>(StakeApi, { address });
       const { data: _rewards } = await stakeApi.permanentTotal();
       const rewards = _rewards || 0n;

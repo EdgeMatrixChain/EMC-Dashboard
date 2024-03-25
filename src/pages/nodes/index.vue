@@ -1,89 +1,111 @@
 <template>
-  <div class="page max-w-[1440px]" style="margin: auto">
-    <div class="mask-bgcolor-left"></div>
-    <div class="page-node">
-      <div class="page-search w-full max-w-[960px]">
-        <div class="page-search-icon">
-          <img src="@/assets/icon_search.png" width="20" height="20" />
+  <Background>
+    <div class="page" style="margin: auto">
+      <NSpace class="w-[100%] max-w-[1200px] m-auto" vertical :wrap-item="false" :size="[0, 24]">
+        <div class="section">
+          <NGrid class="grid" x-gap="48" y-gap="48" cols="400:2 800:2 1200:4" item-responsive>
+            <NGridItem class="grid-item">
+              <NodeComputer />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NodeValidator />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NodeRpc />
+            </NGridItem>
+            <NGridItem class="grid-item">
+              <NodeRelay />
+            </NGridItem>
+          </NGrid>
         </div>
-        <input class="page-search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
-      </div>
-      <div class="node-list">
-        <div class="node-list-header">
-          <span class="node-list-header-span">Node list</span>
-        </div>
-        <div class="node-list-subtitle">
-          <img class="node-list-subtitle-icon" src="@/assets/icon_check.svg" />
-          <span class="node-list-subtitle-span">Last 30 days of updates</span>
-        </div>
-        <NSpin size="small" :show="loading">
-          <div class="node-list-table">
-            <div class="node-list-theader">
-              <div class="node-list-theader-item min-w-[80px]">Node ID</div>
-              <!-- <div class="node-list-theader-item">Avg E-Power</div> -->
-              <!-- <div class="node-list-theader-item">Today Reward</div> -->
-              <div class="node-list-theader-item hidden xl:block">Last Updated</div>
-              <div class="node-list-theader-item hidden xl:block">Running Time</div>
+      </NSpace>
+
+      <div class="node w-[100%] max-w-[1200px] m-auto p-[24px]">
+        <NSpace class="node-header" align="end" justify="space-between" :wrap-item="false" :size="[0, 8]">
+          <NSpace vertical :wrap-item="false" :size="[0, 8]">
+            <span class="node-header-text">Node List</span>
+            <NSpace align="center" :wrap-item="false" :size="[0, 8]">
+              <img class="node-header-subtitle-icon" src="@/assets/icon_check.svg" />
+              <span class="node-header-subtitle">Last 30 days of updates</span>
+            </NSpace>
+          </NSpace>
+
+          <NSpace class="tools" align="center" :wrap-item="false" :wrap="false" :size="[16, 16]">
+            <NSpace class="filter" align="center" :wrap-item="false" :wrap="false" :size="[0, 0]">
+              <img class="filter-icon" src="@/assets/icon_filter.svg" />
+              <div class="filter-content">
+                <span class="filter-content-text">All</span>
+                <img class="filter-menu-icon" src="@/assets/icon_arrow_down.svg" />
+              </div>
+            </NSpace>
+
+            <div class="search w-full">
+              <div class="search-icon">
+                <img src="@/assets/icon_search.png" width="20" height="20" />
+              </div>
+              <input class="search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
             </div>
-            <div class="node-list-body">
-              <template v-for="(item, index) in list" :key="item._id">
-                <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
-                  <div class="node-list-main">
-                    <div class="node-list-main-item min-w-[80px] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
-                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower
+          </NSpace>
+        </NSpace>
+        <div class="node-list">
+          <NSpin size="small" :show="loading">
+            <div class="node-list-table">
+              <div class="node-list-theader">
+                <div class="node-list-theader-item w-[20%]">Node ID</div>
+                <div class="node-list-theader-item w-[16%] justify-center">Type</div>
+                <div class="node-list-theader-item w-[16%] justify-center">CPU</div>
+                <div class="node-list-theader-item w-[16%] justify-center">Memory</div>
+                <div class="node-list-theader-item w-[16%] justify-center">GPU</div>
+                <div class="node-list-theader-item w-[16%]">Last Updated</div>
+                <!-- <div class="node-list-theader-item">Running Time</div> -->
+              </div>
+              <div class="node-list-body">
+                <template v-for="(item, index) in list" :key="item._id">
+                  <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
+                    <div class="node-list-main">
+                      <div class="node-list-main-item w-[20%] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
+                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower
                       ? '--' : item.avgPower }}</div> -->
-                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div> -->
-                    <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div> -->
-                    <template v-if="isSmallDesktop || isDesktop">
-                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.updateTimeStr }}</div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime }}</div>
-                    </template>
-                  </div>
-                </RouterLink>
-              </template>
+                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div> -->
+                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div> -->
+
+                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">
+                        <div class="node-list-main-item-badge" :style="{ color: item.type.color, backgroundColor: item.type.bgColor }">
+                          {{ item.type.name }}
+                        </div>
+                      </div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.cpus }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.memory }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.gpus }}</div>
+                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%]">{{ item.updateTimeStr }}</div>
+                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime }}</div> -->
+                    </div>
+                  </RouterLink>
+                </template>
+              </div>
             </div>
-          </div>
-        </NSpin>
+          </NSpin>
+        </div>
       </div>
+      <NSpace class="pagination" justify="center">
+        <NPagination
+          v-model:page="pageNo"
+          :disabled="loading"
+          :page-count="pageCount"
+          @update:page="handlePageChange"
+          size="large"
+          :page-slot="isDesktop ? 10 : 6"
+        />
+      </NSpace>
     </div>
-    <NSpace class="pagination" justify="center">
-      <NPagination
-        v-model:page="pageNo"
-        :disabled="loading"
-        :page-count="pageCount"
-        @update:page="handlePageChange"
-        size="large"
-        :page-slot="isDesktop ? 10 : 6"
-      />
-    </NSpace>
-  </div>
+  </Background>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch, onActivated, ComputedRef } from 'vue';
-import { NPagination, NSpace, NButton, NSpin } from 'naive-ui';
-import { Utils } from '@/tools/utils';
-import { useRoute, useRouter } from 'vue-router';
-import moment from 'moment';
-import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-import { Http } from '@/tools/http';
-import { getComputeNodes } from '@/apis';
-
-type Item = {
-  _id: string;
-  nodeIdFormat: string;
-  avgPower: string;
-  reward: string;
-  updateTime: string;
-  updateTimeStr: string;
-  createTime: string;
-  runTime: string;
-  startupTime: string;
-};
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'nodes',
-  components: { NPagination, NSpace, NButton, NSpin },
   beforeRouteEnter(to, from, next) {
     if (typeof to.meta !== 'object') {
       to.meta = {};
@@ -96,99 +118,151 @@ export default defineComponent({
     }
     next();
   },
-  setup() {
-    const pageNo = ref(1);
-    const pageCount = ref(1);
-    const list = ref<Item[]>([]);
-    const loading = ref(false);
-    const route = useRoute();
-    const router = useRouter();
-    const isSmallDesktop = useIsSmallDesktop();
-    const isDesktop = useIsDesktop();
-
-    const inputSearchValue = ref('');
-    onActivated(() => {
-      if (route.meta.isBack) {
-        init();
-      } else {
-        pageNo.value = 1;
-        pageCount.value = 1;
-        list.value = [];
-        init();
-      }
-    });
-
-    const init = async () => {
-      loading.value = true;
-      const resp = await getComputeNodes({ page: pageNo.value, size: 10 });
-      loading.value = false;
-      const nodeList: any[] = [];
-      (resp.list || []).forEach((item: any) => {
-        item.nodeIdFormat = Utils.formatAddress(item._id, 11);
-        item.updateTimeStr = moment(item.updateTime).format('YYYY-MM-DD hh:mm');
-        item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);
-        nodeList.push(item);
-      });
-      const total = resp.total || 0;
-      list.value = nodeList;
-      pageCount.value = Math.ceil(total / 10);
-    };
-
-    const handlePageChange = (currentPage: number) => {
-      pageNo.value = currentPage;
-      init();
-    };
-
-    const onPressSearch = async () => {
-      router.push({ name: 'node-detail', params: { id: inputSearchValue.value } });
-    };
-
-    return {
-      isSmallDesktop,
-      isDesktop,
-      pageNo,
-      pageCount,
-      list,
-      loading,
-      inputSearchValue,
-      onPressSearch,
-      handlePageChange,
-    };
-  },
 });
 </script>
+<script lang="ts" setup>
+import { ref, onActivated } from 'vue';
+import { NPagination, NSpace, NGrid, NGridItem, NSpin } from 'naive-ui';
+import { Utils } from '@/tools/utils';
+import { useRoute, useRouter } from 'vue-router';
+import moment from 'moment';
+import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
+import { getComputeNodes } from '@/apis';
+import NodeComputer from './numeric/node-computing.vue';
+import NodeValidator from './numeric/node-validate.vue';
+import NodeRpc from './numeric/node-rpc.vue';
+import NodeRelay from './numeric/node-relay.vue';
+import Background from './bg/index.vue';
+type Item = {
+  _id: string;
+  nodeIdFormat: string;
+  avgPower: string;
+  reward: string;
+  updateTime: string;
+  updateTimeStr: string;
+  createTime: string;
+  runTime: string;
+  startupTime: string;
+};
+const pageNo = ref(1);
+const pageCount = ref(1);
+const list = ref<Item[]>([]);
+const loading = ref(false);
+const route = useRoute();
+const router = useRouter();
+const isSmallDesktop = useIsSmallDesktop();
+const isDesktop = useIsDesktop();
 
+const inputSearchValue = ref('');
+onActivated(() => {
+  if (route.meta.isBack) {
+    init();
+  } else {
+    pageNo.value = 1;
+    pageCount.value = 1;
+    list.value = [];
+    init();
+  }
+});
+
+function formatNodeType(status: number) {
+  if (status === 11) {
+    return { name: 'Validate', color: '#6EA6BF', bgColor: '#2F454A' };
+  } else if (status === 12) {
+    return { name: 'RPC', color: '#74BF6E', bgColor: '#2F4A3D' };
+  } else if (status === 13) {
+    return { name: 'Relay', color: '#BF946E', bgColor: '#4A462F' };
+  } else {
+    return { name: 'Computing', color: '#A16EBF', bgColor: '#402F4A' };
+  }
+}
+
+const init = async () => {
+  loading.value = true;
+  const resp = await getComputeNodes({ page: pageNo.value, size: 10 });
+  loading.value = false;
+  const nodeList: any[] = [];
+  (resp.list || []).forEach((item: any) => {
+    item.nodeIdFormat = Utils.formatAddress(item._id, 11);
+    item.updateTimeStr = moment(item.updateTime).format('YYYY-MM-DD hh:mm');
+    item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);
+    item.type = formatNodeType(item.status);
+    item.gpus = item.gpus;
+    item.cpus = item.cpus;
+    item.memory = item.memory;
+    nodeList.push(item);
+  });
+  const total = resp.total || 0;
+  list.value = nodeList;
+  pageCount.value = Math.ceil(total / 10);
+};
+
+const handlePageChange = (currentPage: number) => {
+  pageNo.value = currentPage;
+  init();
+};
+
+const onPressSearch = async () => {
+  router.push({ name: 'node-detail', params: { id: inputSearchValue.value } });
+};
+</script>
 <style scoped>
-.mask-bgcolor-left {
-  position: fixed;
-  width: 210px;
-  height: 210px;
-  left: 156px;
-  top: 100px;
-  background: linear-gradient(130.04deg, rgba(253, 153, 42, 0.3) 13.45%, rgba(125, 81, 220, 0.3) 60.04%, rgba(37, 237, 255, 0.3) 88.4%);
-  filter: blur(50px);
+.page {
+  position: relative;
+  padding-top: 48px;
+  z-index: 1;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: calc(var(--footer-height) + 48px);
 }
 
-.page-node {
-  margin: 40px 0 24px;
-  min-height: 682px;
+.tools {
+  /* border-bottom: solid 1px #6b5d9e; */
 }
 
-.page-search {
+.filter {
+  background-color: #1c2025;
+  padding: 0 12px;
+  border-radius: 4px;
+}
+
+.filter-icon {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+.filter-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  width: 100px;
+}
+.filter-content-text {
+  color: #ffffff;
+}
+
+.filter-content-icon {
+  margin-left: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.search {
   display: flex;
   align-items: center;
   display: flex;
-  height: 48px;
-  margin: 32px auto;
-  padding: 0 14px;
-  border-radius: 16px;
-  border: 1px solid #705989;
-  background: linear-gradient(70deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.08) 100%);
-  backdrop-filter: blur(21px);
+  height: 40px;
+  padding: 0 12px;
+  background-color: #1c2025;
+  border-radius: 4px;
+  /* border: 1px solid #6b5d9e; */
+  /* background: linear-gradient(70deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.08) 100%); */
+  /* backdrop-filter: blur(21px); */
 }
 
-.page-search-input {
-  margin-left: 8px;
+.search-input {
+  margin-left: 12px;
   width: 100%;
   height: 100%;
   line-height: 100%;
@@ -198,80 +272,89 @@ export default defineComponent({
   color: #fff;
 }
 
-.node-list {
-  width: 100%;
-  height: 100%;
-  min-height: 680px;
-  padding: 24px 24px 4px;
-  border-radius: 15px;
-  background-color: #1c2025;
-  backdrop-filter: blur(60px);
-  box-sizing: border-box;
+.node {
+  margin-top: 24px;
+  min-height: 682px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
 }
 
-.node-list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+.node-header {
+  margin-bottom: 16px;
 }
 
-.node-list-header-span {
+.node-header-text {
   color: #fff;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 18px;
+  font-size: 24px;
+  font-weight: 500;
+  font-family: Oxanium;
 }
-
-.node-list-subtitle {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.node-list-subtitle-icon {
+.node-header-subtitle-icon {
   width: 14px;
   height: 14px;
   margin-right: 4px;
 }
 
-.node-list-subtitle-span {
+.node-header-subtitle {
   color: #a0aec0;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 14px;
+}
+
+.node-list {
+  min-height: 560px;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .node-list-theader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 0 24px;
+  height: 56px;
+  background-color: #1c2025;
+  margin-bottom: 2px;
 }
 
 .node-list-theader-item {
-  width: 100%;
-  color: #a0aec0;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 12px;
+  color: #a0aec0;
 }
 
 .node-list-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 24px;
   height: 56px;
-  border-top: 1px solid #56577a;
+  background-color: #1c2025;
+  margin-bottom: 2px;
 }
 
 .node-list-main-item {
-  width: 100%;
+  display: flex;
+  align-items: center;
   height: 100%;
-  color: #fff;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 56px;
+  color: #fff;
   cursor: pointer;
+}
+
+.node-list-main-item-badge {
+  display: inline-block;
+  border-radius: 1000px;
+  height: 32px;
+  padding: 0 12px;
+  width: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination {
