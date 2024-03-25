@@ -558,6 +558,9 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
     } else {
       //ClaimWithSignature: balance of tokens is not enough
       const message = claimResp.err && claimResp.err.reason ? claimResp.err.reason : 'ClaimWithSignature: unknow error';
+      if (!claimResp.err || !claimResp.err.reason) {
+        console.info(claimResp);
+      }
       return { _result: 2, _desc: `${message}` };
     }
   }
