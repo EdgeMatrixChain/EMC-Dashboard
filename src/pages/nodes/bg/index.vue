@@ -11,6 +11,6 @@ import BgTop from './bg-top.vue';
 .bg {
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--header-height));
 }
 </style>

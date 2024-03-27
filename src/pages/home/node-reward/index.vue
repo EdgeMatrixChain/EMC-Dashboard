@@ -4,7 +4,7 @@
       <span class="section-header-title">Token Reward of Node</span>
     </div>
     <NSpace class="section-body w-full" vertical :wrap-item="false" :wrap="false" :size="[16, 24]">
-      <Distributed />
+      <Released />
     </NSpace>
     <NSpace class="section-body w-full" vertical :wrap-item="false" :wrap="false" :size="[16, 24]">
       <Schedule />
@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { NSpace, NText } from 'naive-ui';
-import Distributed from './distributed/index.vue';
+import Released from './released/index.vue';
 import Schedule from './schedule/index.vue';
 
 // const data = ref<any[]>([]);

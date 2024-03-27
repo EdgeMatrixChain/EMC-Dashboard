@@ -1,11 +1,11 @@
 <template>
-  <NSpace class="item" align="center" justify="space-between" :wrap-item="false" :size="[0, 16]">
-    <NSpace class="flex-1 w-[0]" vertical justify="space-between" :wrap-item="false" :size="[0, 16]">
-      <NSpace vertical justify="center" :wrap-item="false" :size="[0, 0]">
-        <NText class="item-title" :style="titleStyle">{{ title }}</NText>
-      </NSpace>
+  <div class="item">
+    <div class="item-row">
+      <span class="item-title" :style="titleStyle">{{ title }}</span>
+    </div>
+    <div class="item-row">
       <template v-if="loading">
-        <NSkeleton class="rounded" :width="80" size="small" />
+        <NSkeleton height="28" :width="56" size="small" />
       </template>
       <template v-else>
         <div class="item-data">
@@ -13,11 +13,11 @@
           <NText class="item-data-unit" :style="unitStyle">&nbsp;{{ unit }}</NText>
         </div>
       </template>
-    </NSpace>
-    <NSpace class="item-icon" align="center" justify="center" :wrap-item="false" :size="[0, 0]" :style="{ 'background-color': iconBgColor }">
-      <img class="item-icon-img" :src="icon" />
-    </NSpace>
-  </NSpace>
+      <div class="item-icon">
+        <img class="item-icon-img" :src="icon" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -40,7 +40,7 @@ const titleStyle = computed(() => {
     fontSize: '16px',
   };
   if (props.size === 'small') {
-    style.fontSize = '12px';
+    style.fontSize = '14px';
   }
   return style;
 });
@@ -50,7 +50,7 @@ const valueStyle = computed(() => {
     fontSize: '28px',
   };
   if (props.size === 'small') {
-    style.fontSize = '18px';
+    style.fontSize = '24px';
   }
   return style;
 });
@@ -68,14 +68,23 @@ const unitStyle = computed(() => {
 
 <style scoped>
 .item {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 16px 24px;
+  padding: 16px;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.1);
+  gap: 16px 0;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .item-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   color: #eeddff;
 }
@@ -97,13 +106,14 @@ const unitStyle = computed(() => {
   font-size: 16px;
   font-weight: 500;
 }
-.item-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-}
+
 .item-icon-img {
   width: 20px;
   height: 20px;
+}
+@media (min-width: 640px) {
+  .item {
+    padding: 16px 24px;
+  }
 }
 </style>

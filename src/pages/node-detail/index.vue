@@ -189,7 +189,7 @@
 
               <LabelWithValue>
                 <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Memory</NText>
+                  <NText class="text-[14px] xl:text-[16px]" depth="3">RAM</NText>
                 </template>
                 <template #value>
                   <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.memoryInfo }}</NText>

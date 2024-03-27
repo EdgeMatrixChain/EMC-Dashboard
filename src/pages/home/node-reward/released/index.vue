@@ -1,7 +1,7 @@
 <template>
   <NSpace class="content" vertical :wrap-item="false" :size="[0, 16]">
     <div class="content-header">
-      <span class="content-header-title">Distributed Node Rewards</span>
+      <span class="content-header-title">Released Node Rewards</span>
     </div>
     <NSpace class="content-body w-full" align="center" justify="space-between" :wrap-item="false" :wrap="false" :size="[16, 0]">
       <NSpace align="center" :wrap-item="false" :wrap="false" :size="[16, 0]">

@@ -1,102 +1,45 @@
 <template>
   <Background>
     <div class="page" style="margin: auto">
-      <NSpace class="w-[100%] max-w-[1200px] m-auto" vertical :wrap-item="false" :size="[0, 24]">
-        <div class="section">
-          <NGrid class="grid" x-gap="48" y-gap="48" cols="400:2 800:2 1200:4" item-responsive>
-            <NGridItem class="grid-item">
-              <NodeComputer />
-            </NGridItem>
-            <NGridItem class="grid-item">
-              <NodeValidator />
-            </NGridItem>
-            <NGridItem class="grid-item">
-              <NodeRpc />
-            </NGridItem>
-            <NGridItem class="grid-item">
-              <NodeRelay />
-            </NGridItem>
-          </NGrid>
-        </div>
-      </NSpace>
-
-      <div class="node w-[100%] max-w-[1200px] m-auto p-[24px]">
-        <NSpace class="node-header" align="end" justify="space-between" :wrap-item="false" :size="[0, 8]">
-          <NSpace vertical :wrap-item="false" :size="[0, 8]">
-            <span class="node-header-text">Node List</span>
-            <NSpace align="center" :wrap-item="false" :size="[0, 8]">
-              <img class="node-header-subtitle-icon" src="@/assets/icon_check.svg" />
-              <span class="node-header-subtitle">Last 30 days of updates</span>
-            </NSpace>
-          </NSpace>
-
-          <NSpace class="tools" align="center" :wrap-item="false" :wrap="false" :size="[16, 16]">
-            <NSpace class="filter" align="center" :wrap-item="false" :wrap="false" :size="[0, 0]">
-              <img class="filter-icon" src="@/assets/icon_filter.svg" />
-              <div class="filter-content">
-                <span class="filter-content-text">All</span>
-                <img class="filter-menu-icon" src="@/assets/icon_arrow_down.svg" />
-              </div>
-            </NSpace>
-
-            <div class="search w-full">
-              <div class="search-icon">
-                <img src="@/assets/icon_search.png" width="20" height="20" />
-              </div>
-              <input class="search-input" v-model="inputSearchValue" type="text" placeholder="Search IDs" @keyup.enter="onPressSearch" />
-            </div>
-          </NSpace>
-        </NSpace>
-        <div class="node-list">
-          <NSpin size="small" :show="loading">
-            <div class="node-list-table">
-              <div class="node-list-theader">
-                <div class="node-list-theader-item w-[20%]">Node ID</div>
-                <div class="node-list-theader-item w-[16%] justify-center">Type</div>
-                <div class="node-list-theader-item w-[16%] justify-center">CPU</div>
-                <div class="node-list-theader-item w-[16%] justify-center">Memory</div>
-                <div class="node-list-theader-item w-[16%] justify-center">GPU</div>
-                <div class="node-list-theader-item w-[16%]">Last Updated</div>
-                <!-- <div class="node-list-theader-item">Running Time</div> -->
-              </div>
-              <div class="node-list-body">
-                <template v-for="(item, index) in list" :key="item._id">
-                  <RouterLink :to="{ name: 'node-detail', params: { id: item._id } }">
-                    <div class="node-list-main">
-                      <div class="node-list-main-item w-[20%] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
-                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.avgPower == '0' || !item.avgPower
-                      ? '--' : item.avgPower }}</div> -->
-                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `≈ ${Number(item.reward).toFixed(isDesktop ? 8 : 2)}` }}</div> -->
-                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ `${item.reward}` }}</div> -->
-
-                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">
-                        <div class="node-list-main-item-badge" :style="{ color: item.type.color, backgroundColor: item.type.bgColor }">
-                          {{ item.type.name }}
-                        </div>
-                      </div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.cpus }}</div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.memory }}</div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%] justify-center">{{ item.gpus }}</div>
-                      <div class="node-list-main-item text-[12px] xl:text-[14px] w-[16%]">{{ item.updateTimeStr }}</div>
-                      <!-- <div class="node-list-main-item text-[12px] xl:text-[14px]">{{ item.runTime }}</div> -->
-                    </div>
-                  </RouterLink>
-                </template>
-              </div>
-            </div>
-          </NSpin>
+      <div class="section">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-[16px] sm:gap-[24px]">
+          <div class="grid-cols-1">
+            <NodeComputer :size="numericSize" />
+          </div>
+          <div class="grid-cols-1">
+            <NodeValidator :size="numericSize" />
+          </div>
+          <div class="grid-cols-1">
+            <NodeRpc :size="numericSize" />
+          </div>
+          <div class="grid-cols-1">
+            <NodeRelay :size="numericSize" />
+          </div>
         </div>
       </div>
-      <NSpace class="pagination" justify="center">
-        <NPagination
-          v-model:page="pageNo"
-          :disabled="loading"
-          :page-count="pageCount"
-          @update:page="handlePageChange"
-          size="large"
-          :page-slot="isDesktop ? 10 : 6"
-        />
-      </NSpace>
+      <div class="section node">
+        <div class="node-grid">
+          <div class="node-header">
+            <div class="node-header-row">
+              <span class="node-title">Node List</span>
+            </div>
+            <div class="node-header-row">
+              <img class="node-subtitle-icon" src="@/assets/icon_check.svg" />
+              <span class="node-subtitle-text">Last 6 hours of updates</span>
+            </div>
+          </div>
+          <div class="node-tools">
+            <Filter v-model:value="filterOptionVal" @update:value="onFilterDropdownUpdate" />
+            <Search v-model:value="filterInputVal" :show-clear="Boolean(queries.keywords)" @search="onFilterSearch" />
+          </div>
+        </div>
+        <template v-if="isMobile">
+          <ListMobile :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+        </template>
+        <template v-else>
+          <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+        </template>
+      </div>
     </div>
   </Background>
 </template>
@@ -121,18 +64,28 @@ export default defineComponent({
 });
 </script>
 <script lang="ts" setup>
-import { ref, onActivated } from 'vue';
-import { NPagination, NSpace, NGrid, NGridItem, NSpin } from 'naive-ui';
+import { ref, computed, onActivated } from 'vue';
+import { NPagination, NSpace, NGrid, NGridItem, NSpin, NDropdown } from 'naive-ui';
+import { useThrottleFn } from '@vueuse/core';
 import { Utils } from '@/tools/utils';
 import { useRoute, useRouter } from 'vue-router';
 import moment from 'moment';
 import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-import { getComputeNodes } from '@/apis';
+import { getNodes, getNodeTypes, getComputeNodes } from '@/apis';
 import NodeComputer from './numeric/node-computing.vue';
 import NodeValidator from './numeric/node-validate.vue';
 import NodeRpc from './numeric/node-rpc.vue';
 import NodeRelay from './numeric/node-relay.vue';
 import Background from './bg/index.vue';
+import Filter from './filter.vue';
+import Search from './search.vue';
+import ListDesktop from './list.desktop.vue';
+import ListMobile from './list.mobile.vue';
+import IconComputer from './numeric/icons/icon_computer.svg';
+import IconRelay from './numeric/icons/icon_relay.svg';
+import IconRPC from './numeric/icons/icon_rpc.svg';
+import IconValidator from './numeric/icons/icon_validator.svg';
+
 type Item = {
   _id: string;
   nodeIdFormat: string;
@@ -144,47 +97,82 @@ type Item = {
   runTime: string;
   startupTime: string;
 };
-const pageNo = ref(1);
-const pageCount = ref(1);
-const list = ref<Item[]>([]);
-const loading = ref(false);
 const route = useRoute();
 const router = useRouter();
-const isSmallDesktop = useIsSmallDesktop();
+const isMobile = useIsMobile();
 const isDesktop = useIsDesktop();
+const { list: nodeTypeList, map: nodeTypeMap } = getNodeTypes();
 
-const inputSearchValue = ref('');
+const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
+const list = ref<Item[]>([]);
+const queries = ref<any>({
+  status: '-1',
+  keywords: '',
+});
+const pageNo = ref(1);
+const pageSize = ref(20);
+const pageCount = ref(1);
+const loading = ref(false);
+
+const filterOptionVal = ref('-1');
+const filterInputVal = ref('');
+
 onActivated(() => {
   if (route.meta.isBack) {
-    init();
+    updateList();
   } else {
-    pageNo.value = 1;
-    pageCount.value = 1;
-    list.value = [];
-    init();
+    initList();
   }
 });
 
 function formatNodeType(status: number) {
+  let name = nodeTypeMap[status].name;
+  let color = '';
+  let bgColor = '';
+  let icon = '';
   if (status === 11) {
-    return { name: 'Validate', color: '#6EA6BF', bgColor: '#2F454A' };
+    color = '#6EA6BF';
+    bgColor = '#2F454A';
+    icon = IconValidator;
   } else if (status === 12) {
-    return { name: 'RPC', color: '#74BF6E', bgColor: '#2F4A3D' };
+    color = '#74BF6E';
+    bgColor = '#2F4A3D';
+    icon = IconRPC;
   } else if (status === 13) {
-    return { name: 'Relay', color: '#BF946E', bgColor: '#4A462F' };
+    color = '#BF946E';
+    bgColor = '#4A462F';
+    icon = IconRelay;
   } else {
-    return { name: 'Computing', color: '#A16EBF', bgColor: '#402F4A' };
+    color = '#A16EBF';
+    bgColor = '#402F4A';
+    icon = IconComputer;
   }
+  return { name, color, bgColor, icon };
 }
 
-const init = async () => {
+const initList = useThrottleFn(async () => {
+  pageNo.value = 1;
+  pageCount.value = 1;
+  list.value = [];
+  updateList();
+}, 60);
+
+const updateList = async () => {
   loading.value = true;
-  const resp = await getComputeNodes({ page: pageNo.value, size: 10 });
+  const now = new Date().getTime();
+  const htbegin = now - 360 * 60000;
+  const htend = now + 60 * 60000;
+  const queriesValue = queries.value;
+  const params = {
+    status: queriesValue.status === '-1' ? void 0 : queriesValue.status,
+    keywords: queriesValue.keywords === '' ? void 0 : queriesValue.keywords,
+  };
+  const resp = await getNodes({ page: pageNo.value, size: pageSize.value, htbegin, htend, ...params });
   loading.value = false;
   const nodeList: any[] = [];
   (resp.list || []).forEach((item: any) => {
     item.nodeIdFormat = Utils.formatAddress(item._id, 11);
-    item.updateTimeStr = moment(item.updateTime).format('YYYY-MM-DD hh:mm');
+    item.updateTimeStr = moment(item.heartTime).format('YYYY-MM-DD hh:mm');
     item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);
     item.type = formatNodeType(item.status);
     item.gpus = item.gpus;
@@ -194,170 +182,118 @@ const init = async () => {
   });
   const total = resp.total || 0;
   list.value = nodeList;
-  pageCount.value = Math.ceil(total / 10);
+  pageCount.value = Math.ceil(total / pageSize.value);
 };
 
 const handlePageChange = (currentPage: number) => {
   pageNo.value = currentPage;
-  init();
+  updateList();
 };
 
-const onPressSearch = async () => {
-  router.push({ name: 'node-detail', params: { id: inputSearchValue.value } });
+const onFilterDropdownUpdate = (key) => {
+  const queriesValue = queries.value;
+  queriesValue.status = key;
+  initList();
+};
+
+const onFilterSearch = () => {
+  const queriesValue = queries.value;
+  queriesValue.keywords = filterInputVal.value;
+  initList();
 };
 </script>
 <style scoped>
 .page {
   position: relative;
-  padding-top: 48px;
   z-index: 1;
+  padding-top: 48px;
   padding-left: 16px;
   padding-right: 16px;
   padding-bottom: calc(var(--footer-height) + 48px);
-}
-
-.tools {
-  /* border-bottom: solid 1px #6b5d9e; */
-}
-
-.filter {
-  background-color: #1c2025;
-  padding: 0 12px;
-  border-radius: 4px;
-}
-
-.filter-icon {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
-}
-.filter-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 40px;
-  width: 100px;
-}
-.filter-content-text {
-  color: #ffffff;
+  flex-direction: column;
+  gap: 16px 0;
 }
 
-.filter-content-icon {
-  margin-left: 8px;
-  width: 16px;
-  height: 16px;
-}
-
-.search {
-  display: flex;
-  align-items: center;
-  display: flex;
-  height: 40px;
-  padding: 0 12px;
-  background-color: #1c2025;
-  border-radius: 4px;
-  /* border: 1px solid #6b5d9e; */
-  /* background: linear-gradient(70deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.08) 100%); */
-  /* backdrop-filter: blur(21px); */
-}
-
-.search-input {
-  margin-left: 12px;
+.section {
   width: 100%;
-  height: 100%;
-  line-height: 100%;
-  border: none;
-  outline: none;
-  background-color: transparent;
-  color: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .node {
-  margin-top: 24px;
-  min-height: 682px;
   background-color: rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.node-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
 }
 
 .node-header {
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
 }
 
-.node-header-text {
+.node-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0 8px;
+}
+
+.node-title {
   color: #fff;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 500;
   font-family: Oxanium;
 }
-.node-header-subtitle-icon {
+
+.node-subtitle-icon {
   width: 14px;
   height: 14px;
-  margin-right: 4px;
 }
 
-.node-header-subtitle {
+.node-subtitle-text {
   color: #a0aec0;
   font-size: 12px;
   font-weight: 400;
 }
 
-.node-list {
-  min-height: 560px;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.node-list-theader {
+.node-tools {
+  width: 100%;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  height: 56px;
-  background-color: #1c2025;
-  margin-bottom: 2px;
+  flex-wrap: nowrap;
+  gap: 0 16px;
 }
 
-.node-list-theader-item {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  font-size: 14px;
-  font-weight: 400;
-  color: #a0aec0;
-}
+@media (min-width: 640px) {
+  .node {
+    padding: 24px;
+    gap: 24px 0;
+  }
 
-.node-list-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  height: 56px;
-  background-color: #1c2025;
-  margin-bottom: 2px;
-}
+  .node-grid {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0;
+  }
 
-.node-list-main-item {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  font-size: 14px;
-  font-weight: 400;
-  color: #fff;
-  cursor: pointer;
-}
+  .node-tools {
+    width: auto;
+  }
 
-.node-list-main-item-badge {
-  display: inline-block;
-  border-radius: 1000px;
-  height: 32px;
-  padding: 0 12px;
-  width: 96px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pagination {
-  text-align: center;
+  .node-title {
+    font-size: 24px;
+  }
 }
 </style>

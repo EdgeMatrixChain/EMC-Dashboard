@@ -1,5 +1,6 @@
 import { http } from '@/tools/http';
 import moment from 'moment';
+
 export async function getMapNodes() {
   const now = new Date().getTime();
   const resp = await http.get({
@@ -16,7 +17,19 @@ export async function getMapNodes() {
 type NodesOption = {
   page: number;
   size: number;
+  htbegin: number;
+  htend: number;
+  status?: string; //0,1:computing 11:validator 12:rpc 13:relay
+  keywords?: string; //nodeid
 };
+
+export async function getNodes({ page, size, htbegin, htend, status, keywords }: NodesOption) {
+  const resp = await http.get({
+    url: '/node/list',
+    data: { page, size, htbegin, htend, keywords, status, sort: encodeURIComponent(JSON.stringify({ createTime: -1 })) },
+  });
+  return { total: resp.total || 0, list: resp.data || [] };
+}
 
 export async function getComputeNodes({ page, size }: NodesOption) {
   const now = new Date().getTime();
@@ -139,3 +152,23 @@ export async function getDAN() {
   });
   return resp.data || [];
 }
+
+export const getNodeTypes = (function () {
+  let list = [
+    { name: 'Computing', value: 0 },
+    { name: 'Computing', value: 1 },
+    { name: 'Validation', value: 11 },
+    { name: 'RPC', value: 12 },
+    { name: 'Relay', value: 13 },
+  ];
+  let map: any = null;
+  return () => {
+    if (!map) {
+      map = {};
+      list.forEach((item) => {
+        map[item.value] = item;
+      });
+    }
+    return { list, map };
+  };
+})();

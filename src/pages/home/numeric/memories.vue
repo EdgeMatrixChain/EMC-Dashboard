@@ -8,7 +8,7 @@ import Icon from './icons/cpu.png';
 import NumericBasic from './basic-simple.vue';
 import { formatNumber } from '@/tools/format-number';
 import { getTotalHardwares } from '@/apis';
-const title = ref('Total Memory');
+const title = ref('Total RAMs');
 const value = ref('');
 const unit = ref('GB');
 const tips = ref('');
