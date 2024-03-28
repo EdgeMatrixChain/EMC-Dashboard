@@ -1,7 +1,7 @@
 <template>
   <section class="gpu-item">
     <div class="gpu-item-name">
-      <span>{{ item.product }}</span>
+      <span>{{ item.gpuModel }}</span>
     </div>
   </section>
 </template>

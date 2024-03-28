@@ -365,15 +365,21 @@ async function queryInfo(_nodeId: string) {
   const cpuInfo = Utils.parseJSON(node.cpuInfo) || {};
   const cpuName = cpuInfo.ModelName || '-';
   const macAddr = node.macAddr || '-';
-  const gpuInfo = Utils.parseJSON(node.gpuInfo) || {};
+  type GpuInfo = { gpuMemory: string; gpuModel: string };
+  const gpuInfo = (Utils.parseJSON(node.gpuInfo) || []) as Array<GpuInfo> | any;
 
   const gpus: any[] = [];
-  (gpuInfo.graphics_card || []).forEach((info: string) => {
-    const gpuInfo = parseGpuInfo(info);
-    if (gpuInfo) {
-      gpus.push(gpuInfo);
-    }
-  });
+  if (Array.isArray(gpuInfo)) {
+    gpus.push(...gpuInfo);
+  } else {
+    (gpuInfo.graphics_card || []).forEach((info: any) => {
+      const gpuInfo = parseGpuInfo(info);
+      if (gpuInfo) {
+        const driver = gpuInfo.driver ? gpuInfo.driver.toLocaleUpperCase() + ' ' : '';
+        gpus.push({ gpuMemory: '', gpuModel: `${driver}${gpuInfo.product}` });
+      }
+    });
+  }
 
   const ipInfo = node.ipInfo || {};
   const ipAddr = ipInfo.ipAddr || '-';
