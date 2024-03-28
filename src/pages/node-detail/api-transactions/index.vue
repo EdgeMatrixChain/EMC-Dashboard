@@ -66,7 +66,7 @@ const columns: any = ref([
     },
   },
   {
-    title: 'Create Date',//Age
+    title: 'Create Date', //Age
     key: 'diffTimeStr',
     render(row: Item) {
       return h(NEllipsis, { style: 'width:188px' }, { default: () => h('span', {}, { default: () => row.diffTimeStr }) });
@@ -95,8 +95,13 @@ const APIs = [
   { application: 'StableDiffsuion', method: 'TextToImage', path: '/hubapi/v1/txt2img' },
 ];
 
-function formatApiPath(path: string) {
-  return APIs.find((item) => path === item.path);
+function formatApiPath(path: string, appOrigin: string) {
+  const item = APIs.find((item) => path === item.path);
+  if (!item) {
+    const paths = path.split('/');
+    return { application: appOrigin || 'Unknow', method: paths[paths.length - 1] };
+  }
+  return item;
 }
 
 async function initList() {
@@ -121,7 +126,7 @@ async function updateList() {
   const newList: Item[] = [];
   const now = new Date().getTime();
   (pageInfo.list || []).forEach((item: any) => {
-    const { application, method } = formatApiPath(item.apiPath) || { application: '', method: '' };
+    const { application, method } = formatApiPath(item.apiPath, item.appOrigin) || { application: '', method: '' };
     const id = item.id;
     const taskSn = item.taskSn;
     const credit = item.credit;
@@ -129,7 +134,7 @@ async function updateList() {
     const statusStr = StatusText[item.status];
     const createTime = new Date(item.createTime).getTime();
     const diffTime = now - createTime;
-    //${Utils.formatDate(diffTime)} ago 
+    //${Utils.formatDate(diffTime)} ago
     const diffTimeStr = `${moment(createTime).utc().format('MMMM DD HH:mm UTC YYYY')}`;
     newList.push({ id, taskSn, application, method, status, statusStr, createTime, diffTimeStr, credit });
   });
