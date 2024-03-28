@@ -93,6 +93,7 @@ const APIs = [
   { application: 'LLM', method: 'Chat', path: '/hubapi/v1/llm/chat/completions' },
   { application: 'StableDiffsuion', method: 'TextToImage', path: null },
   { application: 'StableDiffsuion', method: 'TextToImage', path: '/hubapi/v1/txt2img' },
+  { application: 'StableDiffsuion', method: 'TextToImage', path: '/sdapi/v1/txt2img' },
 ];
 
 function formatApiPath(path: string, appOrigin: string) {
