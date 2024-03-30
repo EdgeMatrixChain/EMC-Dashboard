@@ -1,52 +1,45 @@
 <template>
-  <NSpace class="section" vertical :wrap-item="false" :size="[0, 16]">
-    <div class="section-header">
-      <span class="section-header-title">Token Reward of Node</span>
-    </div>
-    <NSpace class="section-body w-full" vertical :wrap-item="false" :wrap="false" :size="[16, 24]">
+  <div class="content">
+    <SectionHeader>Token Reward of Node</SectionHeader>
+    <div class="content-body">
       <Released />
-    </NSpace>
-    <NSpace class="section-body w-full" vertical :wrap-item="false" :wrap="false" :size="[16, 24]">
+    </div>
+    <div class="content-body">
       <Schedule />
-    </NSpace>
-  </NSpace>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { NSpace, NText } from 'naive-ui';
+import { onUnmounted } from 'vue';
+import SectionHeader from '@/components/section-header.vue';
 import Released from './released/index.vue';
 import Schedule from './schedule/index.vue';
-
-// const data = ref<any[]>([]);
-// onMounted(async () => {
-//   data.value = await getDAN();
-// });
 
 onUnmounted(() => {});
 </script>
 
 <style scoped>
-.section {
+.content {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
 }
 
-.section-header {
+.content-body {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-.section-header-title {
-  font-family: Oxanium;
-  font-size: 24px;
-  font-weight: 500;
-}
-
-.scroller-wrapper {
-  box-sizing: border-box;
-}
-
-.section-body {
-  padding: 24px;
-  background-color: rgba(0, 0, 0, 0.1);
+@media (min-width: 640px) {
+  .content {
+    gap: 16px 0;
+  }
+  .content-body {
+    padding: 24px;
+  }
 }
 </style>

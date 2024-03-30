@@ -4,7 +4,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, PropType, onUnmounted } from 'vue';
-import { NSpace } from 'naive-ui';
 import * as echarts from 'echarts';
 import { getDefaultOption } from './options';
 import { useIsMobile } from '@/composables/use-screen';

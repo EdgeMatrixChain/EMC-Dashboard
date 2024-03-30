@@ -5,9 +5,16 @@
         <span>No Data</span>
       </template>
     </NDataTable>
-    <NSpace class="mt-[16px]" justify="end" :wrap-item="false">
-      <NPagination v-model:page="pageNo" :disabled="loading" :page-count="pageCount" @update:page="handlePageChange" size="large" />
-    </NSpace>
+    <div class="table-footer">
+      <NPagination
+        v-model:page="pageNo"
+        :disabled="loading"
+        :page-count="pageCount"
+        @update:page="handlePageChange"
+        :size="isMobile ? 'small' : 'large'"
+        :page-slot="5"
+      />
+    </div>
   </div>
 </template>
 
@@ -15,7 +22,7 @@
 import { ref, h, onMounted } from 'vue';
 import { NDataTable, NEllipsis, NSpace, NPagination } from 'naive-ui';
 import { http } from '@/tools/http';
-import { Utils } from '@/tools/utils';
+import { useIsMobile } from '@/composables/use-screen';
 import moment from 'moment';
 
 export type Item = {
@@ -36,7 +43,7 @@ const props = defineProps({
 });
 
 defineEmits(['item']);
-
+const isMobile = useIsMobile();
 const loading = ref(false);
 const pageNo = ref(1);
 const pageSize = ref(20);
@@ -88,7 +95,7 @@ const columns: any = ref([
   },
 ]);
 
-const StatusText = ['Wait', 'Pending', 'Complete', 'Failed'];
+const StatusText = ['Wait', 'Pending', 'Complete', 'Failed', 'Timeout'];
 const APIs = [
   { application: 'LLM', method: 'Chat', path: '/hubapi/v1/llm/chat/completions' },
   { application: 'StableDiffsuion', method: 'TextToImage', path: null },
@@ -152,3 +159,10 @@ onMounted(() => {
   initList();
 });
 </script>
+<style scoped>
+.table-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+</style>

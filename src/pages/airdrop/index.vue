@@ -32,7 +32,7 @@ import { ApiManager } from '@/web3/api';
 import { MerkleClaimApi } from '@/web3/api/merkle-claim';
 import { Http } from '@/tools/http';
 import Header from '@/layout/app/header/index.vue';
-import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import { useIsMobile } from '@/composables/use-screen';
 import Bg from './bg.vue';
 import GiftLoading from './gift-loading.vue';
 import GiftSuccess from './gift-success.vue';
@@ -51,15 +51,11 @@ type Airdrop = {
 };
 
 const isMobile = useIsMobile();
-const isTablet = useIsTablet();
 const bannerStyle = computed(() => {
   let fontSize = '40px';
   let marginTop = '24px';
   if (isMobile.value) {
     fontSize = '24px';
-    marginTop = '0';
-  } else if (isTablet.value) {
-    fontSize = '32px';
     marginTop = '0';
   }
   return { fontSize, marginTop };

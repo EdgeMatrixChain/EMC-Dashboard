@@ -1,5 +1,5 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small"/>
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small" />
 </template>
 
 <script lang="ts" setup>
@@ -20,8 +20,7 @@ onMounted(async () => {
   const { fdv, priceUsd } = await getDexData();
   loading.value = false;
   const { value: _value, text, unit: _unit } = formatMillion(fdv);
-  value.value = `$${formatNumber(_value || 0)}`;
-  unit.value = _unit;
+  value.value = `$${text}`;
 });
 </script>
 

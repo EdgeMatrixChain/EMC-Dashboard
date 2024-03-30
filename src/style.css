@@ -1,10 +1,10 @@
 :root {
-  font-family: "Public Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(255, 255, 255, 1);
   background-color: #242424;
 
   font-synthesis: none;
@@ -13,8 +13,17 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --header-height: 84px;
-  --footer-height: 120px;
+  --bg-color1: #18181c;
+  --bg-color2: #212121;
+
+  --text-color2: #69656f;
+
+  --screen-max-width: 1200px;
+  --screen-min-width: 1200px;
+  --header-height: 72px;
+  --footer-height: 200px;
+  --page-py: 24px;
+  --page-px: 16px;
 }
 /* ::-webkit-scrollbar {
   display: none;
@@ -74,6 +83,10 @@ a {
     color: #747bff;
   }
 }
+/* pagination vertical middle */
+.n-pagination-item {
+  line-height: 1;
+}
 
 .n-input {
   background: transparent !important;
@@ -92,3 +105,18 @@ a {
   transition: 0.3s;
 }
 
+.page {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: var(--page-py) var(--page-px);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-py: 40px;
+    --page-px: 0;
+    --header-height: 80px;
+    --footer-height: 120px;
+  }
+}

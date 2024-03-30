@@ -7,7 +7,7 @@ export function getDefaultOption(): any {
       },
       backgroundColor: 'rgba(23,23,28,0.6)',
       borderWidth: 0,
-      textStyle: { color: '#ffffff', fontWeight: 500, fontFamily: '"Public Sans", Helvetica, Tahoma, Arial' },
+      textStyle: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
     },
     silent: true,
     grid: {
@@ -23,14 +23,14 @@ export function getDefaultOption(): any {
         data: [],
         axisTick: { show: false },
         axisLine: { lineStyle: { color: '#666666', width: 0.5 } },
-        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: '"Public Sans", Helvetica, Tahoma, Arial' },
+        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
       },
     ],
     yAxis: [
       {
         type: 'value',
         splitLine: { lineStyle: { color: ['#b1b1b166'], type: 'dashed', width: 0.5 } },
-        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: '"Public Sans", Helvetica, Tahoma, Arial' },
+        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
       },
     ],
     // dataZoom: [{ type: 'inside', start: 0, end: 10 }],

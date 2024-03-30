@@ -1,12 +1,12 @@
 <template>
-  <NSpace class="label-with-value" v-bind="layoutAttr" :wrap="false" :wrap-item="false">
-    <NSpace class="min-w-[128px] xl:min-w-[200px]" :wrap-item="false" :size="[8, 0]">
+  <div class="label-with-value">
+    <div class="label-with-value-cell-1">
       <slot name="label"></slot>
-    </NSpace>
-    <NSpace class="xl:flex-1" align="center" justify="space-between" :wrap-item="false" :size="[8, 0]">
+    </div>
+    <div class="label-with-value-cell-2">
       <slot name="value"></slot>
-    </NSpace>
-  </NSpace>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
@@ -16,11 +16,7 @@ const isMobile = useIsMobile();
 
 const layoutAttr = computed<any>(() => {
   if (isMobile.value) {
-    return {
-      vertical: true,
-      justify: 'center',
-      size: [0, 4],
-    };
+    return {};
   } else {
     return {
       align: 'center',
@@ -31,6 +27,10 @@ const layoutAttr = computed<any>(() => {
 </script>
 <style scoped>
 .label-with-value {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px 0;
   min-height: 64px;
   padding: 12px 24px;
   border-bottom: 1px solid #2d343f;
@@ -38,5 +38,30 @@ const layoutAttr = computed<any>(() => {
 
 .label-with-value:nth-last-child(1) {
   border-bottom: none;
+}
+
+.label-with-value-cell-1,
+.label-with-value-cell-2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 8px;
+}
+.label-with-value-cell-1 {
+  min-width: 128px;
+}
+.label-with-value-cell-2 {
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .label-with-value {
+    flex-direction: row;
+    align-items: center;
+  }
+  .label-with-value-cell-2 {
+    flex: 1;
+    width: 0;
+  }
 }
 </style>

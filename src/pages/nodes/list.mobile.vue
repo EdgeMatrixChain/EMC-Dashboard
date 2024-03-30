@@ -29,6 +29,7 @@
                   </div>
                   <div class="badge-value">
                     <span>{{ item.cpus || '-' }}</span>
+                    <span class="badge-value-unit">cors</span>
                   </div>
                 </div>
                 <div class="badge">
@@ -45,6 +46,7 @@
                   </div>
                   <div class="badge-value">
                     <span>{{ item.memory || '-' }}</span>
+                    <span class="badge-value-unit">GB</span>
                   </div>
                 </div>
               </div>
@@ -59,12 +61,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue';
+import { PropType } from 'vue';
 import { RouterLink } from 'vue-router';
 import { NSpin, NPagination } from 'naive-ui';
-import { getNodeTypes } from '@/apis';
+
 const props = defineProps({
-  list: { type: Array, default: () => [] },
+  list: { type: Array as PropType<any[]>, default: () => [] },
   pageNo: { type: Number },
   pageCount: { type: Number },
   loading: { type: Boolean },
@@ -72,7 +74,7 @@ const props = defineProps({
 
 const emits = defineEmits(['paging']);
 
-function handlePageChange(val) {
+function handlePageChange(val: any) {
   emits('paging', val);
 }
 </script>
@@ -129,17 +131,25 @@ function handlePageChange(val) {
 
 .badge {
   display: flex;
-  align-items: center;
-  gap: 0 4px;
-  color: #666666;
+  flex-direction: column;
+  line-height: 1;
+  gap: 4px;
+  width: 56px;
 }
 
 .badge-label {
   font-size: 12px;
+  color: var(--text-color2);
 }
 
 .badge-value {
   font-size: 12px;
+  
+}
+
+.badge-value-unit {
+  font-size: 12px;
+  color: var(--text-color2);
 }
 
 .item-empty {

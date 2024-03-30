@@ -1,17 +1,17 @@
 <template>
   <div class="chart-view">
     <div class="chart-map" ref="chartRef"></div>
-    <div class="chart-view-header bg-color2 rounded">
+    <div class="chart-view-header">
       <span class="chart-view-title">Node Distribution</span>
     </div>
-    <NSpace class="chart-view-zoom" vertical :wrap-item="false" :size="[0, 16]">
-      <NSpace class="zoom-1" align="center" justify="center" :wrap-item="false" :size="[0, 16]" @click.prevent.stop="onPressZoom(3)">
+    <div class="chart-view-zoom">
+      <div class="zoom-1" @click.prevent.stop="onPressZoom(3)">
         <img class="zoom-icon" src="@/assets/icon_zoom_up.svg" />
-      </NSpace>
-      <NSpace class="zoom-2" align="center" justify="center" vertical :wrap-item="false" :size="[0, 16]" @click.prevent.stop="onPressZoom(-3)">
+      </div>
+      <div class="zoom-2" @click.prevent.stop="onPressZoom(-3)">
         <img class="zoom-icon" src="@/assets/icon_zoom_down.svg" />
-      </NSpace>
-    </NSpace>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -92,7 +92,7 @@ onUnmounted(() => {
   position: relative;
   border-radius: 16px;
   border: 1px solid #3d1a5a;
-  background-color: #171717;
+  background-color: var(--bg-color2);
   overflow: hidden;
 }
 .chart-map {
@@ -105,9 +105,11 @@ onUnmounted(() => {
 
 .chart-view-header {
   position: absolute;
-  left: 16px;
-  top: 16px;
-  padding: 4px 12px;
+  left: 4px;
+  top: 4px;
+  padding: 4px 8px;
+  background-color: var(--bg-color2);
+  border-radius: 4px;
 }
 
 .chart-view-title {
@@ -118,19 +120,45 @@ onUnmounted(() => {
 
 .chart-view-zoom {
   position: absolute;
-  right: 16px;
-  bottom: 16px;
+  right: 4px;
+  bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 8px 0;
 }
 .zoom-1,
 .zoom-2 {
   width: 24px;
   height: 24px;
   border-radius: 100%;
-  background-color: #575757;
+  background-color: var(--bg-color2);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
 }
+
 .zoom-icon {
   width: 14px;
   height: 14px;
   object-fit: cover;
+}
+
+@media (min-width: 640px) {
+  .chart-view-header {
+    left: 16px;
+    top: 16px;
+    padding: 4px 12px;
+  }
+
+  .chart-view-zoom {
+    gap: 16px 0;
+  }
+  .chart-view-zoom {
+    right: 16px;
+    bottom: 16px;
+  }
 }
 </style>

@@ -28,7 +28,7 @@
 import { PropType, computed } from 'vue';
 import { NModal } from 'naive-ui';
 import { ethers } from 'ethers';
-import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import { useIsMobile } from '@/composables/use-screen';
 import { toFixedClip } from '@/tools/format-number';
 import GiftBox from './gift-box.vue';
 const props = defineProps({
@@ -37,13 +37,10 @@ const props = defineProps({
 });
 const emits = defineEmits(['claim', 'close']);
 const isMobile = useIsMobile();
-const isTablet = useIsTablet();
 const titleStyle = computed(() => {
   let fontSize = '32px';
   if (isMobile.value) {
     fontSize = '24px';
-  } else if (isTablet.value) {
-    fontSize = '28px';
   }
   return { fontSize };
 });

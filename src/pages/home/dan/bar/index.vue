@@ -4,7 +4,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, PropType, onUnmounted } from 'vue';
-import { NSpace } from 'naive-ui';
 import * as echarts from 'echarts';
 import { getDefaultOption } from './options';
 import { useIsMobile } from '@/composables/use-screen';
@@ -25,6 +24,12 @@ const initChart = () => {
   if (!chartRef.value) return;
   chart = echarts.init(chartRef.value);
   const options = getDefaultOption();
+  if (isMobile.value) {
+    options.grid = { left: 48, right: 16, top: 20, bottom: 32 };
+  } else {
+    options.grid = { left: 64, right: 44, top: 44, bottom: 44 };
+  }
+
   chart.setOption(options);
   if (props.data.length > 0) {
     updateChart(props.data);
@@ -50,7 +55,7 @@ function getSeriesBar(name: string, itemStyle: any, data: number[]) {
     name: name,
     type: 'bar',
     barGap: 0,
-    barWidth: 16,
+    barWidth: isMobile.value ? 4 : 16,
     label: labelOption,
     itemStyle,
     emphasis: { focus: 'series' },
@@ -116,6 +121,11 @@ onUnmounted(() => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.1);
   border: 1px solid #3d1a5a;
-  border-radius: 16px;
+  border-radius: 4px;
+}
+@media (min-width: 640px) {
+  .chart-pie {
+    border-radius: 16px;
+  }
 }
 </style>

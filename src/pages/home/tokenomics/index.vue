@@ -1,38 +1,36 @@
 <template>
-  <NSpace class="section" vertical :wrap-item="false" :size="[0, 16]">
-    <div class="section-header">
-      <span class="section-header-title">Tokenomics</span>
-    </div>
-    <NSpace class="section-body w-full" vertical :wrap-item="false" :wrap="false" :size="[16, 24]">
-      <NSpace class="row" :wrap-item="false" :size="[24, 16]">
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenSupply />
-        </NSpace>
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenStaked />
-        </NSpace>
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenBurned />
-        </NSpace>
-      </NSpace>
-      <NSpace class="row" :wrap-item="false" :size="[24, 16]">
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenCirculating />
-        </NSpace>
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenFdv />
-        </NSpace>
-        <NSpace class="col flex-1" vertical :wrap-item="false" :size="[0, 0]">
-          <TokenMaketCap />
-        </NSpace>
-      </NSpace>
+  <div class="content">
+    <SectionHeader>Tokenomics</SectionHeader>
+    <NSpace class="content-body">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-[16px] sm:gap-[24px]">
+        <div class="grid-cols-1">
+          <TokenSupply :size="numericSize" />
+        </div>
+        <div class="grid-cols-1">
+          <TokenStaked :size="numericSize" />
+        </div>
+        <div class="grid-cols-1">
+          <TokenBurned :size="numericSize" />
+        </div>
+
+        <div class="grid-cols-1">
+          <TokenCirculating :size="numericSize" />
+        </div>
+        <div class="grid-cols-1">
+          <TokenFdv :size="numericSize" />
+        </div>
+        <div class="grid-cols-1">
+          <TokenMaketCap :size="numericSize" />
+        </div>
+      </div>
     </NSpace>
-  </NSpace>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted } from 'vue';
+import { computed } from 'vue';
 import { NSpace } from 'naive-ui';
+import SectionHeader from '@/components/section-header.vue';
 import TokenSupply from '@/pages/home/numeric/token-supply.vue';
 import TokenStaked from '@/pages/home/numeric/token-staked.vue';
 import TokenBurned from '@/pages/home/numeric/token-burned.vue';
@@ -41,46 +39,27 @@ import TokenCirculating from '@/pages/home/numeric/token-circulating.vue';
 import TokenFdv from '@/pages/home/numeric/token-fdv.vue';
 import TokenMaketCap from '@/pages/home/numeric/token-maket-cap.vue';
 
-// import { useIsMobile } from '@/composables/use-screen';
-
-onMounted(async () => {});
-
-onUnmounted(() => {});
+import { useIsMobile } from '@/composables/use-screen';
+const isMobile = useIsMobile();
+const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
 </script>
 
 <style scoped>
-.section {
+.content {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
 }
 
-.section-header {
+.content-body {
+  width: 100%;
 }
 
-.section-header-title {
-  font-family: Oxanium;
-  font-size: 24px;
-  font-weight: 500;
+@media (min-width: 640px) {
+  .content {
+    gap: 16px 0;
+  }
 }
-
-.section-body {
-}
-.row {
-  /* border: solid 1px #3d1a5a; */
-}
-.col {
-  position: relative;
-  background-color: rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
-/* .row .col:not(:last-child)::after {
-  content: '';
-  display: block;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background-color: #3d1a5a;
-} */
 </style>

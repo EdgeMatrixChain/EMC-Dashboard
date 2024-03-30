@@ -42,12 +42,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue';
+import { PropType } from 'vue';
 import { RouterLink } from 'vue-router';
 import { NSpin, NPagination } from 'naive-ui';
-import { getNodeTypes } from '@/apis';
 const props = defineProps({
-  list: { type: Array, default: () => [] },
+  list: { type: Array as PropType<any[]>, default: () => [] },
   pageNo: { type: Number },
   pageCount: { type: Number },
   loading: { type: Boolean },
@@ -55,7 +54,7 @@ const props = defineProps({
 
 const emits = defineEmits(['paging']);
 
-function handlePageChange(val) {
+function handlePageChange(val: any) {
   emits('paging', val);
 }
 </script>

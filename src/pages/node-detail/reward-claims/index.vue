@@ -5,17 +5,18 @@
         <span>No Data</span>
       </template>
     </NDataTable>
-    <NSpace class="mt-[16px]" justify="end" :wrap-item="false">
-      <NPagination v-model:page="pageNo" :disabled="loading" :page-count="pageCount" @update:page="handlePageChange" size="large" />
-    </NSpace>
+    <div class="table-footer">
+      <NPagination v-model:page="pageNo" :disabled="loading" :page-count="pageCount" @update:page="handlePageChange" :size="isMobile ? 'small' : 'large'" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, h, onMounted, onUnmounted } from 'vue';
-import { NDataTable, NEllipsis, NSpace, NButton, NPagination } from 'naive-ui';
+import { NDataTable, NEllipsis, NSpace, NPagination } from 'naive-ui';
 import { http } from '@/tools/http';
 import { ethers } from 'ethers';
+import { useIsMobile } from '@/composables/use-screen';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
 
@@ -36,7 +37,7 @@ const props = defineProps({
   nodeId: String,
   loading: Boolean,
 });
-
+const isMobile = useIsMobile();
 const loading = ref(false);
 const pageNo = ref(1);
 const pageSize = ref(20);
@@ -184,3 +185,10 @@ onUnmounted(() => {
   pendingTimerConfig.stop = true;
 });
 </script>
+<style scoped>
+.table-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+</style>

@@ -65,13 +65,12 @@ export default defineComponent({
 </script>
 <script lang="ts" setup>
 import { ref, computed, onActivated } from 'vue';
-import { NPagination, NSpace, NGrid, NGridItem, NSpin, NDropdown } from 'naive-ui';
 import { useThrottleFn } from '@vueuse/core';
 import { Utils } from '@/tools/utils';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import moment from 'moment';
-import { useIsMobile, useIsTablet, useIsSmallDesktop, useIsDesktop } from '@/composables/use-screen';
-import { getNodes, getNodeTypes, getComputeNodes } from '@/apis';
+import { useIsMobile } from '@/composables/use-screen';
+import { getNodes, getNodeTypes } from '@/apis';
 import NodeComputer from './numeric/node-computing.vue';
 import NodeValidator from './numeric/node-validate.vue';
 import NodeRpc from './numeric/node-rpc.vue';
@@ -98,9 +97,7 @@ type Item = {
   startupTime: string;
 };
 const route = useRoute();
-const router = useRouter();
 const isMobile = useIsMobile();
-const isDesktop = useIsDesktop();
 const { list: nodeTypeList, map: nodeTypeMap } = getNodeTypes();
 
 const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
@@ -190,7 +187,7 @@ const handlePageChange = (currentPage: number) => {
   updateList();
 };
 
-const onFilterDropdownUpdate = (key) => {
+const onFilterDropdownUpdate = (key: any) => {
   const queriesValue = queries.value;
   queriesValue.status = key;
   initList();
@@ -204,12 +201,6 @@ const onFilterSearch = () => {
 </script>
 <style scoped>
 .page {
-  position: relative;
-  z-index: 1;
-  padding-top: 48px;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-bottom: calc(var(--footer-height) + 48px);
   display: flex;
   flex-direction: column;
   gap: 16px 0;

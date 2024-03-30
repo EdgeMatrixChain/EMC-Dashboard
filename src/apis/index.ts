@@ -17,8 +17,8 @@ export async function getMapNodes() {
 type NodesOption = {
   page: number;
   size: number;
-  htbegin: number;
-  htend: number;
+  htbegin?: number;
+  htend?: number;
   status?: string; //0,1:computing 11:validator 12:rpc 13:relay
   keywords?: string; //nodeid
 };
@@ -143,12 +143,10 @@ export async function queryReward(nodeId: string) {
   };
 }
 
-export async function getDAN() {
-  const begin = moment().subtract(15, 'day').utc().format('YYYY-MM-DD');
-  const end = moment().utc().format('YYYY-MM-DD');
+export async function getDAN({ daybegin, dayend }: { daybegin: string; dayend: string }) {
   const resp = await http.get({
     url: '/stats/dan',
-    data: { begin, end },
+    data: { daybegin, dayend },
   });
   return resp.data || [];
 }

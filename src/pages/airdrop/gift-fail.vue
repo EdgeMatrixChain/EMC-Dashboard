@@ -23,19 +23,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { NModal } from 'naive-ui';
-import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import { useIsMobile } from '@/composables/use-screen';
 const props = defineProps({
   isVisible: Boolean,
 });
 const emits = defineEmits(['close']);
 const isMobile = useIsMobile();
-const isTablet = useIsTablet();
 const titleStyle = computed(() => {
   let fontSize = '32px';
   if (isMobile.value) {
     fontSize = '24px';
-  } else if (isTablet.value) {
-    fontSize = '28px';
   }
   return { fontSize };
 });

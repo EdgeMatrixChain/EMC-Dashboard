@@ -9,11 +9,7 @@ export const routes = [
     path: '/airdrop',
     component: () => import('@/pages/airdrop/index.vue'),
   },
-  {
-    name: 'home',
-    path: '/home',
-    component: () => import('@/pages/home/index.vue'),
-  },
+
   {
     name: 'layout',
     path: '/',
@@ -22,6 +18,11 @@ export const routes = [
       name: 'home',
     },
     children: [
+      {
+        name: 'home',
+        path: '/home',
+        component: () => import('@/pages/home/index.vue'),
+      },
       {
         name: 'nodes',
         path: 'nodes',

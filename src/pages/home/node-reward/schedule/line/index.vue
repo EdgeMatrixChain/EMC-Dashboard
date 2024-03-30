@@ -8,10 +8,10 @@ import * as echarts from 'echarts';
 import { getDefaultOption } from './options';
 import { useIsMobile } from '@/composables/use-screen';
 import moment from 'moment';
-export type DataItem = any | { decayPeriod: string; days: string; e: string; pi: string; decayFactor: string; periodicReward: string; epochReward: string };
+import type { ScheduleData, ScheduleDataItem } from '../../data';
 
 const props = defineProps({
-  data: { type: Array as PropType<DataItem[]>, default: () => [] },
+  data: { type: Object as PropType<ScheduleData>, default: () => [] },
 });
 
 const isMobile = useIsMobile();
@@ -24,13 +24,23 @@ const initChart = () => {
   if (!chartRef.value) return;
   chart = echarts.init(chartRef.value);
   const options = getDefaultOption();
+  if (isMobile.value) {
+    options.grid = { left: 48, right: 16, top: 16, bottom: 32 };
+  } else {
+    options.grid = { left: 80, right: 44, top: 24, bottom: 32 };
+  }
   chart.setOption(options);
-  if (props.data.length > 0) {
-    updateChart(props.data);
+  const scheduleData = props.data;
+  if (scheduleData.data.length > 0) {
+    updateChart(scheduleData.data);
   }
 };
 
 function getSeries(name: string, data: number[]) {
+  const lineColor = new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+    { offset: 0, color: '#2f0593' },
+    { offset: 1, color: '#861cb9' },
+  ]);
   return {
     name: name,
     type: 'line',
@@ -47,42 +57,33 @@ function getSeries(name: string, data: number[]) {
       color: '#861cb9',
     },
     step: 'end',
-    lineStyle: {
-      color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-        { offset: 0, color: '#2f0593' },
-        { offset: 1, color: '#861cb9' },
-      ]),
-      width: 1,
-    },
+    lineStyle: { color: lineColor, width: 1 },
     data: data,
   };
 }
 
-const updateChart = (data: DataItem[]) => {
+const updateChart = (data: ScheduleDataItem[]) => {
   if (!chart) return;
   const dates: string[] = [];
-  const rewardValue: number[] = [];
-  let beginDate = moment.utc([2024, 0, 1]);
-  data.forEach((item) => {
-    const beginDateStr = beginDate.format('MM/DD/YYYY');
-    const endDate = beginDate.add(Number(item.days), 'day');
-    const endDateStr = endDate.format('MM/DD/YYYY');
-    const date = `${beginDateStr}~${endDateStr}`;
-    dates.push(date);
-    rewardValue.push(Number(item.epochReward) || 0);
+  const epochValue: number[] = [];
+  const periodicValue: number[] = [];
+  data.forEach((item, index) => {
+    dates.push(item.name);
+    epochValue.push(item.epochReward);
+    periodicValue.push(item.periodicReward);
   });
-  console.info(dates);
   const xAxisLables = dates;
-  const series = getSeries('Periodic Reward', rewardValue);
+  const series1 = getSeries('Epoch Reward', epochValue);
+  // const series2 = getSeries('Periodic Reward', periodicValue);
   chart.setOption({
     xAxis: [{ data: xAxisLables }],
-    series: [series],
+    series: [series1],
   });
 };
 
 watch(
   () => props.data,
-  (val) => updateChart(val)
+  (val) => updateChart(val.data)
 );
 
 onMounted(() => {

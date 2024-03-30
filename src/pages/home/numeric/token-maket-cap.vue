@@ -30,8 +30,7 @@ onMounted(async () => {
   const [circulation, { fdv, priceUsd }] = await Promise.all([queryCirculation(), getDexData()]);
   loading.value = false;
   const { value: _value, text, unit: _unit } = formatMillion(circulation * priceUsd);
-  value.value = `$${_value}`;
-  unit.value = _unit;
+  value.value = `$${text}`;
   tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulation))}`;
 });
 </script>

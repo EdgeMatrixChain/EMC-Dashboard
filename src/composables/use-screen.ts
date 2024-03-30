@@ -1,7 +1,9 @@
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
 /**
-  breakpointsTailwind: {
+ * https://tailwindcss.com/docs/screens
+ * 
+ * breakpointsTailwind: {
     'sm': '640px',
     // => @media (min-width: 640px) { ... }
 
@@ -25,16 +27,22 @@ export function useIsMobile() {
   return breakpoints.smaller('sm');
 }
 
+export function useIsIPad() {
+  const breakpoints = useBreakpoints(breakpointsTailwind);
+  //0~768px
+  return breakpoints.smaller('md');
+}
+
 export function useIsTablet() {
   const breakpoints = useBreakpoints(breakpointsTailwind);
-  //640~1024
-  return breakpoints.between('sm', 'xl');
+  //0~1024
+  return breakpoints.smaller('lg');
 }
 
 export function useIsSmallDesktop() {
   const breakpoints = useBreakpoints(breakpointsTailwind);
-  //1024~1536
-  return breakpoints.between('xl', '2xl');
+  //0~1280
+  return breakpoints.smaller('xl');
 }
 
 export function useIsDesktop() {

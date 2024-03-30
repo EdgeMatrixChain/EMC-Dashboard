@@ -1,7 +1,10 @@
 export default {
   common: {
     // primaryColor: '#9A37FA',
-    fontFamily: '\"Public Sans\", Helvetica, Tahoma, Arial',
+    textColor1: '#ffffff', //'rgba(255,255,255,0.9)',
+    textColor2: '#ffffff', //'rgba(255,255,255,0.82)',
+    bodyColor: 'rgb(16, 16, 20)',
+    fontFamily: 'Roboto, sans-serif',
   },
   Button: {
     textColorPrimary: '#FFFFFF',
@@ -103,6 +106,9 @@ export default {
     colorLoading: '#821BE6FF',
   },
   DataTable: {
+    thColor: '#1c2025',
+    // tdColor: '#1c2025',
+    tdColorStriped: '#1c2025',
     loadingColor: '#821BE6FF',
   },
   Dropdown: {

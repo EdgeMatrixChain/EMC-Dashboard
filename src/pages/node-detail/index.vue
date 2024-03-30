@@ -1,210 +1,201 @@
 <template>
-  <div class="page max-w-[1440px]" style="margin: auto">
+  <div class="page">
     <template v-if="error === -1">
-      <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
+      <div class="page-empty">
         <NSpin />
-      </NSpace>
+      </div>
     </template>
     <template v-else-if="error > 0">
-      <NSpace align="center" justify="center" :wrap-item="false" :size="[16, 16]" style="min-height: 240px">
-        <NText>{{ errorText }}</NText>
-      </NSpace>
+      <div class="page-empty">
+        <span>{{ errorText }}</span>
+      </div>
     </template>
     <template v-else>
-      <NSpace vertical :wrap-item="false">
+      <div class="page-body">
         <template v-if="status === 1">
-          <NAlert class="mb-[4px]" title="Warning" type="warning">
-            <NSpace align="center" :wrap-item="false" :size="[8, 8]">
-              <NText>Nodes need to be bound before stake</NText>
-              <NButton type="warning" strong size="small" :loading="loadings.bind" @click="onPressBind" style="background-color: var(--n-color); width: auto"
-                >Bind</NButton
-              >
-            </NSpace>
-          </NAlert>
+          <Alert title="Warning" type="warning" content="Nodes need to be bound before stake">
+            <PrimaryButton @press="onPressBind">Bind</PrimaryButton>
+          </Alert>
         </template>
         <template v-else-if="status === 2">
           <AlertSyncOwner :node-id="nodeInfo.nodeId" :bind-stake-account="nodeInfo.bindStakeAccount" @finish="onSyncOwnerFinish" />
         </template>
-        <template v-if="status === 0 || status === 1 || status === 2">
-          <AlertUnstake :node-id="nodeInfo.nodeId" />
-        </template>
-        <div class="leading-normal mb-[4px] whitespace-nowrap text-ellipsis overflow-hidden">
-          <NText class="header-text text-[20px] mr-[8px]">Node</NText>
-          <NText class="header-text text-[14px]">{{ nodeInfo.nodeId }}</NText>
-        </div>
 
-        <NGrid x-gap="24" y-gap="16" cols="1 1000:2" item-responsive>
-          <NGridItem>
-            <div class="main-table" style="border-left-color: #8f7df8">
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Running Time</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.runTime }}</NText>
-                </template>
-              </LabelWithValue>
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Startup Time</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.startupTime }}</NText>
-                </template>
-              </LabelWithValue>
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Owner</NText>
-                </template>
-                <template #value>
-                  <div class="flex-1 w-[0] whitespace-nowrap text-ellipsis overflow-hidden">
-                    <template v-if="status === 0 || status === 1 || status === 2">
-                      <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal || '--' }}</NText>
-                    </template>
-                    <template v-else>
-                      <NText class="text-[14px] xl:text-[16px]"> {{ nodeInfo.principal ? Utils.textOverflow(nodeInfo.principal) : '--' }}</NText>
-                    </template>
-                  </div>
-                  <template v-if="status === 0">
-                    <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
-                      <template #icon>
-                        <NIcon size="18">
-                          <IconEdit />
-                        </NIcon>
-                      </template>
-                    </NButton>
+        <div class="node-info">
+          <div class="node-header">
+            <span class="header-text-1">Node ID</span>
+            <span class="header-text-2">{{ nodeInfo.nodeId }}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-[16px] sm:gap-[24px]">
+            <div class="grid-cols-1">
+              <div class="main-table" style="border-left-color: #8f7df8">
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Running Time</span>
                   </template>
-                </template>
-              </LabelWithValue>
-
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Reward</NText>
-                </template>
-                <template #value>
-                  <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
-                    <NText class="text-[14px] xl:text-[16px]">{{ toFixedClip(ethers.formatUnits(nodeInfo.currentReward || 0n, 18), 6) }} EMC </NText>
-                    <NTooltip trigger="hover">
-                      <template #trigger>
-                        <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
-                      </template>
-                      <div>
-                        <p>Min Claim: 100EMC</p>
-                      </div>
-                    </NTooltip>
-                  </NSpace>
-                  <template v-if="status === 0">
-                    <NButton
-                      type="primary"
-                      strong
-                      size="small"
-                      round
-                      :loading="loadings.checkout"
-                      @click="onPressClaim"
-                      :disabled="!nodeInfo.currentReward || nodeInfo.currentReward < minClaimReward"
-                      style="background-color: var(--n-color); width: auto"
-                      >Claim
-                    </NButton>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.runTime }}</span>
                   </template>
-                </template>
-              </LabelWithValue>
-
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Staked</NText>
-                </template>
-                <template #value>
-                  <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
-                    <NText class="text-[14px] xl:text-[16px]">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </NText>
-                    <NTooltip trigger="hover">
-                      <template #trigger>
-                        <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Startup Time</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.startupTime }}</span>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Owner</span>
+                  </template>
+                  <template #value>
+                    <div class="flex-1 w-[0] whitespace-nowrap text-ellipsis overflow-hidden">
+                      <template v-if="status === 0 || status === 1 || status === 2">
+                        <span class="info-item-value"> {{ nodeInfo.principal || '--' }}</span>
                       </template>
-                      <div>
-                        <p>Maximum limit: {{ ethers.formatUnits(nodeInfo.maxStakeAmount || 0n, 18) }}EMC</p>
-                      </div>
-                    </NTooltip>
-                  </NSpace>
-                  <template v-if="status === 0">
-                    <NSpace align="center" :wrap-item="false" :size="[8, 4]">
-                      <NButton type="primary" strong size="small" round :loading="loadings.stake" @click="onPressStake" style="width: 80px">Stake</NButton>
+                      <template v-else>
+                        <span class="info-item-value"> {{ nodeInfo.principal ? Utils.textOverflow(nodeInfo.principal) : '--' }}</span>
+                      </template>
+                    </div>
+                    <template v-if="status === 0">
+                      <NButton strong secondary circle @click.stop.prevent="onPressChangeOwner">
+                        <template #icon>
+                          <NIcon size="18">
+                            <IconEdit />
+                          </NIcon>
+                        </template>
+                      </NButton>
+                    </template>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Reward</span>
+                  </template>
+                  <template #value>
+                    <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
+                      <span class="info-item-value">{{ toFixedClip(ethers.formatUnits(nodeInfo.currentReward || 0n, 18), 6) }} EMC </span>
+                      <NTooltip trigger="hover">
+                        <template #trigger>
+                          <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                        </template>
+                        <div>
+                          <p>Min Claim: 100EMC</p>
+                        </div>
+                      </NTooltip>
+                    </NSpace>
+                    <template v-if="status === 0">
                       <NButton
                         type="primary"
                         strong
                         size="small"
                         round
-                        :loading="loadings.unstake"
-                        :disabled="nodeInfo.currentStaked === 0n || !nodeInfo.currentStaked"
-                        @click="onPressUnstake"
-                        style="width: 80px"
-                        >Unstake</NButton
-                      >
-                    </NSpace>
+                        :loading="loadings.checkout"
+                        @click="onPressClaim"
+                        :disabled="!nodeInfo.currentReward || nodeInfo.currentReward < minClaimReward"
+                        style="background-color: var(--n-color); width: auto"
+                        >Claim
+                      </NButton>
+                    </template>
                   </template>
-                </template>
-              </LabelWithValue>
-            </div>
-          </NGridItem>
-          <NGridItem>
-            <div class="main-table" style="border-left-color: #5554fe">
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">CPU</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.cpuName }}</NText>
-                </template>
-              </LabelWithValue>
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">GPU</NText>
-                </template>
-                <template #value>
-                  <NScrollbar x-scrollable style="flex: 1; width: 0" content-style="height:100%;">
-                    <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
-                      <template v-for="item in nodeInfo.gpus">
-                        <GpuItem :item="item" />
-                      </template>
+                </LabelWithValue>
+
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Staked</span>
+                  </template>
+                  <template #value>
+                    <NSpace class="flex-1 w-[0]" align="center" :wrap-item="false" :size="[4, 0]">
+                      <span class="info-item-value">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </span>
+                      <NTooltip trigger="hover">
+                        <template #trigger>
+                          <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                        </template>
+                        <div>
+                          <p>Maximum limit: {{ ethers.formatUnits(nodeInfo.maxStakeAmount || 0n, 18) }}EMC</p>
+                        </div>
+                      </NTooltip>
                     </NSpace>
-                  </NScrollbar>
-                </template>
-              </LabelWithValue>
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">Mac Address</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.macAddr }}</NText>
-                </template>
-              </LabelWithValue>
-
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">IP Address</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.ipAddr }}</NText>
-                </template>
-              </LabelWithValue>
-
-              <LabelWithValue>
-                <template #label>
-                  <NText class="text-[14px] xl:text-[16px]" depth="3">RAM</NText>
-                </template>
-                <template #value>
-                  <NText class="text-[14px] xl:text-[16px]">{{ nodeInfo.memoryInfo }}</NText>
-                </template>
-              </LabelWithValue>
+                    <template v-if="status === 0">
+                      <NSpace align="center" :wrap-item="false" :size="[8, 4]">
+                        <NButton type="primary" strong size="small" round :loading="loadings.stake" @click="onPressStake" style="width: 80px">Stake</NButton>
+                        <NButton
+                          type="primary"
+                          strong
+                          size="small"
+                          round
+                          :loading="loadings.unstake"
+                          :disabled="nodeInfo.currentStaked === 0n || !nodeInfo.currentStaked"
+                          @click="onPressUnstake"
+                          style="width: 80px"
+                          >Unstake</NButton
+                        >
+                      </NSpace>
+                    </template>
+                  </template>
+                </LabelWithValue>
+              </div>
             </div>
-          </NGridItem>
-        </NGrid>
+            <div class="grid-cols-1">
+              <div class="main-table" style="border-left-color: #5554fe">
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">CPU</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.cpuName }}</span>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">GPU</span>
+                  </template>
+                  <template #value>
+                    <NScrollbar x-scrollable style="flex: 1; width: 0" content-style="height:100%;">
+                      <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
+                        <template v-for="item in nodeInfo.gpus">
+                          <GpuItem :item="item" />
+                        </template>
+                      </NSpace>
+                    </NScrollbar>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Mac Address</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.macAddr }}</span>
+                  </template>
+                </LabelWithValue>
 
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">IP Address</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.ipAddr }}</span>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">RAM</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.memoryInfo }}</span>
+                  </template>
+                </LabelWithValue>
+              </div>
+            </div>
+          </div>
+        </div>
         <NTabs default-value="apis">
-          <NTabPane name="apis" tab="Api transactions">
-            <template v-if="nodeInfo.nodeId">
+          <template v-if="nodeInfo.nodeId && (nodeInfo.status === 0 || nodeInfo.status === 1)">
+            <NTabPane name="apis" tab="Api transactions">
               <ApiTransactions :node-id="nodeInfo.nodeId" />
-            </template>
-          </NTabPane>
+            </NTabPane>
+          </template>
           <template v-if="status === 0">
             <NTabPane name="claims" tab="Reward claims">
               <RewardClaims :node-id="nodeInfo.nodeId" />
@@ -232,7 +223,7 @@
           />
         </template>
         <ModalTips v-model:visible="isVisibleTips" :type="tipsType" :title="tipsTitle" :message="tipsMessage" />
-      </NSpace>
+      </div>
     </template>
   </div>
 </template>
@@ -240,8 +231,10 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, NTooltip, useMessage, useDialog } from 'naive-ui';
+import { NSpace, NText, NButton, NIcon, NScrollbar, NSpin, NTabs, NTabPane, NTooltip, useMessage, useDialog } from 'naive-ui';
 import { PencilSharp as IconEdit, InformationCircleOutline as IconTips } from '@vicons/ionicons5';
+import PrimaryButton from '@/components/primary-button.vue';
+import Alert from './alert.vue';
 import moment from 'moment';
 import { Utils } from '@/tools/utils';
 import { Http } from '@/tools/http';
@@ -257,7 +250,6 @@ import { getDefaultNetwork } from '@/web3/network';
 import { nodeBind } from './bind-node';
 
 import AlertSyncOwner from './alert-sync-owner.vue';
-import AlertUnstake from './alert-unstake.vue';
 
 import ApiTransactions from './api-transactions/index.vue';
 import RewardClaims from './reward-claims/index.vue';
@@ -663,14 +655,49 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.page {
-  width: 100%;
+.page-empty {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
 }
 
-.header-text {
-  font-weight: 400;
+.page-body {
+  display: flex;
+  flex-direction: column;
+
+  margin: auto;
+  gap: 16px 0;
+}
+
+.node-info {
+}
+
+.node-header {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px 0;
+}
+
+.header-text-1 {
+  display: inline-block;
   color: #fff;
-  text-shadow: 0px 2px 8px #762db6;
+  font-weight: 400;
+  font-size: 20px;
+  margin-right: 4px;
+  user-select: none;
+}
+
+.header-text-2 {
+  display: inline-block;
+  color: #fff;
+  font-weight: 400;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .main-table {
@@ -679,13 +706,33 @@ onUnmounted(() => {
   border-left: solid 4px #1c2025;
 }
 
-.main-table-item {
-  height: 64px;
-  padding: 0 24px;
-  border-bottom: 1px solid #2d343f;
+.info-item-label {
+  font-size: 12px;
+  color: var(--text-color2);
 }
 
-.main-table-item:nth-last-child(1) {
-  border-bottom: none;
+.info-item-value {
+  font-size: 14px;
+  color: #ffffff;
+}
+
+@media (min-width: 640px) {
+  .page-body {
+    gap: 24px 0;
+    max-width: var(--screen-max-width);
+    min-width: var(--screen-min-width);
+  }
+  .node-header {
+    flex-direction: row;
+    align-items: baseline;
+  }
+
+  .info-item-label {
+    font-size: 14px;
+  }
+
+  .info-item-value {
+    font-size: 14px;
+  }
 }
 </style>

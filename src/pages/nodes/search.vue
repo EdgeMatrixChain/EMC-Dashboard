@@ -17,17 +17,17 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { NDropdown } from 'naive-ui';
-const emits = defineEmits(['update:value']);
+const emits = defineEmits(['update:value', 'search']);
 const props = defineProps({
   value: { type: String },
   showClear: { type: Boolean },
 });
 
-function onInput(e) {
+function onInput(e: any) {
   emits('update:value', e.target.value);
 }
 
-function onEnter(e) {
+function onEnter() {
   emits('search');
 }
 

@@ -1,50 +1,57 @@
 <template>
-  <NSpace class="section" vertical :wrap-item="false" :size="[0, 16]">
-    <div class="section-header">
-      <span class="section-header-title">Daily Active Node</span>
-    </div>
-    <NSpace class="section-body w-full" :wrap-item="false" :wrap="false" :size="[16, 0]">
-      <div class="w-[100%] h-[360px] relative">
+  <div class="content">
+    <SectionHeader>Daily Active Node</SectionHeader>
+    <div class="content-body w-full">
+      <div class="bar-container">
         <Bar :data="data" />
       </div>
-    </NSpace>
-  </NSpace>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { NSpace } from 'naive-ui';
+import { ref, onMounted } from 'vue';
+import moment from 'moment';
 import Bar from './bar/index.vue';
-import { formatNumber } from '@/tools/format-number';
+import SectionHeader from '@/components/section-header.vue';
 import { getDAN } from '@/apis';
-// import { useIsMobile } from '@/composables/use-screen';
+import { useIsMobile } from '@/composables/use-screen';
+const isMobile = useIsMobile();
 const data = ref<any[]>([]);
 onMounted(async () => {
-  data.value = await getDAN();
+  const days = isMobile.value ? 7 : 14;
+  const daybegin = moment().subtract(days, 'day').utc().format('YYYY-MM-DD');
+  const dayend = moment().utc().format('YYYY-MM-DD');
+  data.value = await getDAN({ daybegin, dayend });
 });
-
-onUnmounted(() => {});
 </script>
 
 <style scoped>
-.section {
+.content {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
 }
 
-.section-header {
+.content-body {
+  width: 100%;
 }
 
-.section-header-title {
-  font-family: Oxanium;
-  font-size: 24px;
-  font-weight: 500;
+.bar-container {
+  width: 100%;
+  height: 240px;
+  position: relative;
 }
 
-.scroller-wrapper {
-  box-sizing: border-box;
-}
-
-.section-body {
+@media (min-width: 640px) {
+  .content {
+    gap: 16px 0;
+  }
+  .bar-container {
+    height: 36px;
+    height: 400px;
+  }
 }
 </style>

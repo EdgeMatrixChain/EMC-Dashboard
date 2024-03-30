@@ -3,6 +3,9 @@ export function getDefaultOption(): any {
     tooltip: {
       trigger: 'item',
       formatter: 'Nodes: {b0}',
+      backgroundColor: 'rgba(23,23,28,0.6)',
+      borderWidth: 0,
+      textStyle: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
     },
     geo: {
       type: 'map',

@@ -1,69 +1,66 @@
 <template>
-  <NSpace class="header" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
-    <template v-if="!isTablet && !isMobile">
-      <NSpace class="header-cell" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
-        <RouterLink :to="{ path: '/' }">
+  <div class="header">
+    <div class="header-content">
+      <div class="header-cell">
+        <RouterLink class="p-[16px]" :to="{ path: '/' }">
           <img class="header-icon" />
         </RouterLink>
-        <NSpace class="header-tabs" align="center" :size="[40, 0]" :wrap-item="false" :wrap="false">
-          <template v-for="item in tabs">
-            <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
-              <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-                <span class="header-tabs-item-text whitespace-nowrap">{{ item.label }}</span>
-              </div>
-            </RouterLink>
-          </template>
-        </NSpace>
-      </NSpace>
-    </template>
-    <template v-else>
-      <NSpace class="header-cell" align="center" :size="[8, 0]" :wrap-item="false" :wrap="false">
-        <RouterLink class="p-[16px]" :to="{ path: '/' }">
-          <img class="header-icon-small" />
-        </RouterLink>
-        <PopupMenu :configs="tabConfigs" />
-      </NSpace>
-    </template>
-    <div class="header-cell flex-nowrap flex gap-x-2 xl:gap-x-10 justify-between items-center">
-      <template v-if="!ethUserStore.isConnected">
-        <div class="header-user" @click="onPressConnect">
-          <span class="header-user-text">Connect Wallet</span>
-        </div>
-      </template>
-      <template v-else-if="ethUserStore.isInvalidNetwork">
-        <div class="header-user" @click="onPressSwitchNetwork">
-          <span class="header-user-text">Network Error</span>
-        </div>
-      </template>
-      <template v-else>
-        <div class="header-user" @click="onPressUser">
-          <span class="header-user-text">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
-          <div class="text-[12px]">
-            <span class="max-w-[76px] overflow-hidden whitespace-nowrap text-ellipsis" style="margin-right: 4px">{{ ethUserStore.tokens.emc.short }}</span>
-            <span class="mr-[4px]">{{ ethUserStore.tokens.emc.symbolName }}</span>
+        <template v-if="!isMobile">
+          <div class="header-tabs">
+            <template v-for="item in tabs">
+              <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
+                <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
+                  <span class="header-tabs-item-text whitespace-nowrap">{{ item.label }}</span>
+                </div>
+              </RouterLink>
+            </template>
           </div>
-        </div>
-        <NDrawer
-          v-model:show="visibleWallet"
-          :auto-focus="false"
-          :width="400"
-          :height="'88%'"
-          :placement="walletPlacement"
-          style="background-color: transparent"
-        >
-          <NDrawerContent body-content-style="padding:8px;"> <Wallet @close="onWalletClose" @disconnect="onWalletDisconnect" /> </NDrawerContent>
-        </NDrawer>
-      </template>
+        </template>
+        <template v-else>
+          <PopupMenu :configs="tabConfigs" />
+        </template>
+      </div>
+      <div class="header-cell">
+        <template v-if="!ethUserStore.isConnected">
+          <div class="header-user" @click="onPressConnect">
+            <span class="header-user-text">Connect Wallet</span>
+          </div>
+        </template>
+        <template v-else-if="ethUserStore.isInvalidNetwork">
+          <div class="header-user" @click="onPressSwitchNetwork">
+            <span class="header-user-text">Network Error</span>
+          </div>
+        </template>
+        <template v-else>
+          <div class="header-user" @click="onPressUser">
+            <span class="header-user-text">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
+            <div class="header-user-balance">
+              <span class="header-user-balance-text" style="margin-right: 4px">{{ ethUserStore.tokens.emc.short }}</span>
+              <span class="header-user-balance-unit">{{ ethUserStore.tokens.emc.symbolName }}</span>
+            </div>
+          </div>
+          <NDrawer
+            v-model:show="visibleWallet"
+            :auto-focus="false"
+            :width="400"
+            :height="'88%'"
+            :placement="walletPlacement"
+            style="background-color: transparent"
+          >
+            <NDrawerContent body-content-style="padding:8px;"> <Wallet @close="onWalletClose" @disconnect="onWalletDisconnect" /> </NDrawerContent>
+          </NDrawer>
+        </template>
+      </div>
     </div>
-  </NSpace>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue';
-import { NSpace, NDrawer, NDrawerContent } from 'naive-ui';
+import { NDrawer, NDrawerContent } from 'naive-ui';
 import { useRoute, RouterLink } from 'vue-router';
 import { Utils } from '@/tools/utils';
 import { useETHUserStore } from '@/stores/eth-user';
-import { useIsMobile, useIsTablet } from '@/composables/use-screen';
+import { useIsMobile } from '@/composables/use-screen';
 import PopupMenu from './popup-menu.vue';
 import Wallet from './wallet/index.vue';
 type tabkey = number;
@@ -87,7 +84,6 @@ const initTabKey = -1;
 const ethUserStore = useETHUserStore();
 const route = useRoute();
 const isMobile = useIsMobile();
-const isTablet = useIsTablet();
 
 const tabs = ref<TabItem[]>(tabConfigs);
 const currentTabKey = ref<tabkey>(initTabKey);
@@ -127,20 +123,32 @@ function onWalletClose() {
 <style scoped>
 .header {
   height: var(--header-height);
+  position: relative;
+}
+
+.header-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--screen-max-width);
+  margin: auto;
+  box-sizing: border-box;
+  /* mobile */
+  min-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .header-cell {
-  position: relative;
-  padding: 0 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0 8px;
 }
 
 .header-icon {
-  width: 120px;
-  object-fit: cover;
-  content: url('@/assets/logo.png');
-}
-
-.header-icon-small {
   width: 36px;
   height: 36px;
   object-fit: cover;
@@ -148,7 +156,14 @@ function onWalletClose() {
 }
 
 .header-tabs {
+  flex: 1;
+  width: 0;
   --actived-color: #8f7df8;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0 40px;
 }
 
 .header-tabs-item {
@@ -188,8 +203,8 @@ function onWalletClose() {
   position: relative;
   background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
   border-radius: 6px;
-  width: 152px;
-  height: 52px;
+  width: 120px;
+  height: 48px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -198,23 +213,51 @@ function onWalletClose() {
 }
 
 .header-user-text {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-@media (prefers-color-scheme: light) {
-  .header-icon {
-    /* content: url('@/assets/logo.light.png'); */
-    content: url('@/assets/logo.png');
-  }
-  .header-icon-small {
-    content: url('@/assets/icon_coin_emc.png');
-  }
+.header-user-balance {
+  font-size: 12px;
+  line-height: 1.2;
 }
 
-@media screen and (max-width: 1280px) {
+.header-user-balance-text {
+  display: inline-block;
+  max-width: 76px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 4px;
+  vertical-align: top;
+}
+
+.header-user-balance-unit {
+}
+
+@media (min-width: 640px) {
+  .header-content {
+    min-width: var(--screen-min-width);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .header-icon {
+    width: 200px;
+    content: url('@/assets/logo.png');
+  }
+
   .header-cell {
-    padding: 0 16px;
+    gap: 0 16px;
+  }
+
+  .header-user {
+    width: 152px;
+    height: 52px;
+  }
+
+  .header-user-text {
+    font-size: 16px;
   }
 }
 </style>

@@ -6,12 +6,13 @@
 import { ref, onMounted } from 'vue';
 import Icon from './icons/token-supply.png';
 import NumericBasic from './basic-simple.vue';
-import { formatNumber, toFixedClip } from '@/tools/format-number';
+import { formatNumber, toFixedClip, formatMillion } from '@/tools/format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { ethers } from 'ethers';
-
+import { useIsMobile } from '@/composables/use-screen';
+const isMobile = useIsMobile();
 const title = ref('Total Supply');
 const value = ref('');
 const unit = ref('EMC');
@@ -27,8 +28,15 @@ onMounted(async () => {
   const { data: amount } = await tokenApi.totalSupply();
   loading.value = false;
   const formatted = ethers.formatUnits(amount, tokenDecimal);
-  const _value = formatNumber(toFixedClip(formatted, 4));
-  value.value = `${_value}`;
+  const number = Number(toFixedClip(formatted, 4)) || 0;
+  const { text } = formatMillion(number);
+  value.value = text;
+  // if (isMobile.value) {
+  //   const { text } = formatMillion(number);
+  //   value.value = text;
+  // } else {
+  //   value.value = formatNumber(number);
+  // }
 });
 </script>
 

@@ -52,7 +52,7 @@ watch(
   { immediate: true }
 );
 
-function onSelect(key) {
+function onSelect(key: any) {
   emits('update:value', key);
 }
 </script>

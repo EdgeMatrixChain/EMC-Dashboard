@@ -1,14 +1,9 @@
 <template>
-  <NAlert class="mb-[4px]" title="Waiting synchronize" type="info">
-    <NSpace align="center" :wrap-item="false" :size="[8, 8]">
-      <NText>Please waiting for owner to synchronize</NText>
-    </NSpace>
-  </NAlert>
+  <Alert title="Waiting synchronize" type="info" content="Please waiting for owner to synchronize"></Alert>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { NSpace, NAlert, NText, NButton, NIcon, NGrid, NGridItem, NScrollbar, NSpin, NTabs, NTabPane, useMessage, useDialog } from 'naive-ui';
+import { onMounted, onUnmounted } from 'vue';
+import Alert from './alert.vue';
 import { queryNodeOwner } from '@/apis';
 import { Web3Utils } from '@/web3/utils';
 const props = defineProps({

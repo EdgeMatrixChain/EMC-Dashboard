@@ -1,44 +1,41 @@
 <template>
-  <NSpace class="section" vertical :wrap-item="false" :size="[0, 16]">
-    <div class="section-header">
-      <span class="section-header-title">Distribution of Tokens</span>
-    </div>
-    <NSpace class="section-body w-full" :wrap-item="false" :wrap="false" :size="[16, 0]">
-      <div class="w-[60%] pt-[60%] relative">
+  <div class="content">
+    <SectionHeader>Distribution of Tokens</SectionHeader>
+    <div class="content-body">
+      <div class="chart-container">
         <Pie :data="data" />
       </div>
-      <div class="w-[40%] pt-[60%] relative">
-        <div class="scroller-wrapper absolute w-[100%] h-[100%] top-0 left-0">
-          <NScrollbar class="w-[100%] h-[100%]" trigger="hover">
-            <NSpace class="pie-badge flex-1" vertical :wrap-item="false" :size="[0, 0]">
-              <NSpace class="pie-badge-content px-[16px] py-[16px]" vertical :wrap-item="false" :size="[0, 8]">
-                <template v-for="item in data">
-                  <NSpace class="py-[6px]" vertical :wrap-item="false" :size="[0, 8]">
-                    <NSpace class="leading-[1]" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
-                      <div class="bg-[#ff2200] w-[2px] h-[12px] rounded-sm" :style="{ 'background-color': item.color }"></div>
-                      <span class="text-[12px] font-[400]">{{ item.name }}</span>
-                    </NSpace>
-                    <NSpace class="pl-[10px]" align="center" :wrap-item="false" :size="[0, 8]" :wrap="false">
-                      <span class="text-[16px] font-[500] pie-badge-item-value">{{ formatNumber(item.value) }}</span>
-                      <span class="pie-badge-item-unit">&nbsp;EMC</span>
-                    </NSpace>
-                  </NSpace>
-                </template>
-              </NSpace>
-            </NSpace>
+      <div class="chart-badges">
+        <div class="chart-badges-scroller">
+          <NScrollbar style="height: 100%" trigger="hover">
+            <div class="pie-badge">
+              <template v-for="item in data">
+                <div class="pie-badge-item">
+                  <div class="pie-badge-item-row-1">
+                    <div class="pie-badge-item-color" :style="{ 'background-color': item.color }"></div>
+                    <span class="pie-badge-item-text">{{ item.name }}</span>
+                  </div>
+                  <div class="pie-badge-item-row-2">
+                    <span class="pie-badge-item-value">{{ formatNumber(item.value) }}</span>
+                    <span class="pie-badge-item-unit">&nbsp;EMC</span>
+                  </div>
+                </div>
+              </template>
+            </div>
           </NScrollbar>
         </div>
       </div>
-    </NSpace>
-  </NSpace>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, PropType, onUnmounted } from 'vue';
-import { NSpace, NScrollbar } from 'naive-ui';
+import { ref } from 'vue';
+import { NScrollbar } from 'naive-ui';
+import SectionHeader from '@/components/section-header.vue';
 import Pie from './pie/index.vue';
 import { formatNumber } from '@/tools/format-number';
-// import { useIsMobile } from '@/composables/use-screen';
+
 const data = ref([
   { value: 200000000, name: 'Transaction Reward', color: '#5470c6' },
   { value: 150000000, name: 'Foundation/Treasury', color: '#91cc75' },
@@ -50,48 +47,115 @@ const data = ref([
   { value: 20000000, name: 'Governance Reward', color: '#9a60b4' },
   { value: 30000000, name: 'Airdrop', color: '#ea7ccc' },
 ]);
-onMounted(async () => {});
-
-onUnmounted(() => {});
 </script>
 
 <style scoped>
-.section {
+.content {
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
 }
 
-.section-header {
+.content-body {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0 16px;
 }
 
-.section-header-title {
-  font-family: Oxanium;
-  font-size: 24px;
-  font-weight: 500;
+.chart-container {
+  width: 60%;
+  padding-top: 60%;
+  position: relative;
 }
 
-.scroller-wrapper {
+.chart-badges {
+  width: 40%;
+  min-width: 140px;
+  padding-top: 60%;
+  position: relative;
+}
+
+.chart-badges-scroller {
   box-sizing: border-box;
-}
-
-.section-body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
 }
 
 .pie-badge {
   background-color: rgba(0, 0, 0, 0.1);
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 12px 0;
 }
 
-.pie-badge-content {
+.pie-badge-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
+}
+
+.pie-badge-item-row-1,
+.pie-badge-item-row-2 {
+  display: flex;
+  flex-direction: row;
+  line-height: 1;
+}
+
+.pie-badge-item-row-2 {
+  padding-left: 10px;
+  align-items: center;
+}
+
+.pie-badge-item-color {
+  width: 2px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
+.pie-badge-item-text {
+  flex: 1;
+  width: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #eeddff;
 }
 
 .pie-badge-item-value {
   font-family: Oxanium;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .pie-badge-item-unit {
   color: #69656f;
   font-size: 12px;
   font-weight: 500;
+}
+
+@media (min-width: 640px) {
+  .content {
+    gap: 16px 0;
+  }
+  .pie-badge {
+    padding: 16px;
+    gap: 12px 0;
+  }
+
+  .pie-badge-item {
+    gap: 8px 0;
+  }
+
+  .pie-badge-item-value {
+    font-size: 16px;
+  }
 }
 </style>
