@@ -190,13 +190,13 @@
             </div>
           </div>
         </div>
-        <NTabs default-value="apis">
-          <template v-if="nodeInfo.nodeId && (nodeInfo.status === 0 || nodeInfo.status === 1)">
+        <NTabs :default-value="defaultTabs">
+          <template v-if="isVisibleApiTransition">
             <NTabPane name="apis" tab="Api transactions">
               <ApiTransactions :node-id="nodeInfo.nodeId" />
             </NTabPane>
           </template>
-          <template v-if="status === 0">
+          <template v-if="isVisibleNodeRewards">
             <NTabPane name="claims" tab="Reward claims">
               <RewardClaims :node-id="nodeInfo.nodeId" />
             </NTabPane>
@@ -295,6 +295,7 @@ const stakeContract = ref('');
 const tokenContract = ref('');
 
 const nodeInfo = ref<any>({});
+
 const isVisibleChangePrincipal = ref(false);
 const isVisibleStake = ref(false);
 const isVisibleUnstake = ref(false);
@@ -322,6 +323,25 @@ const status = computed(() => {
     } else {
       return 0; // Stake、Unstake、Change binding
     }
+  }
+});
+const isVisibleApiTransition = computed(() => {
+  const isInited = nodeInfo.value.nodeId;
+  const nodeStatus = nodeInfo.value.status;
+  return isInited && (nodeStatus === 0 || nodeStatus === 1);
+});
+const isVisibleNodeRewards = computed(() => {
+  const isInited = nodeInfo.value.nodeId;
+  const globalStatus = status.value;
+  return isInited && globalStatus === 0;
+});
+const defaultTabs = computed(() => {
+  if (isVisibleApiTransition.value) {
+    return 'apis';
+  } else if (isVisibleNodeRewards.value) {
+    return 'claims';
+  } else {
+    return '';
   }
 });
 

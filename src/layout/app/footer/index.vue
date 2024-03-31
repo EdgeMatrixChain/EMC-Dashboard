@@ -115,5 +115,10 @@
   .footer-text {
     align-items: flex-start;
   }
+
+  .social-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
 </style>
