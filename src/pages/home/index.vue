@@ -32,6 +32,12 @@
       <div class="section">
         <WorldMap :data="mapData" />
       </div>
+      <div class="section">
+        <TokenomicsArb />
+      </div>
+      <div class="section">
+        <TokenomicsSol />
+      </div>
       <!-- tokens -->
       <div class="section">
         <div class="token-container">
@@ -40,12 +46,9 @@
           </div>
           <div class="token-container-divider"></div>
           <div class="token-numeric-container">
-            <Tokenomics />
+            <Dan />
           </div>
         </div>
-      </div>
-      <div class="section">
-        <Dan />
       </div>
       <div class="section">
         <NodeReward />
@@ -59,7 +62,8 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useIsMobile } from '@/composables/use-screen';
 import WorldMap from './world-map/index.vue';
 import TokenDistribution from './token-distribution/index.vue';
-import Tokenomics from './tokenomics/index.vue';
+import TokenomicsArb from './tokenomics-arb/index.vue';
+import TokenomicsSol from './tokenomics-sol/index.vue';
 import Dan from './dan/index.vue';
 import NodeReward from './node-reward/index.vue';
 import { getMapNodes } from '@/apis';
@@ -171,7 +175,7 @@ onUnmounted(() => {
   top: 48px;
   bottom: 0;
   position: absolute;
-  background-image: linear-gradient(180deg, rgba(127, 58, 185, 0) 0%, #391a53 50%, rgba(127, 58, 185, 0) 99%);
+  background-image: linear-gradient(180deg, rgba(127, 58, 185, 0) 0%, #391a53 50%, rgba(127, 58, 185, 0) 80%);
 }
 
 @media (min-width: 640px) {

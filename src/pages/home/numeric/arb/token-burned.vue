@@ -1,35 +1,24 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small" />
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" size="small" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import Icon from './icons/token-maket-cap.png';
-import NumericBasic from './basic-simple.vue';
-import { formatNumber, toFixedClip, formatMillion } from '@/tools/format-number';
 import { http } from '@/tools/http';
+import NumericBasic from '../basic-simple.vue';
+import { toFixedClip, formatNumber, formatMillion } from '@/tools/format-number';
 import { useIsMobile } from '@/composables/use-screen';
 const isMobile = useIsMobile();
-const title = ref('Circulating Supply');
+const title = ref('Total Burn');
 const value = ref('');
 const unit = ref('EMC');
 const tips = ref('');
 const loading = ref(false);
-
-const queryCirculation = async () => {
-  const resp = await http.get({
-    url: '/stats/circulating-supply',
-    data: { fmt: 'num' },
-    noAutoHint: true,
-  });
-  return resp || 0;
-};
-
 onMounted(async () => {
   loading.value = true;
-  const [circulation] = await Promise.all([queryCirculation()]);
+  const resp = await http.get({ url: '/stats/emcburns' });
   loading.value = false;
-  const number = Number(toFixedClip(circulation, 4)) || 0;
+  const number = Number(toFixedClip(resp.data, 4)) || 0;
   const { text } = formatMillion(number);
   value.value = text;
   // if (isMobile.value) {

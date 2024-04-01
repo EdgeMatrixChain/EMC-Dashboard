@@ -1,11 +1,10 @@
 <template>
-  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" :icon="Icon" size="small" />
+  <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" size="small" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import Icon from './icons/token-supply.png';
-import NumericBasic from './basic-simple.vue';
+import NumericBasic from '../basic-simple.vue';
 import { formatNumber, toFixedClip, formatMillion } from '@/tools/format-number';
 import { getDefaultNetwork } from '@/web3/network';
 import { ApiManager } from '@/web3/api';

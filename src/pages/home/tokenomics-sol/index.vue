@@ -1,18 +1,17 @@
 <template>
   <div class="content">
-    <SectionHeader>Tokenomics</SectionHeader>
-    <NSpace class="content-body">
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-[16px] sm:gap-[24px]">
+    <SectionHeader> Tokenomics for <img class="header-icon-inline" src="@/assets/icon_solana.svg" /> Solana </SectionHeader>
+    <div class="content-body">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-[16px] sm:gap-[16px]">
         <div class="grid-cols-1">
           <TokenSupply :size="numericSize" />
         </div>
         <div class="grid-cols-1">
-          <TokenStaked :size="numericSize" />
-        </div>
-        <div class="grid-cols-1">
           <TokenBurned :size="numericSize" />
         </div>
-
+        <div class="grid-cols-1">
+          <TokenStaked :size="numericSize" />
+        </div>
         <div class="grid-cols-1">
           <TokenCirculating :size="numericSize" />
         </div>
@@ -23,21 +22,20 @@
           <TokenMaketCap :size="numericSize" />
         </div>
       </div>
-    </NSpace>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { NSpace } from 'naive-ui';
 import SectionHeader from '@/components/section-header.vue';
-import TokenSupply from '@/pages/home/numeric/token-supply.vue';
-import TokenStaked from '@/pages/home/numeric/token-staked.vue';
-import TokenBurned from '@/pages/home/numeric/token-burned.vue';
+import TokenSupply from '@/pages/home/numeric/sol/token-supply.vue';
+import TokenBurned from '@/pages/home/numeric/sol/token-burned.vue';
+import TokenStaked from '@/pages/home/numeric/sol/token-staked.vue';
 
-import TokenCirculating from '@/pages/home/numeric/token-circulating.vue';
-import TokenFdv from '@/pages/home/numeric/token-fdv.vue';
-import TokenMaketCap from '@/pages/home/numeric/token-maket-cap.vue';
+import TokenCirculating from '@/pages/home/numeric/sol/token-circulating.vue';
+import TokenFdv from '@/pages/home/numeric/sol/token-fdv.vue';
+import TokenMaketCap from '@/pages/home/numeric/sol/token-maket-cap.vue';
 
 import { useIsMobile } from '@/composables/use-screen';
 const isMobile = useIsMobile();
@@ -53,8 +51,20 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
   gap: 8px 0;
 }
 
+.header-icon-inline {
+  display: inline-block;
+  /* must be 25px */
+  height: 25px;
+  margin-left: 4px;
+}
+
 .content-body {
   width: 100%;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.item-wrapper {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 @media (min-width: 640px) {

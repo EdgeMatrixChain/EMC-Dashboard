@@ -19,7 +19,7 @@ import { useIsMobile } from '@/composables/use-screen';
 const isMobile = useIsMobile();
 const data = ref<any[]>([]);
 onMounted(async () => {
-  const days = isMobile.value ? 7 : 14;
+  const days = isMobile.value ? 7 : 10;
   const daybegin = moment().subtract(days, 'day').utc().format('YYYY-MM-DD');
   const dayend = moment().utc().format('YYYY-MM-DD');
   data.value = await getDAN({ daybegin, dayend });
@@ -51,7 +51,7 @@ onMounted(async () => {
   }
   .bar-container {
     height: 36px;
-    height: 400px;
+    height: 260px;
   }
 }
 </style>
