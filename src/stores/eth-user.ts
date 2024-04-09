@@ -12,32 +12,15 @@ import IconUSDT from '@/assets/token/usdt.svg';
 
 export type Token = { address: string; formatted: string; short: string; value: bigint; symbolName: string; decimal: number; icon: string; name: string };
 
-type Tokens = {
+export type Tokens = {
   [k: string]: Token;
 };
-
-const BALANCE_NONE = '0.0';
-
-function formatBalance(value: bigint, unit: number) {
-  value = value || 0n;
-  const formatted = ethers.formatUnits(value, unit);
-  return {
-    formatted: formatted,
-    short: Web3Utils.shortAmount(formatted),
-    value: value,
-  };
-}
 
 export const useETHUserStore = defineStore('ethuser', () => {
   const networkConfig = getDefaultNetwork();
   const CHAIN_ID = networkConfig.chainId;
   const w3s = Web3Service.getInstance();
   const apiManager = ApiManager.getInstance();
-
-  const wcModal = useWeb3Modal();
-  const { isConnected, address, chainId } = useWeb3ModalAccount();
-  const { walletProvider } = useWeb3ModalProvider();
-  const { disconnect } = useDisconnect();
 
   //init balance metadata, exclude value.
   const initTokens = () => {
@@ -51,81 +34,24 @@ export const useETHUserStore = defineStore('ethuser', () => {
         decimal: tokenConfig.decimal,
         symbolName: tokenConfig.symbolName,
         icon: tokenIcon,
-        formatted: BALANCE_NONE,
-        short: BALANCE_NONE,
+        formatted: '0.0',
+        short: '0.0',
         value: 0n,
       };
     });
     return result;
   };
 
+  const isConnected = ref(false);
+  const chainId = ref(0);
+  const account0 = ref('');
+  const isInvalidNetwork = computed(() => chainId.value !== CHAIN_ID);
+  const isInvalidConnect = computed(() => !account0.value || chainId.value !== CHAIN_ID);
   const tokens = ref<Tokens>(initTokens());
 
-  watch(
-    () => isConnected.value,
-    async (isConnected) => {
-      console.info('watch isConnected', isConnected);
-      if (!isConnected) {
-        w3s.setProvider(null);
-        return;
-      }
-      if (!walletProvider.value) {
-        console.error('Not found provider');
-        return;
-      }
+  const signIn = () => {};
 
-      w3s.setProvider(walletProvider.value);
-
-      const { chainId } = await w3s.getChainId();
-
-      if (chainId !== CHAIN_ID) {
-        const resp = await w3s.switchNetwork(CHAIN_ID);
-        if (resp._result !== 0) {
-          console.error(`switch network error`, resp);
-          signOut();
-          return;
-        }
-      }
-      if (address.value) {
-        updateBalance(address.value);
-      }
-    },
-    { immediate: true }
-  );
-
-  watch(
-    () => address.value,
-    (account) => {
-      console.info('watch address', account);
-      if (account) {
-        updateBalance(account);
-      }
-    }
-  );
-
-  watch(
-    () => chainId.value,
-    async (chainId) => {
-      if (chainId === CHAIN_ID) {
-        if (address.value) {
-          updateBalance(address.value);
-        }
-      }
-    }
-  );
-
-  const signIn = async () => {
-    wcModal.open({ view: 'Connect' });
-  };
-
-  const signOut = async () => {
-    Object.entries(tokens.value).forEach(([k, v]) => {
-      v.formatted = BALANCE_NONE;
-      v.short = BALANCE_NONE;
-      v.value = 0n;
-    });
-    await disconnect();
-
+  const signOut: () => Promise<{ _result: number }> = async () => {
     return { _result: 0 };
   };
 
@@ -134,7 +60,13 @@ export const useETHUserStore = defineStore('ethuser', () => {
     const [{ data: _balance }, { data: _decimal }] = await Promise.all([api.balanceOf({ account: target }), api.decimals()]);
     const balance = _balance || 0n;
     const decimal = Number(_decimal) || 0;
-    return formatBalance(balance, decimal);
+
+    const formatted = ethers.formatUnits(balance, decimal);
+    return {
+      formatted: formatted,
+      short: Web3Utils.shortAmount(formatted),
+      value: balance,
+    };
   };
 
   const updateBalance = async (account: string) => {
@@ -155,16 +87,25 @@ export const useETHUserStore = defineStore('ethuser', () => {
     return tokens.value;
   };
 
+  const resetBalance = () => {
+    Object.entries(tokens.value).forEach(([k, v]) => {
+      v.formatted = '0.0';
+      v.short = '0.0';
+      v.value = 0n;
+    });
+  };
+
   return {
     isConnected,
-    isInvalidNetwork: computed(() => chainId.value !== CHAIN_ID),
-    isInvalidConnect: computed(() => !address.value || chainId.value !== CHAIN_ID),
-    account0: computed(() => address.value || ''),
+    isInvalidNetwork,
+    isInvalidConnect,
+    account0,
     chainId,
     tokens,
     signIn,
     signOut,
     updateBalance,
+    resetBalance,
     switchNetwork: () => {
       w3s.switchNetwork(CHAIN_ID);
     },

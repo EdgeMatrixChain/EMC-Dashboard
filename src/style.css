@@ -25,9 +25,6 @@
   --page-py: 24px;
   --page-px: 16px;
 }
-/* ::-webkit-scrollbar {
-  display: none;
-} */
 
 html {
   font-size: 16px;
@@ -83,26 +80,10 @@ a {
     color: #747bff;
   }
 }
+
 /* pagination vertical middle */
 .n-pagination-item {
   line-height: 1;
-}
-
-.n-input {
-  background: transparent !important;
-  border-radius: 8px !important;
-  border: 2px solid rgba(255, 255, 255, 0.2) !important;
-  transition: 0.3s;
-}
-
-.n-input input {
-  caret-color: #fff !important;
-}
-
-.n-input:not(.n-input--disabled).n-input--focus {
-  background: transparent !important;
-  border: 2px solid #ffb017 !important;
-  transition: 0.3s;
 }
 
 .page {

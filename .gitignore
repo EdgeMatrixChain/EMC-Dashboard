@@ -21,3 +21,5 @@ dist/
 .env
 
 .deprecated/
+
+deploy/
