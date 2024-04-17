@@ -55,7 +55,7 @@
                         <span class="info-item-value"> {{ nodeInfo.principal || '--' }}</span>
                       </template>
                       <template v-else>
-                        <span class="info-item-value"> {{ nodeInfo.principal ? Utils.textOverflow(nodeInfo.principal) : '--' }}</span>
+                        <span class="info-item-value"> {{ '*********' }}</span>
                       </template>
                     </div>
                     <template v-if="status === 0">

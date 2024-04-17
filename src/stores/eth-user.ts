@@ -1,8 +1,7 @@
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { getDefaultNetwork } from '@/web3/network';
 import { Web3Service } from '@/web3';
-import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/vue';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { Web3Utils } from '@/web3/utils';

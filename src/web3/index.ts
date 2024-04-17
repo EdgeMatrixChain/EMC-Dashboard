@@ -28,9 +28,9 @@ export class Web3Service {
   }
 
   async setProvider(provider: Eip1193Provider | null) {
-    if (this.provider) {
-      this.provider.removeAllListeners();
-    }
+    // if (this.provider) {
+    //   this.provider.removeAllListeners();
+    // }
     if (provider) {
       this.provider = new BrowserProvider(provider);
     } else {

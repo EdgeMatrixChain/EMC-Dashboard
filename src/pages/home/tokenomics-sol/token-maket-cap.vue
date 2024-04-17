@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import NumericBasic from '../basic-simple.vue';
+import NumericBasic from '@/pages/home/numeric/basic-simple.vue';
 import { formatNumber, formatMillion, toFixedClip } from '@/tools/format-number';
 import { getDexData } from '@/apis';
 import { http } from '@/tools/http';

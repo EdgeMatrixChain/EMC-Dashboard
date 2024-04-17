@@ -152,7 +152,7 @@ function onWalletClose() {
   width: 36px;
   height: 36px;
   object-fit: cover;
-  content: url('@/assets/icon_coin_emc.png');
+  content: url('@/assets/logo.simple.png');
 }
 
 .header-tabs {

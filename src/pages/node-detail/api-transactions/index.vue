@@ -86,13 +86,13 @@ const columns: any = ref([
       return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.statusStr }) });
     },
   },
-  {
-    title: 'Credit',
-    key: 'credit',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.credit }) });
-    },
-  },
+  // {
+  //   title: 'Credit',
+  //   key: 'credit',
+  //   render(row: Item) {
+  //     return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.credit }) });
+  //   },
+  // },
 ]);
 
 const StatusText = ['Wait', 'Pending', 'Complete', 'Failed', 'Timeout'];

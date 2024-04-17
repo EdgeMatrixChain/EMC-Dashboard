@@ -33,6 +33,9 @@
         <WorldMap :data="mapData" />
       </div>
       <div class="section">
+        <TokenomicsAll />
+      </div>
+      <div class="section">
         <TokenomicsArb />
       </div>
       <div class="section">
@@ -62,6 +65,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useIsMobile } from '@/composables/use-screen';
 import WorldMap from './world-map/index.vue';
 import TokenDistribution from './token-distribution/index.vue';
+import TokenomicsAll from './tokenomics-all/index.vue';
 import TokenomicsArb from './tokenomics-arb/index.vue';
 import TokenomicsSol from './tokenomics-sol/index.vue';
 import Dan from './dan/index.vue';

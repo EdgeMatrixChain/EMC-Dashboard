@@ -70,7 +70,7 @@ a {
   opacity: 0;
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -79,7 +79,7 @@ a {
   a:hover {
     color: #747bff;
   }
-}
+} */
 
 /* pagination vertical middle */
 .n-pagination-item {

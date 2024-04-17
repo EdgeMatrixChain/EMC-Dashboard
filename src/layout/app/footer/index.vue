@@ -54,7 +54,7 @@
 .footer-logo {
   width: 56px;
   object-fit: contain;
-  content: url('@/assets/logo.outline.svg');
+  content: url('@/assets/logo.outline.png');
 }
 
 .footer-cell {

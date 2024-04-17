@@ -1,16 +1,16 @@
 <template>
   <div class="content">
-    <SectionHeader> <img class="header-icon-inline" src="@/assets/icon_solana.svg" /> Tokenomics Solana </SectionHeader>
+    <SectionHeader> Tokenomics </SectionHeader>
     <div class="content-body">
       <div class="grid grid-cols-3 sm:grid-cols-3 gap-[8px] sm:gap-[16px]">
         <div class="grid-cols-1">
-          <TokenCirculating :size="numericSize" />
+          <TokenSupply :size="numericSize" />
         </div>
         <div class="grid-cols-1">
-          <TokenFdv :size="numericSize" />
+          <TokenBurned :size="numericSize" />
         </div>
         <div class="grid-cols-1">
-          <TokenMaketCap :size="numericSize" />
+          <TokenStaked :size="numericSize" />
         </div>
       </div>
     </div>
@@ -20,10 +20,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import SectionHeader from '@/components/section-header.vue';
-import TokenCirculating from './token-circulating.vue';
-import TokenFdv from './token-fdv.vue';
-import TokenMaketCap from './token-maket-cap.vue';
-
+import TokenSupply from './token-supply.vue';
+import TokenBurned from './token-burned.vue';
+import TokenStaked from './token-staked.vue';
 import { useIsMobile } from '@/composables/use-screen';
 const isMobile = useIsMobile();
 const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
@@ -42,8 +41,12 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
   display: inline-block;
   /* must be 25px */
   height: 25px;
-  /* must be -2px */
-  margin-top: -2px;
+  margin-left: 4px;
+}
+
+.section-header-row {
+  display: flex;
+  align-items: center;
 }
 
 .content-body {

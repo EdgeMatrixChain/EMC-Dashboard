@@ -4,8 +4,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { http } from '@/tools/http';
-import NumericBasic from '../basic-simple.vue';
+import NumericBasic from '@/pages/home/numeric/basic-simple.vue';
 import { formatNumber, formatMillion } from '@/tools/format-number';
 import { getDexData } from '@/apis';
 const title = ref('FDV');

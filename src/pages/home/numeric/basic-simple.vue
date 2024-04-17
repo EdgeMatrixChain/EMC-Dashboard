@@ -2,6 +2,7 @@
   <div class="item">
     <div class="item-header">
       <span class="item-header-text" :style="titleStyle">{{ title }}</span>
+      <slot name="header-suffix"></slot>
     </div>
     <template v-if="loading">
       <NSkeleton :width="40" :height="12" />
@@ -44,7 +45,7 @@ const valueStyle = computed(() => {
     fontSize: '28px',
   };
   if (props.size === 'small') {
-    style.fontSize = '24px';
+    style.fontSize = '20px';
   }
   return style;
 });
@@ -74,9 +75,10 @@ const unitStyle = computed(() => {
 
 .item-header {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
   white-space: nowrap;
+  gap: 0 8px;
 }
 
 .item-header-text {

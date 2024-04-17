@@ -11,7 +11,7 @@
     "generate": "dfx generate",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "deploy": "npm run deploy:ic",
+    "deploy": "npm run deploy:server",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
     "deploy:server": "npm run build && bash ./deploy/deploy.sh"

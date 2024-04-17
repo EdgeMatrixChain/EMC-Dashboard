@@ -5,6 +5,13 @@ export default {
     textColor2: '#ffffff', //'rgba(255,255,255,0.82)',
     bodyColor: 'rgb(16, 16, 20)',
     fontFamily: 'Roboto, sans-serif',
+
+    primaryColor: '#821BE6FF',
+    primaryColorHover: '#A548FFFF',
+    primaryColorPressed: '#8E23F5FF',
+  },
+  Input: {
+    caretColor: '#ffffff',
   },
   Button: {
     textColorPrimary: '#FFFFFF',
@@ -113,5 +120,8 @@ export default {
   },
   Dropdown: {
     color: '#18181c',
+  },
+  Popover: {
+    color: '#212121', // --bg-color2
   },
 };
