@@ -21,13 +21,7 @@
       <template v-else>
         <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height: 160px">
           <NSpace vertical :wrap-item="false" :size="[0, 4]">
-            <NInput
-              v-model:value="inputTokenAmount"
-              placeholder=" "
-              size="large"
-              style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px"
-            >
-            </NInput>
+            <NInput v-model:value="inputTokenAmount" placeholder=" " size="large" style="border-radius: 8px; height: 56px; line-height: 56px"> </NInput>
           </NSpace>
 
           <NSpace align="center" :wrap-item="false" :size="[8, 0]">

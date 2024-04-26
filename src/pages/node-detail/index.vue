@@ -190,12 +190,10 @@
             </div>
           </div>
         </div>
-        <NTabs :default-value="defaultTabs">
-          <template v-if="isVisibleApiTransition">
-            <NTabPane name="apis" tab="Api transactions">
-              <ApiTransactions :node-id="nodeInfo.nodeId" />
-            </NTabPane>
-          </template>
+        <NTabs default-value="apis">
+          <NTabPane name="apis" tab="Api transactions">
+            <ApiTransactions :node-id="nodeInfo.nodeId" />
+          </NTabPane>
           <template v-if="isVisibleNodeRewards">
             <NTabPane name="claims" tab="Reward claims">
               <RewardClaims :node-id="nodeInfo.nodeId" />
@@ -325,24 +323,11 @@ const status = computed(() => {
     }
   }
 });
-const isVisibleApiTransition = computed(() => {
-  const isInited = nodeInfo.value.nodeId;
-  const nodeStatus = nodeInfo.value.status;
-  return isInited && (nodeStatus === 0 || nodeStatus === 1);
-});
+
 const isVisibleNodeRewards = computed(() => {
   const isInited = nodeInfo.value.nodeId;
   const globalStatus = status.value;
   return isInited && globalStatus === 0;
-});
-const defaultTabs = computed(() => {
-  if (isVisibleApiTransition.value) {
-    return 'apis';
-  } else if (isVisibleNodeRewards.value) {
-    return 'claims';
-  } else {
-    return '';
-  }
 });
 
 function parseGpuInfo(input: string) {
@@ -434,7 +419,7 @@ const init = async (nodeId: string) => {
 
   const [_nodeInfo, { principal }, _stakeInfo, { currentReward }] = await Promise.all([
     queryInfo(nodeId),
-    queryNodeOwner(nodeId),
+    queryNodeOwner(nodeId, ethUserStore.account0),
     nodeService.queryStake(nodeId),
     queryReward(nodeId),
   ]);

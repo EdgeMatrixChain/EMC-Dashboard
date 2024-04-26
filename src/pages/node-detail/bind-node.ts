@@ -21,7 +21,7 @@ export const preNodeBind = async (params: { account: string; chainId: number; no
   }
   const signature = resp1.data.signature;
   return http.postJSON({
-    url: '/nodestake/bindsignnew',
+    url: '/nodestake/bindsign',
     data: { nodeId, chainId, signatureRaw, signature },
     noAutoHint: true,
   });

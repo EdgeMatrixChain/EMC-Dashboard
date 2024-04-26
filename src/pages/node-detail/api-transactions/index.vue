@@ -143,7 +143,7 @@ async function updateList() {
     const createTime = new Date(item.createTime).getTime();
     const diffTime = now - createTime;
     //${Utils.formatDate(diffTime)} ago
-    const diffTimeStr = `${moment(createTime).utc().format('MMMM DD HH:mm UTC YYYY')}`;
+    const diffTimeStr = `${moment(createTime).utc().format('MMMM DD HH:mm:ss UTC YYYY')}`;
     newList.push({ id, taskSn, application, method, status, statusStr, createTime, diffTimeStr, credit });
   });
   list.value = newList;

@@ -14,7 +14,7 @@
           <NSpace :wrap-item="false" justify="space-between">
             <NText depth="3" strong style="font-size: 16px">Owner</NText>
           </NSpace>
-          <NInput v-model:value="inputAddress" placeholder=" " size="large" style="border-radius: 8px; background: #f5f5f5; height: 56px; line-height: 56px">
+          <NInput v-model:value="inputAddress" placeholder=" " size="large" style="border-radius: 8px; height: 56px; line-height: 56px">
           </NInput>
         </NSpace>
         <NButton type="primary" strong size="large" round :loading="isLoading" @click="onPressSubmit" style="background-color: var(--n-color); width: 100%"

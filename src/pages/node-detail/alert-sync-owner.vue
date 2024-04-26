@@ -27,7 +27,7 @@ async function handler() {
     return;
   }
   const before = new Date().getTime();
-  const { principal } = await queryNodeOwner(props.nodeId);
+  const { principal } = await queryNodeOwner(props.nodeId, props.bindStakeAccount);
   const end = new Date().getTime();
   if (!principal) {
     triggerFinish();

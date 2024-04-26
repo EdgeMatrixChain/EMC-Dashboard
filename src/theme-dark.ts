@@ -12,6 +12,7 @@ export default {
   },
   Input: {
     caretColor: '#ffffff',
+    color: '#212121',
   },
   Button: {
     textColorPrimary: '#FFFFFF',

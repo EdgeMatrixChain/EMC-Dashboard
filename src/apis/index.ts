@@ -122,10 +122,10 @@ export async function getDexData(chainName?: string) {
   return { priceUsd, fdv };
 }
 
-export async function queryNodeOwner(nodeId: string) {
+export async function queryNodeOwner(nodeId: string, principal: string) {
   const resp = await http.get({
     url: '/nodesign/query',
-    data: { nodeId },
+    data: { nodeId, principal },
     noAutoHint: true,
   });
   const signInfo = resp.data || {};
@@ -136,7 +136,7 @@ export async function queryNodeOwner(nodeId: string) {
 
 export async function queryReward(nodeId: string) {
   const resp = await http.get({
-    url: '/nodebill/summarynew',
+    url: '/nodebill/summary',
     data: { nodeId: nodeId },
     noAutoHint: true,
   });

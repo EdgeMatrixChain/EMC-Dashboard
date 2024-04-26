@@ -39,7 +39,7 @@ export const useNodeService = () => {
     },
     getNodeMetadata(status: number | string): NodeMetadata | undefined {
       const metadatas: any = {
-        0: { typeName: 'Initial', maxStakeAmount: BigInt('1000000000000000000000') },
+        0: { typeName: 'Initial', maxStakeAmount: BigInt('0') },
         1: { typeName: 'Computing', maxStakeAmount: BigInt('1000000000000000000000') },
         11: { typeName: 'Validator', maxStakeAmount: BigInt('50000000000000000000000') },
         12: { typeName: 'RPC', maxStakeAmount: BigInt('5000000000000000000000') },
