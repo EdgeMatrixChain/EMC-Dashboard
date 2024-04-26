@@ -98,19 +98,28 @@ function handleScroll() {
 
 onMounted(async () => {
   const list = await getMapNodes();
+  const filterList: any[] = [];
   const formatList: any[] = [];
+  const maxSymbolSize = 200;
   let totalBefore = 0;
   let total = 0;
+
   list.forEach((item: any) => {
     totalBefore += item.nodes;
     if (!item.latitude || !item.longitude || item.nodes === 0) return;
     total += item.nodes;
+    filterList.push(item);
+  });
+
+  filterList.forEach((item: any) => {
+    const symbolSize = Number(((item.nodes / total) * maxSymbolSize).toFixed(0));
     formatList.push({
       name: item.nodes,
       value: [item.longitude, item.latitude],
-      symbolSize: item.nodes * 10 > 60 ? 60 : item.nodes * 10,
+      symbolSize: Math.max(5, symbolSize),
     });
   });
+
   mapData.value = formatList;
   window.addEventListener('scroll', handleScroll);
 });
