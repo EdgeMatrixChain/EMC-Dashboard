@@ -18,6 +18,11 @@ onMounted(async () => {
   loading.value = false;
   const { value: _value, text, unit: _unit } = formatMillion(fdv);
   value.value = `$${text}`;
+  
+  //cover solana pair error;
+  if (!fdv) {
+    loading.value = true;
+  }
 });
 </script>
 

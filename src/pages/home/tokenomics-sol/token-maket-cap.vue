@@ -28,9 +28,14 @@ onMounted(async () => {
   loading.value = true;
   const [circulation, { fdv, priceUsd }] = await Promise.all([new Promise<number>((resolve) => resolve(19999999.83)), getDexData('solana')]);
   loading.value = false;
-  const { value: _value, text, unit: _unit } = formatMillion(circulation * 1.4783);
+  const { value: _value, text, unit: _unit } = formatMillion(circulation * priceUsd);
   value.value = `$${text}`;
   tips.value = `Circulating supply: ${formatNumber(toFixedClip(circulation))}`;
+
+  //cover solana pair error;
+  if (!priceUsd) {
+    loading.value = true;
+  }
 });
 </script>
 
