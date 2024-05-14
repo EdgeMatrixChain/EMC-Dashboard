@@ -18,11 +18,15 @@ const props = defineProps({
   value: { type: String },
 });
 const emits = defineEmits(['update:value']);
+
+const options = ref<any[]>([]);
+const currentOptionName = ref('');
+
 const { list: nodeTypeList, map: nodeTypeMap } = getNodeTypes();
 
 function initFilterOption() {
   const map: any = {};
-  const options: any[] = [{ label: 'All', key: '-1' }];
+  const options: any[] = [];
 
   nodeTypeList.forEach((item) => {
     if (map[item.name]) {
@@ -38,18 +42,26 @@ function initFilterOption() {
 
   return options;
 }
+function updateOptionName(val: string) {
+  const currentOption = options.value.find((item) => item.key === val);
+  currentOptionName.value = currentOption?.label;
+}
 
-const options = ref<any[]>(initFilterOption());
-const currentOptionName = ref('');
+onMounted(() => {
+  options.value = initFilterOption();
+  if (props.value) {
+    updateOptionName(props.value);
+  } else {
+    const value = options.value[0].key;
+    emits('update:value', value);
+  }
+});
 
 watch(
   () => props.value,
   (val) => {
-    console.info(val);
-    const currentOption = options.value.find((item) => item.key === val);
-    currentOptionName.value = currentOption?.label;
-  },
-  { immediate: true }
+    updateOptionName(val || '');
+  }
 );
 
 function onSelect(key: any) {

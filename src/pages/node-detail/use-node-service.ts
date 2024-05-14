@@ -1,8 +1,4 @@
-import { Web3Utils } from '@/web3/utils';
-import { ApiManager } from '@/web3/api';
 import { StakeNodeApi } from '@/web3/api/stake-node';
-import { Web3Service } from '@/web3';
-import { getDefaultNetwork } from '@/web3/network';
 
 export type NodeMetadata = { typeName: string; maxStakeAmount: bigint };
 

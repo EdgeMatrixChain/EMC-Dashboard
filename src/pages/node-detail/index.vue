@@ -227,7 +227,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { NSpace, NText, NButton, NIcon, NScrollbar, NSpin, NTabs, NTabPane, NTooltip, useMessage, useDialog } from 'naive-ui';
 import { PencilSharp as IconEdit, InformationCircleOutline as IconTips } from '@vicons/ionicons5';
@@ -266,6 +266,41 @@ import { toFixedClip } from '@/tools/format-number';
 
 import LabelWithValue from './label-with-value.vue';
 
+class NodeRewardTimer {
+  interval: number;
+  running: boolean;
+  nodeId: string;
+  callback: (reward: bigint) => void;
+
+  constructor({ nodeId, callback }: { nodeId: string; callback: (reward: bigint) => void }) {
+    this.interval = 15000;
+
+    this.running = true;
+    this.nodeId = nodeId;
+    this.callback = callback;
+    this.handle();
+  }
+
+  async handle() {
+    const before = new Date().getTime();
+    const { currentReward } = await queryReward(this.nodeId);
+    const end = new Date().getTime();
+    this.callback(currentReward);
+    const diff = this.interval - (end - before);
+    if (diff > 0) {
+      // console.info(`wait ${diff} ms`);
+      await new Promise((resolve) => setTimeout(resolve, diff));
+    }
+    if (this.running) {
+      this.handle();
+    }
+  }
+
+  stop() {
+    this.running = false;
+  }
+}
+
 const route = useRoute();
 const message = useMessage();
 const dialog = useDialog();
@@ -302,10 +337,8 @@ const tipsType = ref<any>('success');
 const tipsTitle = ref('');
 const tipsMessage = ref('');
 const minClaimReward = ref(BigInt(100 * 1e18));
-const nodeRewardTimerConfig = {
-  interval: 15000,
-  stop: false,
-};
+const rewardQueryTimer = ref<NodeRewardTimer>();
+
 const status = computed(() => {
   if (!ethUserStore.account0) {
     return 11; // Not connected
@@ -393,20 +426,18 @@ async function queryInfo(_nodeId: string) {
   return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application, status, maxStakeAmount };
 }
 
-async function handleNodeRewardTimer() {
-  const before = new Date().getTime();
-  const { currentReward } = await queryReward(nodeId);
-  const end = new Date().getTime();
-  nodeInfo.value.currentReward = currentReward;
-  const diff = nodeRewardTimerConfig.interval - (end - before);
-  if (diff > 0) {
-    // console.info(`wait ${diff} ms`);
-    await new Promise((resolve) => setTimeout(resolve, diff));
+const updateStakeInfo = async (nodeId: string) => {
+  if (!nodeId) {
+    nodeInfo.value.bindStakeAccount = '';
+    nodeInfo.value.currentStaked = 0n;
+    return;
   }
-  if (!nodeRewardTimerConfig.stop) {
-    handleNodeRewardTimer();
-  }
-}
+  const _stakeInfo = await nodeService.queryStake(nodeId);
+  const bindStakeAccount = (_stakeInfo && _stakeInfo.bindStakeAccount) || '';
+  const currentStaked = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
+  nodeInfo.value.bindStakeAccount = bindStakeAccount;
+  nodeInfo.value.currentStaked = currentStaked;
+};
 
 const init = async (nodeId: string) => {
   error.value = -1;
@@ -417,25 +448,40 @@ const init = async (nodeId: string) => {
     return;
   }
 
-  const [_nodeInfo, { principal }, _stakeInfo, { currentReward }] = await Promise.all([
+  const [_nodeInfo, { principal }, { currentReward }] = await Promise.all([
     queryInfo(nodeId),
     queryNodeOwner(nodeId, ethUserStore.account0),
-    nodeService.queryStake(nodeId),
     queryReward(nodeId),
   ]);
-  const bindStakeAccount = (_stakeInfo && _stakeInfo.bindStakeAccount) || '';
-  const currentStaked = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
 
   nodeInfo.value = {
     ..._nodeInfo,
     principal,
-    bindStakeAccount,
-    currentStaked,
     currentReward,
   };
-  setTimeout(() => handleNodeRewardTimer(), 3000);
+
+  await updateStakeInfo(nodeId);
+
+  if (rewardQueryTimer.value) {
+    rewardQueryTimer.value.stop();
+  }
+  rewardQueryTimer.value = new NodeRewardTimer({
+    nodeId: nodeId,
+    callback: (currentReward) => {
+      nodeInfo.value.currentReward = currentReward;
+    },
+  });
   error.value = 0;
 };
+
+watch(
+  () => ethUserStore.isInvalidNetwork,
+  (_isInvalidNetwork) => {
+    if (!_isInvalidNetwork) {
+      updateStakeInfo(nodeInfo.value.nodeId);
+    }
+  }
+);
 
 const handleBind = async () => {
   const account = ethUserStore.account0;
@@ -650,12 +696,13 @@ onMounted(async () => {
   nodeService.setStakeNodeApi(stakeNodeApi);
   const { data: _tokenContract } = await stakeNodeApi!.token();
   tokenContract.value = _tokenContract || '';
-  nodeRewardTimerConfig.stop = false;
   await init(nodeId);
 });
 
 onUnmounted(() => {
-  nodeRewardTimerConfig.stop = true;
+  if (rewardQueryTimer.value) {
+    rewardQueryTimer.value.stop();
+  }
 });
 </script>
 

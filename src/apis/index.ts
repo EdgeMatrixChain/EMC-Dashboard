@@ -26,7 +26,7 @@ type NodesOption = {
 export async function getNodes({ page, size, htbegin, htend, status, keywords }: NodesOption) {
   const resp = await http.get({
     url: '/node/list',
-    data: { page, size, htbegin, htend, keywords, status, sort: encodeURIComponent(JSON.stringify({ createTime: -1 })) },
+    data: { page, size, htbegin, htend, keywords, status, sort: encodeURIComponent(JSON.stringify({ status: -1, createTime: -1 })) },
   });
   return { total: resp.total || 0, list: resp.data || [] };
 }

@@ -29,7 +29,9 @@
             </div>
           </div>
           <div class="node-tools">
-            <Filter v-model:value="filterOptionVal" @update:value="onFilterDropdownUpdate" />
+            <template v-if="!queries.keywords">
+              <Filter v-model:value="filterOptionVal" @update:value="onFilterDropdownUpdate" />
+            </template>
             <Search v-model:value="filterInputVal" :show-clear="Boolean(queries.keywords)" @search="onFilterSearch" />
           </div>
         </div>
@@ -111,7 +113,7 @@ const pageSize = ref(20);
 const pageCount = ref(1);
 const loading = ref(false);
 
-const filterOptionVal = ref('-1');
+const filterOptionVal = ref('');
 const filterInputVal = ref('');
 
 onActivated(() => {
@@ -160,10 +162,12 @@ const updateList = async () => {
   const htbegin = now - 360 * 60000;
   const htend = now + 60 * 60000;
   const queriesValue = queries.value;
-  const params = {
-    status: queriesValue.status === '-1' ? void 0 : queriesValue.status,
-    keywords: queriesValue.keywords === '' ? void 0 : queriesValue.keywords,
-  };
+  const params: any = {};
+  if (queriesValue.keywords) {
+    params.keywords = queriesValue.keywords;
+  } else {
+    params.status = queriesValue.status === '-1' ? void 0 : queriesValue.status;
+  }
   const resp = await getNodes({ page: pageNo.value, size: pageSize.value, htbegin, htend, ...params });
   loading.value = false;
   const nodeList: any[] = [];
@@ -189,6 +193,7 @@ const handlePageChange = (currentPage: number) => {
 
 const onFilterDropdownUpdate = (key: any) => {
   const queriesValue = queries.value;
+  // if (queriesValue.status === key) return;
   queriesValue.status = key;
   initList();
 };

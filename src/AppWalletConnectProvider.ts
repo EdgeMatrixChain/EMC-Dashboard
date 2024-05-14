@@ -66,14 +66,28 @@ export default defineComponent({
       { immediate: true }
     );
 
-    watch<[string | undefined, number | undefined]>(
-      () => [address.value, chainId.value],
-      ([_address, _chainId]) => {
-        // console.info('watch [address, chainId]', [address.value, chainId.value]);
-        ethUserStore.account0 = _address || '';
+    watch<number | undefined>(
+      () => chainId.value,
+      (_chainId) => {
+        console.info('watch chainId', chainId.value);
         ethUserStore.chainId = _chainId || 0;
 
-        if (_address && _chainId === CHAIN_ID) {
+        if (!walletProvider.value) console.error('watch connected error: Not found provider');
+        w3s.setProvider(walletProvider.value || null);
+
+        if (_chainId === CHAIN_ID) {
+          ethUserStore.updateBalance(ethUserStore.account0);
+        }
+      }
+    );
+
+    watch<string | undefined>(
+      () => address.value,
+      (_address) => {
+        // console.info('watch address', address.value);
+        ethUserStore.account0 = _address || '';
+
+        if (_address && ethUserStore.chainId === CHAIN_ID) {
           ethUserStore.updateBalance(_address);
         }
       }
