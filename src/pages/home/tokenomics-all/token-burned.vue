@@ -6,7 +6,7 @@
           <IconTips style="width: 20px; height: 20px; color: #eeddff" />
         </template>
         <div class="tips-content">
-          <p class="tips-content-text">{{ totalBridge }} for Solana mint.</p>
+          <p class="tips-content-text">{{ totalBridge }} EMC on Arbitrum burned for minting on Solana.</p>
         </div>
       </NPopover>
     </template>
