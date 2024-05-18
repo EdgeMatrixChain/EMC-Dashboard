@@ -49,7 +49,6 @@ export function useEvent() {
           if (timer) clearTimeout(timer);
         }
         typeof callbacks.onMouseUp === 'function' && callbacks.onMouseUp(event);
-        //重置
         sx = 0;
         sy = 0;
         st = 0;

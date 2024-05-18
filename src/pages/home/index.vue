@@ -88,35 +88,28 @@ const mapData = ref<any[]>([]);
 
 const headerStyle = ref<any>({ 'background-color': 'rgba(24, 24, 28, 0.4)' });
 function handleScroll() {
-  // rgba(24, 24, 28) 与 bg-color1 一致
   if (window.scrollY > 80) {
     headerStyle.value['background-color'] = 'rgba(24, 24, 28, 1)';
   } else {
     headerStyle.value['background-color'] = 'rgba(24, 24, 28, 0.4)';
   }
 }
+function calculateRadius(nodeCount: number, maxRadius: number) {
+  const base = 100;
+  const radius = (maxRadius * Math.log(nodeCount + 1)) / Math.log(nodeCount + base);
+  return parseFloat(Math.min(radius, maxRadius).toFixed(2));
+}
 
 onMounted(async () => {
-  const list = await getMapNodes();
-  const filterList: any[] = [];
+  const { list, summary } = await getMapNodes();
   const formatList: any[] = [];
-  const maxSymbolSize = 200;
-  let totalBefore = 0;
-  let total = 0;
 
   list.forEach((item: any) => {
-    totalBefore += item.nodes;
-    if (!item.latitude || !item.longitude || item.nodes === 0) return;
-    total += item.nodes;
-    filterList.push(item);
-  });
-
-  filterList.forEach((item: any) => {
-    const symbolSize = Number(((item.nodes / total) * maxSymbolSize).toFixed(0));
+    const size = calculateRadius(item.nodes, 100);
     formatList.push({
       name: item.nodes,
       value: [item.longitude, item.latitude],
-      symbolSize: Math.max(5, symbolSize),
+      symbolSize: size,
     });
   });
 

@@ -1,17 +1,46 @@
 import { http } from '@/tools/http';
 import moment from 'moment';
-
+type Location = { latitude: number; longitude: number };
+function haversineDistance({ latitude: lat1, longitude: lon1 }: Location, { latitude: lat2, longitude: lon2 }: Location) {
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance;
+}
 export async function getMapNodes() {
   const now = new Date().getTime();
+
   const resp = await http.get({
     url: '/stats/nodemap',
-    data: {
-      htbegin: now - 360 * 60000,
-      htend: now + 60 * 60000,
-    },
+    data: { htbegin: now - 360 * 60000, htend: now + 60 * 60000 },
   });
   const list = resp.data || [];
-  return list;
+  const cityMap: { [k: string]: any } = {};
+  const summary = { total: 0 };
+  list.forEach((item: any) => {
+    if (!item.latitude || !item.longitude || item.nodes === 0) return;
+    const entries = Object.entries(cityMap);
+    const index = entries.findIndex(([k, v]) => {
+      return haversineDistance(v, item) < 400;
+    });
+    
+    let cityName = item.city;
+    
+    if (index === -1) {
+      cityMap[cityName] = { ...item, nodes: 0 };
+    } else {
+      cityName = entries[index][0];
+    }
+
+    cityMap[cityName].nodes += item.nodes;
+    summary.total += item.nodes;
+  });
+  console.info(cityMap);
+  return { summary, list: Object.entries(cityMap).map(([k, v]) => v) };
 }
 
 type NodesOption = {

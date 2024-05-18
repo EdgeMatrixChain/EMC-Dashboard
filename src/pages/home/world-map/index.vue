@@ -47,7 +47,6 @@ function zoom(delta: number) {
 
   geo.zoom = newZoom;
 
-  // 应用修改后的配置项
   chart.setOption(option);
 }
 
