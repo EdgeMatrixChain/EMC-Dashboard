@@ -67,7 +67,7 @@ export class Web3Service {
     return { _result: 0, accounts };
   }
 
-  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string;}) {
+  async addToken(config: { type?: 'ERC20' | 'ERC721' | 'ERC1155'; address: string; symbol: string; decimals: number; image?: string }) {
     const { type, address, symbol, decimals, image } = config;
     if (!this.provider) {
       return { _result: 2, _desc: 'Please connect wallet first' };
@@ -186,7 +186,11 @@ export class Web3Service {
       return { _result: 1, _desc: `Not found ${method} in abi` };
     }
     if (functionFragment.constant) {
-      const provider = this.provider || this.defaultProvider;
+      //const provider = this.provider || this.defaultProvider;
+
+      /** Use the default provider for query */
+      const provider = this.defaultProvider;
+      
       return this.#call(instance.connect(provider), method, data);
     } else {
       const signer = await this.getSigner();
@@ -206,6 +210,5 @@ export class Web3Service {
     }
   }
 }
-
 
 export const w3s = Web3Service.getInstance();

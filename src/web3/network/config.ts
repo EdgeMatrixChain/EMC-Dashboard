@@ -5,7 +5,7 @@ export default [
     chainId: 42161,
     chainName: 'Arbitrum One',
     chainAvatar: Arbitrum,
-    rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+    rpcUrls: ['https://rpc.ankr.com/arbitrum', 'https://1rpc.io/arb', 'https://arb1.arbitrum.io/rpc', 'https://arbitrum-one-rpc.publicnode.com'],
     //rpcUrls: ['https://arbitrum-mainnet.infura.io'],
     decimals: 18,
     symbol: 'ETH',

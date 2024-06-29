@@ -75,7 +75,7 @@ const tabConfigs: TabItem[] = [
   { id: 1, label: 'Home', key: '/home' },
   { id: 2, label: 'Node', key: '/nodes' },
   { id: 3, label: 'Staking', key: '/staking' },
-  { id: 4, label: 'Migration', key: '/dip20' },
+  // { id: 4, label: 'Migration', key: '/dip20' },
   // { id: 3, name: 'Marketplace', path: '/market' },
 ];
 

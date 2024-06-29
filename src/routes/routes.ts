@@ -36,11 +36,11 @@ export const routes = [
         path: 'nodes/:id',
         component: () => import('@/pages/node-detail/index.vue'),
       },
-      {
-        name: 'dip20',
-        path: 'dip20',
-        component: () => import('@/pages/dip20/index.vue'),
-      },
+      // {
+      //   name: 'dip20',
+      //   path: 'dip20',
+      //   component: () => import('@/pages/dip20/index.vue'),
+      // },
       {
         name: 'cliffs',
         path: 'cliffs',

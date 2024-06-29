@@ -625,10 +625,12 @@ function onPressBind() {
 }
 
 async function onPressClaim() {
-  // tipsType.value = 'info';
-  // tipsTitle.value = 'Check out';
-  // tipsMessage.value = `The reward contract is currently being audited by Certik, and the withdrawal operation will be officially available after the audit is completed.`;
-  // isVisibleTips.value = true;
+  tipsType.value = 'warning';
+  tipsTitle.value = 'Coming soon';
+  tipsMessage.value = `The Reward System is being updated.`;
+  isVisibleTips.value = true;
+
+  return;
   if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
   const nodeId = nodeInfo.value.nodeId;
   const amount = nodeInfo.value.currentReward;

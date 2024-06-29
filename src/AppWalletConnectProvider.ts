@@ -53,44 +53,43 @@ export default defineComponent({
       (_isConnected) => {
         // console.info('watch connected', _isConnected);
         ethUserStore.isConnected = _isConnected;
-        if (!_isConnected) {
-          w3s.setProvider(null);
-          return;
-        }
-        if (!walletProvider.value) {
-          console.error('watch connected error: Not found provider');
-          return;
-        }
-        w3s.setProvider(walletProvider.value);
+     
       },
       { immediate: true }
     );
 
-    watch<number | undefined>(
+    watch(
       () => chainId.value,
       (_chainId) => {
-        console.info('watch chainId', chainId.value);
-        ethUserStore.chainId = _chainId || 0;
-
-        if (!walletProvider.value) console.error('watch connected error: Not found provider');
-        w3s.setProvider(walletProvider.value || null);
-
+        _chainId = _chainId || 0;
+        console.info(`chainId: ${_chainId}`);
+        ethUserStore.chainId = _chainId;
         if (_chainId === CHAIN_ID) {
+          w3s.setProvider(walletProvider.value || null);
+        } else {
+          w3s.setProvider(null);
+        }
+
+        if (ethUserStore.account0 && _chainId === CHAIN_ID) {
           ethUserStore.updateBalance(ethUserStore.account0);
         }
-      }
+      },
+      { immediate: true }
     );
 
-    watch<string | undefined>(
+    watch(
       () => address.value,
       (_address) => {
         // console.info('watch address', address.value);
-        ethUserStore.account0 = _address || '';
+        _address = _address || '';
+
+        ethUserStore.account0 = _address;
 
         if (_address && ethUserStore.chainId === CHAIN_ID) {
           ethUserStore.updateBalance(_address);
         }
-      }
+      },
+      { immediate: true }
     );
 
     ethUserStore.signIn = () => {

@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard style="max-width: 640px">
+    <NCard style="max-width: 480px">
       <NSpace vertical :wrap-item="false" :size="[0, 16]">
         <NAlert :title="title" :type="type">
           <NText>{{ message }}</NText>
