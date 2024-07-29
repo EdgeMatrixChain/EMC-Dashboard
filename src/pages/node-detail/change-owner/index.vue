@@ -1,6 +1,6 @@
 <template>
   <NModal :show="visible" :block-scroll="false" :mask-closable="false">
-    <NCard title="Change owner" style="max-width: 640px">
+    <NCard title="Change Owner" style="max-width: 640px">
       <template #header-extra>
         <NButton strong secondary circle :disabled="isLoading" @click.stop.prevent="onPressClose">
           <template #icon>
@@ -8,18 +8,14 @@
           </template>
         </NButton>
       </template>
-      <NSpace vertical :wrap-item="false" :size="[0, 16]" style="min-height: 240px">
-        <NAlert title="Warning" type="warning"> Make sure that the owner you entered is working! </NAlert>
+      <NSpace vertical :wrap-item="false" :size="[0, 16]">
         <NSpace vertical :wrap-item="false" :size="[0, 4]">
-          <NSpace :wrap-item="false" justify="space-between">
-            <NText depth="3" strong style="font-size: 16px">Owner</NText>
-          </NSpace>
-          <NInput v-model:value="inputAddress" placeholder=" " size="large" style="border-radius: 8px; height: 56px; line-height: 56px">
-          </NInput>
+          <NInput v-model:value="inputAddress" placeholder=" " size="large" style="border-radius: 8px; height: 56px; line-height: 56px"> </NInput>
         </NSpace>
-        <NButton type="primary" strong size="large" round :loading="isLoading" @click="onPressSubmit" style="background-color: var(--n-color); width: 100%"
-          >Submit
-        </NButton>
+        <NSpace vertical align="center" :wrap-item="false" :size="[0, 8]">
+          <NButton type="primary" strong size="large" round :loading="isLoading" @click="onPressSubmit" style="width: 100%">Submit </NButton>
+          <NText depth="3" style="font-size: 12px">Make sure that the owner you entered is working!</NText>
+        </NSpace>
       </NSpace>
     </NCard>
   </NModal>

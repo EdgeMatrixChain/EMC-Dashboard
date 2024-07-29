@@ -27,9 +27,9 @@ export async function getMapNodes() {
     const index = entries.findIndex(([k, v]) => {
       return haversineDistance(v, item) < 400;
     });
-    
+
     let cityName = item.city;
-    
+
     if (index === -1) {
       cityMap[cityName] = { ...item, nodes: 0 };
     } else {
@@ -94,6 +94,8 @@ export async function getValidateNodes({ page, size }: NodesOption) {
     data: {
       page: page,
       size: size,
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
       status: 11,
     },
   });
@@ -107,6 +109,8 @@ export async function getRelayNodes({ page, size }: NodesOption) {
     data: {
       page: page,
       size: size,
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
       status: 13,
     },
   });
@@ -120,6 +124,8 @@ export async function getRPCNodes({ page, size }: NodesOption) {
     data: {
       page: page,
       size: size,
+      htbegin: now - 360 * 60000,
+      htend: now + 60 * 60000,
       status: 12,
     },
   });
@@ -163,18 +169,19 @@ export async function queryNodeOwner(nodeId: string, principal: string) {
   };
 }
 
-export async function queryReward(nodeId: string) {
+export async function queryReward(nodeId: string, projectId?: number) {
   const resp = await http.get({
     url: '/nodebill/summary',
-    data: { nodeId: nodeId },
+    data: { nodeId, projectId },
     noAutoHint: true,
   });
   const data = resp.data || {};
-  const totalReward = data.billTotal || 0;
-  const totalClaim = data.claimedTotal || 0;
+  const totalReward = BigInt(data.billTotal || 0);
+  const totalClaim = BigInt(data.claimedTotal || 0);
   return {
-    currentReward: BigInt(totalReward) - BigInt(totalClaim),
+    currentReward: totalReward - totalClaim,
     totalReward: totalReward,
+    claimedReward: totalClaim,
   };
 }
 

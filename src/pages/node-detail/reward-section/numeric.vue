@@ -27,7 +27,7 @@ const props = defineProps({
   tips: String,
   icon: String,
   loading: Boolean,
-  size: { type: String, default: 'normal' },
+  size: { type: String, default: 'small' },
 });
 
 const titleStyle = computed(() => {

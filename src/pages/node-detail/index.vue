@@ -22,27 +22,26 @@
         </template>
 
         <div class="node-info">
-          <div class="node-header">
-            <span class="header-text-1">Node ID</span>
-            <span class="header-text-2">{{ nodeInfo.nodeId }}</span>
-          </div>
+          <SectionHeader>Node Infomation</SectionHeader>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-[16px] sm:gap-[24px]">
             <div class="grid-cols-1">
               <div class="main-table" style="border-left-color: #8f7df8">
                 <LabelWithValue>
                   <template #label>
-                    <span class="info-item-label">Running Time</span>
+                    <span class="info-item-label">Node ID</span>
                   </template>
                   <template #value>
-                    <span class="info-item-value">{{ nodeInfo.runTime }}</span>
+                    <div class="flex-1 w-[0] whitespace-nowrap text-ellipsis overflow-hidden">
+                      <span class="info-item-value">{{ nodeInfo.nodeId }}</span>
+                    </div>
                   </template>
                 </LabelWithValue>
                 <LabelWithValue>
                   <template #label>
-                    <span class="info-item-label">Startup Time</span>
+                    <span class="info-item-label">Update Time</span>
                   </template>
                   <template #value>
-                    <span class="info-item-value">{{ nodeInfo.startupTime }}</span>
+                    <span class="info-item-value">{{ nodeInfo.updateTime }}</span>
                   </template>
                 </LabelWithValue>
                 <LabelWithValue>
@@ -69,7 +68,7 @@
                     </template>
                   </template>
                 </LabelWithValue>
-                <LabelWithValue>
+                <!-- <LabelWithValue>
                   <template #label>
                     <span class="info-item-label">Reward</span>
                   </template>
@@ -99,7 +98,7 @@
                       </NButton>
                     </template>
                   </template>
-                </LabelWithValue>
+                </LabelWithValue> -->
 
                 <LabelWithValue>
                   <template #label>
@@ -135,6 +134,18 @@
                     </template>
                   </template>
                 </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">Reward Pool</span>
+                  </template>
+                  <template #value>
+                    <div class="info-item-pools">
+                      <template v-for="item in nodeInfo.projects">
+                        <span class="info-item-value">{{ item.name }}</span>
+                      </template>
+                    </div>
+                  </template>
+                </LabelWithValue>
               </div>
             </div>
             <div class="grid-cols-1">
@@ -152,13 +163,26 @@
                     <span class="info-item-label">GPU</span>
                   </template>
                   <template #value>
-                    <NScrollbar x-scrollable style="flex: 1; width: 0" content-style="height:100%;">
-                      <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
-                        <template v-for="item in nodeInfo.gpus">
-                          <GpuItem :item="item" />
-                        </template>
-                      </NSpace>
-                    </NScrollbar>
+                    <template v-if="nodeInfo.gpus.length > 0">
+                      <NScrollbar x-scrollable style="flex: 1; width: 0" content-style="height:100%;">
+                        <NSpace class="h-full" align="center" :wrap="false" :wrap-item="false" :size="[8, 0]">
+                          <template v-for="item in nodeInfo.gpus">
+                            <GpuItem :item="item" />
+                          </template>
+                        </NSpace>
+                      </NScrollbar>
+                    </template>
+                    <template v-else>
+                      <span class="info-item-value">--</span>
+                    </template>
+                  </template>
+                </LabelWithValue>
+                <LabelWithValue>
+                  <template #label>
+                    <span class="info-item-label">RAM</span>
+                  </template>
+                  <template #value>
+                    <span class="info-item-value">{{ nodeInfo.memoryInfo }}</span>
                   </template>
                 </LabelWithValue>
                 <LabelWithValue>
@@ -178,28 +202,40 @@
                     <span class="info-item-value">{{ nodeInfo.ipAddr }}</span>
                   </template>
                 </LabelWithValue>
-                <LabelWithValue>
-                  <template #label>
-                    <span class="info-item-label">RAM</span>
-                  </template>
-                  <template #value>
-                    <span class="info-item-value">{{ nodeInfo.memoryInfo }}</span>
-                  </template>
-                </LabelWithValue>
               </div>
             </div>
           </div>
         </div>
-        <NTabs default-value="apis">
-          <NTabPane name="apis" tab="Api transactions">
+        <template v-if="isVisibleNodeRewards">
+          <template v-for="item in nodeInfo.currentRewards">
+            <RewardSection
+              :title="item.projectName"
+              :logo="item.projectLogo"
+              :total-reward="toFixedClip(ethers.formatUnits(item.totalReward || 0n, 18), 6)"
+              :current-reward="toFixedClip(ethers.formatUnits(item.currentReward || 0n, 18), 6)"
+            />
+          </template>
+        </template>
+        <div class="node-tasks">
+          <SectionHeader>Node Tasks</SectionHeader>
+          <ApiTransactions :node-id="nodeInfo.nodeId" />
+        </div>
+        <!-- <template v-if="isVisibleNodeRewards">
+          <div>
+            <SectionHeader>Earnings</SectionHeader>
+            <RewardClaims :node-id="nodeInfo.nodeId" />
+          </div>
+        </template> -->
+        <!-- <NTabs default-value="apis">
+          <NTabPane name="apis" tab="Tasks">
             <ApiTransactions :node-id="nodeInfo.nodeId" />
           </NTabPane>
           <template v-if="isVisibleNodeRewards">
-            <NTabPane name="claims" tab="Reward claims">
+            <NTabPane name="claims" tab="Earnings">
               <RewardClaims :node-id="nodeInfo.nodeId" />
             </NTabPane>
           </template>
-        </NTabs>
+        </NTabs> -->
         <template v-if="status === 0 || status === 1">
           <ModalChangeOwner v-model:visible="isVisibleChangePrincipal" :node-id="nodeInfo.nodeId" @success="onChangeOwnerSuccess" />
         </template>
@@ -209,6 +245,7 @@
             :stake-contract="stakeContract"
             :token-contract="tokenContract"
             :node-id="nodeInfo.nodeId"
+            :node-projects="nodeInfo.projects"
             :node-status="nodeInfo.status"
             @success="onStakeSuccess"
           />
@@ -231,6 +268,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { NSpace, NText, NButton, NIcon, NScrollbar, NSpin, NTabs, NTabPane, NTooltip, useMessage, useDialog } from 'naive-ui';
 import { PencilSharp as IconEdit, InformationCircleOutline as IconTips } from '@vicons/ionicons5';
+import SectionHeader from '@/components/section-header.vue';
 import PrimaryButton from '@/components/primary-button.vue';
 import Alert from './alert.vue';
 import moment from 'moment';
@@ -242,6 +280,7 @@ import { useETHUserStore } from '@/stores/eth-user';
 import { Web3Utils } from '@/web3/utils';
 import { ApiManager } from '@/web3/api';
 import { StakeNodeApi } from '@/web3/api/stake-node';
+import { NodeRewardApi } from '@/web3/api/node-reward';
 import { Web3Service } from '@/web3';
 import { getDefaultNetwork } from '@/web3/network';
 
@@ -265,27 +304,57 @@ import { useNodeService } from './use-node-service';
 import { toFixedClip } from '@/tools/format-number';
 
 import LabelWithValue from './label-with-value.vue';
+import RewardSection from './reward-section/index.vue';
+
+type Project = {
+  name: string;
+  logo: string;
+  projectId: number;
+};
+
+type CurrentReward = {
+  projectId: number;
+  projectName: string;
+  projectLogo: string;
+  currentReward: bigint;
+  totalReward: bigint;
+  claimedReward: bigint;
+};
 
 class NodeRewardTimer {
   interval: number;
   running: boolean;
   nodeId: string;
-  callback: (reward: bigint) => void;
+  projects: Project[];
+  callback: (rewards: CurrentReward[]) => void;
 
-  constructor({ nodeId, callback }: { nodeId: string; callback: (reward: bigint) => void }) {
+  constructor({ nodeId, projects, callback }: { nodeId: string; projects: Project[]; callback: (rewards: CurrentReward[]) => void }) {
     this.interval = 15000;
 
     this.running = true;
     this.nodeId = nodeId;
+    this.projects = projects;
     this.callback = callback;
     this.handle();
   }
 
   async handle() {
     const before = new Date().getTime();
-    const { currentReward } = await queryReward(this.nodeId);
+    const responses = await Promise.all(this.projects.map((item) => queryReward(nodeId, item.projectId)));
+    const currentRewards: CurrentReward[] = [];
+    responses.forEach((item, index) => {
+      const project = this.projects[index];
+      currentRewards.push({
+        projectId: project.projectId,
+        projectName: project.name,
+        projectLogo: project.logo,
+        currentReward: item.currentReward,
+        totalReward: item.totalReward,
+        claimedReward: item.claimedReward,
+      });
+    });
     const end = new Date().getTime();
-    this.callback(currentReward);
+    this.callback(currentRewards);
     const diff = this.interval - (end - before);
     if (diff > 0) {
       // console.info(`wait ${diff} ms`);
@@ -312,6 +381,7 @@ const w3s = Web3Service.getInstance();
 const ethUserStore = useETHUserStore();
 const nodeService = useNodeService();
 let stakeNodeApi: StakeNodeApi | null = null;
+let nodeRewardApi: NodeRewardApi | null = null;
 let nodeId = '';
 
 const error = ref(-1);
@@ -325,6 +395,7 @@ const loadings = ref({
 });
 
 const stakeContract = ref('');
+const rewardContract = ref('');
 const tokenContract = ref('');
 
 const nodeInfo = ref<any>({});
@@ -336,7 +407,7 @@ const isVisibleTips = ref(false);
 const tipsType = ref<any>('success');
 const tipsTitle = ref('');
 const tipsMessage = ref('');
-const minClaimReward = ref(BigInt(100 * 1e18));
+const minClaimReward = ref(BigInt(1 * 1e18)); //ref(BigInt(100 * 1e18));
 const rewardQueryTimer = ref<NodeRewardTimer>();
 
 const status = computed(() => {
@@ -389,8 +460,10 @@ async function queryInfo(_nodeId: string) {
     const resp = await http.get({ url: '/emcnetwork/info', data: { nodeid: _nodeId } });
     node = resp.data || {};
   }
+  const projects: Project[] = node.projects || [];
   const nodeId = node._id;
   const startupTime = node.startupTime ? moment(node.startupTime).utc().format('MMMM DD HH:mm UTC YYYY') : '-';
+  const updateTime = node.updateTime ? moment(node.updateTime).utc().format('MMMM DD HH:mm UTC YYYY') : '-';
   const runTime = node.runTime ? Utils.formatDate(node.runTime) : '-';
   const cpuInfo = Utils.parseJSON(node.cpuInfo) || {};
   const cpuName = cpuInfo.ModelName || '-';
@@ -420,10 +493,10 @@ async function queryInfo(_nodeId: string) {
   const application = node.appOrigin || '-';
   const status = node.status;
 
-  const metadata = nodeService.getNodeMetadata(status);
+  const metadata = nodeService.getNodeMetadata(status, projects);
   const maxStakeAmount = metadata ? metadata.maxStakeAmount : 0n;
 
-  return { nodeId, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application, status, maxStakeAmount };
+  return { projects, nodeId, updateTime, startupTime, runTime, cpuName, gpus, macAddr, ipAddr, memoryInfo, application, status, maxStakeAmount };
 }
 
 const updateStakeInfo = async (nodeId: string) => {
@@ -448,16 +521,26 @@ const init = async (nodeId: string) => {
     return;
   }
 
-  const [_nodeInfo, { principal }, { currentReward }] = await Promise.all([
-    queryInfo(nodeId),
-    queryNodeOwner(nodeId, ethUserStore.account0),
-    queryReward(nodeId),
-  ]);
+  const [_nodeInfo, { principal }] = await Promise.all([queryInfo(nodeId), queryNodeOwner(nodeId, ethUserStore.account0)]);
+
+  const responses = await Promise.all(_nodeInfo.projects.map((item) => queryReward(nodeId, item.projectId)));
+  const currentRewards: CurrentReward[] = [];
+  responses.forEach((item, index) => {
+    const project = _nodeInfo.projects[index];
+    currentRewards.push({
+      projectId: project.projectId,
+      projectName: project.name,
+      projectLogo: project.logo,
+      currentReward: item.currentReward,
+      totalReward: item.totalReward,
+      claimedReward: item.claimedReward,
+    });
+  });
 
   nodeInfo.value = {
     ..._nodeInfo,
     principal,
-    currentReward,
+    currentRewards,
   };
 
   await updateStakeInfo(nodeId);
@@ -467,9 +550,8 @@ const init = async (nodeId: string) => {
   }
   rewardQueryTimer.value = new NodeRewardTimer({
     nodeId: nodeId,
-    callback: (currentReward) => {
-      nodeInfo.value.currentReward = currentReward;
-    },
+    projects: _nodeInfo.projects,
+    callback: (currentRewards) => (nodeInfo.value.currentRewards = currentRewards),
   });
   error.value = 0;
 };
@@ -524,8 +606,8 @@ const preClaimReward = async (params: { amount: string; nodeId: string; chainId:
   });
 };
 
-const claimReward = async (params: { amount: bigint; account: string; nodeId: string; nonce: string; signature: string }) => {
-  const resp = await stakeNodeApi!.claimWithSignature(params);
+const claimReward = async (params: { amount: bigint; account: string; nodeId: string; nonce: string; sign1: string; sign2: string; sign3: string }) => {
+  const resp = await nodeRewardApi!.claimWithSignature(params);
   if (resp._result !== 0) {
     return resp;
   }
@@ -575,10 +657,12 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
     return resp;
   }
   const data = resp.data || {};
-  const sign = data.sign;
+  const sign1 = `0x${data.sign1}`;
+  const sign2 = `0x${data.sign2}`;
+  const sign3 = `0x${data.sign3}`;
   const nonce = data.nonce;
   const owner = data.owner;
-  if (!sign || !nonce || !owner) {
+  if (!sign1 || !sign2 || !sign3 || !nonce || !owner) {
     return { _result: 1, _desc: 'Claim error' };
   }
 
@@ -591,7 +675,7 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
       content: `You have an unfinished claim amounting to ${ethers.formatUnits(amount, 18)}EMC. This operation will prioritize completing this claim.`,
       confirmText: 'Continue',
       cancelText: 'Cancel',
-      onConfirm: () => claimReward({ amount, account: owner, nodeId, nonce, signature: sign }),
+      onConfirm: () => claimReward({ amount, account: owner, nodeId, nonce, sign1, sign2, sign3 }),
     });
     if (dialogResp.type === 'cancel') {
       return { _result: 3, _desc: 'Claim cancel' };
@@ -599,7 +683,7 @@ const handleClaimReward = async (params: { amount: bigint; nodeId: string; chain
       claimResp = dialogResp.data;
     }
   } else {
-    claimResp = await claimReward({ amount, account: owner, nodeId, nonce, signature: sign });
+    claimResp = await claimReward({ amount, account: owner, nodeId, nonce, sign1, sign2, sign3 });
   }
   if (claimResp._result !== 0) {
     if (claimResp.err && claimResp.err.code === 'ACTION_REJECTED') {
@@ -624,16 +708,17 @@ function onPressBind() {
   handleBind();
 }
 
-async function onPressClaim() {
-  tipsType.value = 'warning';
-  tipsTitle.value = 'Coming soon';
-  tipsMessage.value = `The Reward System is being updated.`;
-  isVisibleTips.value = true;
-
-  return;
-  if (nodeInfo.value.currentReward === 0n || !nodeInfo.value.currentReward) return;
+async function onPressClaim(projectId: number) {
+  // tipsType.value = 'warning';
+  // tipsTitle.value = 'Coming soon';
+  // tipsMessage.value = `The Reward System is being updated.`;
+  // isVisibleTips.value = true;
+  const currentRewardItem = nodeInfo.value.currentRewards.find((item: any) => item.projectId === projectId);
+  const currentReward = currentRewardItem?.currentReward;
+  // return;
+  if (currentReward === 0n || !currentReward) return;
   const nodeId = nodeInfo.value.nodeId;
-  const amount = nodeInfo.value.currentReward;
+  const amount = BigInt(1 * 1e17); //currentReward;
   const chainId = ethUserStore.chainId as number;
   if (typeof chainId !== 'number') return;
 
@@ -694,7 +779,9 @@ onMounted(async () => {
   nodeId = route.params.id as string;
   const networkConfig = getDefaultNetwork();
   stakeContract.value = networkConfig.smarts.nodeStake.contract;
+  rewardContract.value = networkConfig.smarts.nodeReward.contract;
   stakeNodeApi = apiManager.create(StakeNodeApi, { address: stakeContract.value });
+  nodeRewardApi = apiManager.create(NodeRewardApi, { address: rewardContract.value });
   nodeService.setStakeNodeApi(stakeNodeApi);
   const { data: _tokenContract } = await stakeNodeApi!.token();
   tokenContract.value = _tokenContract || '';
@@ -720,49 +807,26 @@ onUnmounted(() => {
 .page-body {
   display: flex;
   flex-direction: column;
-
   margin: auto;
   gap: 16px 0;
 }
 
 .node-info {
-}
-
-.node-header {
-  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px 0;
-}
-
-.header-text-1 {
-  display: inline-block;
-  color: #fff;
-  font-weight: 400;
-  font-size: 20px;
-  margin-right: 4px;
-  user-select: none;
-}
-
-.header-text-2 {
-  display: inline-block;
-  color: #fff;
-  font-weight: 400;
-  font-size: 14px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  gap: 16px 0;
 }
 
 .main-table {
   width: 100%;
   background-color: #1c2025;
   border-left: solid 4px #1c2025;
+  border-radius: 4px;
 }
 
 .info-item-label {
   font-size: 12px;
-  color: var(--text-color2);
+  color: var(--text-color1);
 }
 
 .info-item-value {
@@ -770,15 +834,23 @@ onUnmounted(() => {
   color: #ffffff;
 }
 
+.info-item-pools {
+  display: flex;
+  flex-direction: row;
+  gap: 0 8px;
+}
+
+.node-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+}
+
 @media (min-width: 640px) {
   .page-body {
     gap: 24px 0;
     max-width: var(--screen-max-width);
     min-width: var(--screen-min-width);
-  }
-  .node-header {
-    flex-direction: row;
-    align-items: baseline;
   }
 
   .info-item-label {

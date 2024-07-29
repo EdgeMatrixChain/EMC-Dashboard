@@ -1,5 +1,5 @@
 <template>
-  <NSpace class="wallet" vertical :size="[0, 0]" :wrap-item="false" :wrap="false">
+  <div class="wallet">
     <!-- header -->
     <NSpace class="px-[16px] py-[12px]" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
       <NSpace
@@ -21,7 +21,7 @@
       </NButton>
     </NSpace>
     <!-- dex -->
-    <NSpace class="px-[16px]" vertical align="center" justify="center" :size="[0, 8]" :wrap-item="false" :wrap="false">
+    <div class="wallet-dex px-[16px]">
       <NSpace class="mb-[8px]" vertical align="center" justify="center" :size="[0, 0]" :wrap-item="false" :wrap="false">
         <span class="text-[14px] font-[400]">EMC/USDT</span>
         <NSpace class="h-[56px]" vertical align="center" justify="center" :size="[0, 0]" :wrap-item="false" :wrap="false">
@@ -40,24 +40,24 @@
         </template>
       </NButton>
       <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressLocks">Staking Status</NButton>
-    </NSpace>
-    <NSpace class="px-[16px] mt-[8px]" vertical align="center" justify="center" :size="[0, 8]" :wrap-item="false" :wrap="false">
+    </div>
+    <div class="wallet-body px-[16px] mt-[8px]">
       <NTabs type="bar" animated>
-        <NTabPane name="tokens" tab="Tokens">
-          <template v-if="!loadings.priceUsd">
-            <Tokens :price-usd="priceUsd" />
-          </template>
-        </NTabPane>
         <NTabPane name="nodes" tab="Nodes">
           <template v-if="!loadings.priceUsd">
             <Nodes @press-item="onPressNode" />
           </template>
         </NTabPane>
+        <NTabPane name="tokens" tab="Tokens">
+          <template v-if="!loadings.priceUsd">
+            <Tokens :price-usd="priceUsd" />
+          </template>
+        </NTabPane>
         <!-- <NTabPane name="nodes" tab="Nodes"> Hey Jude </NTabPane> -->
         <!-- <NTabPane name="activity" tab="Activity"> Activity </NTabPane> -->
       </NTabs>
-    </NSpace>
-  </NSpace>
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
@@ -116,9 +116,23 @@ onMounted(async () => {
 </script>
 <style scoped>
 .wallet {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   border-radius: 12px;
   border: solid 1px #4c4c5a;
   background-color: #212121;
+}
+.wallet-dex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 0;
+}
+.wallet-body {
+  flex: 1;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 </style>

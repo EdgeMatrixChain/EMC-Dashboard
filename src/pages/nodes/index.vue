@@ -173,7 +173,7 @@ const updateList = async () => {
   const nodeList: any[] = [];
   (resp.list || []).forEach((item: any) => {
     item.nodeIdFormat = Utils.formatAddress(item._id, 11);
-    item.updateTimeStr = moment(item.heartTime).format('YYYY-MM-DD hh:mm');
+    item.updateTimeStr = moment(item.heartTime).format('YYYY-MM-DD HH:mm');
     item.runTime = item.runTime === item.startupTime ? '--' : Utils.formatDate(item.runTime);
     item.type = formatNodeType(item.status);
     item.gpus = item.gpus;

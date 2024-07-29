@@ -18,7 +18,7 @@ export default [
     smarts: {
       rewardStake: { contract: '0xb204C35048C73F03b69Bd6163b3c2e88ce9dAa00' },
       nodeStake: { contract: '0xaeFDD38de2aD3C301b234be320A2305db082426f' },
-      nodeReward: { contract: '' }, //0x70bbf54454117D30B32eCAbCD16899C545DB14e4
+      nodeReward: { contract: '0xFc26d0075221d9ad0B01c2734AF46ECaea0aed3E' },
       nodeUnstakeClaim: { contract: '0xbfbc3BF85FBA818fc49A0354D2C84623cE711b63' },
       publicSell: { contract: '0x9E035Dc6DB311d35F1eDca506B41AAec90d9E704' },
     },

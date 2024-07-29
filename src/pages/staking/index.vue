@@ -483,6 +483,7 @@ const staking = async () => {
     amount: amount,
   });
   if (pay._result !== 0) {
+    console.error(JSON.stringify(pay, (key, value) => (typeof value === 'bigint' ? value.toString() : value)));
     message.error(`CreateVestingSchedule Error`);
     stakingLoading.value = false;
     return;

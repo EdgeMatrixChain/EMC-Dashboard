@@ -31,6 +31,7 @@ export type Item = {
   status: number;
   statusStr: string;
   nonce: string;
+  projectName: string;
 };
 
 const props = defineProps({
@@ -47,9 +48,15 @@ const pendingTimerConfig = { interval: 3000, stop: false };
 const pendingWatches = ref<{ [id: string]: number }>({});
 const columns: any = ref([
   {
+    title: 'Reward Pool',
+    key: 'projectName',
+    render(row: Item) {
+      return h(NEllipsis, { style: 'width:88px' }, { default: () => h('span', {}, { default: () => row.projectName }) });
+    },
+  },
+  {
     title: 'Beneficiary',
     key: 'owner',
-    width: 200,
     render(row: Item) {
       return h('span', {}, { default: () => row.ownerFormatted });
     },
@@ -57,7 +64,6 @@ const columns: any = ref([
   {
     title: 'Amount',
     key: 'amount',
-    width: 200,
     render(row: Item) {
       return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => `${row.amountFormatted} EMC` }) });
     },
@@ -65,7 +71,6 @@ const columns: any = ref([
   {
     title: 'Create Date',
     key: 'createTime',
-    width: 200,
     render(row: Item) {
       return h(NEllipsis, { style: 'width:188px' }, { default: () => h('span', {}, { default: () => row.createTimeStr }) });
     },
@@ -73,7 +78,6 @@ const columns: any = ref([
   {
     title: 'Status',
     key: 'statusStr',
-    width: 200,
     render(row: Item) {
       return h(NSpace, { algin: 'center', wrapItem: false, size: [8, 0] }, { default: () => h('span', {}, { default: () => row.statusStr }) });
     },

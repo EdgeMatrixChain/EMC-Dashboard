@@ -73,15 +73,8 @@
             <NButton type="primary" strong size="large" round disabled style="background-color: var(--n-color); width: 100%">Switch to arbitrum one </NButton>
           </template>
           <template v-else>
-            <NSpace vertical align="center" :wrap-item="false" :size="[0, 2]">
-              <NButton
-                type="primary"
-                strong
-                size="large"
-                round
-                :loading="loadings.submit || loadings.info"
-                @click="onPressSubmit"
-                style="background-color: var(--n-color); width: 100%"
+            <NSpace vertical align="center" :wrap-item="false" :size="[0, 8]">
+              <NButton type="primary" strong size="large" round :loading="loadings.submit || loadings.info" @click="onPressSubmit" style="width: 100%"
                 >Submit
               </NButton>
               <NText depth="3" style="font-size: 12px">If you want to withdraw, you need to wait for 30-day claim your staked EMC.</NText>
@@ -94,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, computed, watch, ref } from 'vue';
+import { defineComponent, computed, watch, ref, PropType } from 'vue';
 import { NModal, NCard, NText, NInput, NSpace, NButton, NAlert, NIcon, NSpin, NSkeleton, useMessage } from 'naive-ui';
 import { useRoute } from 'vue-router';
 import { Close as IconClose } from '@vicons/ionicons5';
@@ -107,6 +100,7 @@ import { useNodeService } from '../use-node-service';
 const props = defineProps({
   visible: { type: Boolean, default: false },
   nodeId: { type: String, default: false },
+  nodeProjects: { type: Array as PropType<any[]>, default: () => [] },
   nodeStatus: { type: Number, default: -1 },
   stakeContract: { type: String, default: false },
   tokenContract: { type: String, default: false },
@@ -151,7 +145,7 @@ const init = async () => {
   tokenSymbol.value = _tokenSymbol;
   tokenDecimal.value = Number(_tokenDecimals);
   minLimitEach.value = _minLimitEach || 0n;
-  const metadata = nodeService.getNodeMetadata(props.nodeStatus);
+  const metadata = nodeService.getNodeMetadata(props.nodeStatus, props.nodeProjects);
   maxStakeAmount.value = metadata ? metadata.maxStakeAmount : 0n;
   nodeStakedAmount.value = (_stakeInfo && _stakeInfo.currentStaked) || 0n;
   await initUserInfo();

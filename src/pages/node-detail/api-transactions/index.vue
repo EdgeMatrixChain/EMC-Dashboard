@@ -1,29 +1,27 @@
 <template>
-  <div>
-    <NDataTable :columns="columns" :data="list" :loading="loading" size="small" :pagination="false" striped>
-      <template #empty>
-        <span>No Data</span>
-      </template>
-    </NDataTable>
-    <div class="table-footer">
-      <NPagination
-        v-model:page="pageNo"
-        :disabled="loading"
-        :page-count="pageCount"
-        @update:page="handlePageChange"
-        :size="isMobile ? 'small' : 'large'"
-        :page-slot="5"
-      />
-    </div>
+  <div class="list-wrapper">
+    <!-- <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" /> -->
+    <template v-if="isMobile">
+      <ListMobile :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+    </template>
+    <template v-else>
+      <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, h, onMounted } from 'vue';
-import { NDataTable, NEllipsis, NSpace, NPagination } from 'naive-ui';
+import { ref, onMounted } from 'vue';
 import { http } from '@/tools/http';
-import { useIsMobile } from '@/composables/use-screen';
 import moment from 'moment';
+import { useIsMobile } from '@/composables/use-screen';
+import ListDesktop from './list.desktop.vue';
+import ListMobile from './list.mobile.vue';
+
+const props = defineProps({
+  nodeId: String,
+  loading: Boolean,
+});
 
 export type Item = {
   id: number;
@@ -35,66 +33,15 @@ export type Item = {
   createTime: number;
   diffTimeStr: string;
   credit: number;
+  projectName: string;
 };
 
-const props = defineProps({
-  nodeId: String,
-  loading: Boolean,
-});
-
-defineEmits(['item']);
 const isMobile = useIsMobile();
-const loading = ref(false);
+const list = ref<Item[]>([]);
 const pageNo = ref(1);
 const pageSize = ref(20);
-const pageCount = ref(0);
-const list = ref<Item[]>([]);
-
-const columns: any = ref([
-  {
-    title: 'Task Id',
-    key: 'taskSn',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:160px' }, { default: () => h('span', {}, { default: () => row.taskSn }) });
-    },
-  },
-  {
-    title: 'Application',
-    key: 'application',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.application }) });
-    },
-  },
-  {
-    title: 'Method',
-    key: 'method',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.method }) });
-    },
-  },
-  {
-    title: 'Create Date', //Age
-    key: 'diffTimeStr',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:188px' }, { default: () => h('span', {}, { default: () => row.diffTimeStr }) });
-    },
-  },
-  {
-    title: 'Status',
-    key: 'statusStr',
-    render(row: Item) {
-      return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.statusStr }) });
-    },
-  },
-  // {
-  //   title: 'Credit',
-  //   key: 'credit',
-  //   render(row: Item) {
-  //     return h(NEllipsis, { style: 'width:140px' }, { default: () => h('span', {}, { default: () => row.credit }) });
-  //   },
-  // },
-]);
-
+const pageCount = ref(1);
+const loading = ref(false);
 const StatusText = ['Wait', 'Pending', 'Complete', 'Failed', 'Timeout'];
 const APIs = [
   { application: 'LLM', method: 'Chat', path: '/hubapi/v1/llm/chat/completions' },
@@ -112,21 +59,22 @@ function formatApiPath(path: string, appOrigin: string) {
   return item;
 }
 
-async function initList() {
+onMounted(() => {
+  initList();
+});
+
+const initList = () => {
   list.value = [];
+  pageNo.value = 1;
   pageCount.value = 0;
   updateList();
-}
+};
 
-async function updateList() {
+const updateList = async () => {
   loading.value = true;
   const resp = await http.get({
     url: 'https://openapi.emchub.ai/emchub/api/client/open/queryApiList',
-    data: {
-      pageNo: pageNo.value,
-      pageSize: pageSize.value,
-      nodeId: props.nodeId,
-    },
+    data: { pageNo: pageNo.value, pageSize: pageSize.value, nodeId: props.nodeId },
     noAutoHint: true,
   });
   loading.value = false;
@@ -144,25 +92,104 @@ async function updateList() {
     const diffTime = now - createTime;
     //${Utils.formatDate(diffTime)} ago
     const diffTimeStr = `${moment(createTime).utc().format('MMMM DD HH:mm:ss UTC YYYY')}`;
-    newList.push({ id, taskSn, application, method, status, statusStr, createTime, diffTimeStr, credit });
+    const projectName = item.projectName;
+    newList.push({ id, taskSn, application, method, status, statusStr, createTime, diffTimeStr, credit, projectName });
   });
   list.value = newList;
   pageCount.value = Math.ceil(pageInfo.total / pageSize.value);
-}
+};
 
-function handlePageChange(page: number) {
-  pageNo.value = page;
+const handlePageChange = (currentPage: number) => {
+  pageNo.value = currentPage;
   updateList();
-}
-
-onMounted(() => {
-  initList();
-});
+};
 </script>
 <style scoped>
-.table-footer {
-  margin-top: 16px;
+.page {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 16px 0;
+}
+
+.section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.node {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.node-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+}
+
+.node-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0;
+}
+
+.node-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0 8px;
+}
+
+.node-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Oxanium;
+}
+
+.node-subtitle-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.node-subtitle-text {
+  color: #a0aec0;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.node-tools {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .node {
+    padding: 24px;
+    gap: 24px 0;
+  }
+
+  .node-grid {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .node-tools {
+    width: auto;
+  }
+
+  .node-title {
+    font-size: 24px;
+  }
 }
 </style>
