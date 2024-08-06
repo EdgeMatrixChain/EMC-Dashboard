@@ -1,9 +1,9 @@
 <template>
-  <div class="schedule">
+  <div class="schedule xs:!gap-y-[12px]">
     <div class="schedule-header">
-      <span class="schedule-header-title">Node Reward Release Schedule</span>
+      <span class="schedule-header-title xs:!text-[18px]">Node Reward Release Schedule</span>
     </div>
-    <div class="schedule-body">
+    <div class="schedule-body emc-card py-[36px]">
       <Line :data="ScheduleData" />
     </div>
   </div>
@@ -20,22 +20,22 @@ import ScheduleData from '../data';
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 30px 0;
 }
 
 .schedule-header {
+
 }
 
 .schedule-header-title {
   /* font-family: Oxanium; */
-  font-size: 16px;
-  font-weight: 400;
-  color: #eeddff;
+  font-size: 24px;
+  font-weight: 600;
+  /* color: #eeddff; */
 }
 
 .schedule-body {
   position: relative;
-  height: 360px;
+  height: 380px;
 }
 </style>
-../data

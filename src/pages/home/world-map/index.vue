@@ -1,8 +1,8 @@
 <template>
-  <div class="chart-view">
-    <div class="chart-map" ref="chartRef"></div>
+  <div class="chart-view xs:!h-[200px]">
+    <div class="chart-map " ref="chartRef"></div>
     <div class="chart-view-header">
-      <span class="chart-view-title">Node Distribution</span>
+      <span class="chart-view-title xs:!text-[12px]">Node Distribution</span>
     </div>
     <div class="chart-view-zoom">
       <div class="zoom-1" @click.prevent.stop="onPressZoom(3)">
@@ -90,8 +90,8 @@ onUnmounted(() => {
   padding-top: calc(100% * 0.4);
   position: relative;
   border-radius: 16px;
-  border: 1px solid #3d1a5a;
-  background-color: var(--bg-color2);
+  border: 1px solid rgba(137,139,149,0.20);
+  background-color: #111318;
   overflow: hidden;
 }
 .chart-map {
@@ -104,15 +104,19 @@ onUnmounted(() => {
 
 .chart-view-header {
   position: absolute;
-  left: 4px;
-  top: 4px;
-  padding: 4px 8px;
-  background-color: var(--bg-color2);
-  border-radius: 4px;
+  left: 14px;
+  top: 14px;
+  padding: 0 8px;
+  height: 40px;
+  line-height: 40px;
+  background-color: #333;
+  border-radius:  50px;
+  font-size: 14px;
+
 }
 
 .chart-view-title {
-  font-family: Oxanium;
+  /* font-family: Oxanium; */
   font-size: 14px;
   font-weight: 500;
 }
@@ -128,10 +132,10 @@ onUnmounted(() => {
 }
 .zoom-1,
 .zoom-2 {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 100%;
-  background-color: var(--bg-color2);
+  background-color: rgba(87,87,87,1);
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -147,9 +151,11 @@ onUnmounted(() => {
 
 @media (min-width: 640px) {
   .chart-view-header {
-    left: 16px;
-    top: 16px;
-    padding: 4px 12px;
+    left: 20px;
+    top: 20px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 32px;
   }
 
   .chart-view-zoom {

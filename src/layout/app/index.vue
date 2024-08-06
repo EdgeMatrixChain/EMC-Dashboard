@@ -1,8 +1,14 @@
 <template>
   <Background>
     <div class="layout">
-      <div class="n-header" :style="headerStyle">
+      <div class="n-header" :style="{...headerStyle, backgroundColor: '#030003'}">
         <Header />
+      </div>
+      <div class="emc-top-bg fixed">
+        <img class="w-[38%] h-auto emc-select-none" src="/src/assets/images/home-left.png"
+          alt="">
+        <img class="w-[24%] h-auto emc-select-none"
+          src="/src/assets/images/home-right.png" alt="">
       </div>
       <!-- class="xl:w-[1440px]" -->
       <div class="n-body">
@@ -46,7 +52,7 @@ layoutRoute?.children?.forEach((i: any) => {
 
 function handleScroll() {
   if (window.scrollY > 80) {
-    headerStyle.value['background-color'] = '#101422ee';
+    headerStyle.value['background-color'] = '#030003';
   } else {
     headerStyle.value['background-color'] = '#10142200';
   }
@@ -96,6 +102,7 @@ onUnmounted(() => {
 .n-footer {
   position: relative;
   z-index: 1;
+  background: linear-gradient(148.31deg, #141318 20.4%, rgba(14, 15, 21, 0.7) 81.18%);
 }
 
 .loading {

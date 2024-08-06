@@ -1,5 +1,5 @@
 <template>
-  <div class="list-wrapper">
+  <div class="base-emc-card list-wrapper">
     <!-- <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" /> -->
     <template v-if="isMobile">
       <ListMobile :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
@@ -109,6 +109,16 @@ const handlePageChange = (currentPage: number) => {
   display: flex;
   flex-direction: column;
   gap: 16px 0;
+}
+
+.list-wrapper {
+  padding: 24px;
+  border-color: rgba(103, 95, 255, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+linear-gradient(0deg, #111318, #111318);
 }
 
 .section {

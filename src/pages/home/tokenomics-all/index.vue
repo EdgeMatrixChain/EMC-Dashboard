@@ -1,7 +1,7 @@
 <template>
-  <div class="content">
+  <div class="content ">
     <SectionHeader> Tokenomics </SectionHeader>
-    <div class="content-body">
+    <div class="content-body emc-card ">
       <div class="grid grid-cols-3 sm:grid-cols-3 gap-[8px] sm:gap-[16px]">
         <div class="grid-cols-1">
           <TokenSupply :size="numericSize" />
@@ -34,7 +34,7 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 12px 0;
 }
 
 .header-icon-inline {
@@ -52,7 +52,6 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
 .content-body {
   width: 100%;
   padding: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
 }
 .item-wrapper {
   background-color: rgba(0, 0, 0, 0.3);
@@ -60,7 +59,7 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
 
 @media (min-width: 640px) {
   .content {
-    gap: 16px 0;
+    gap: 30px 0;
   }
 }
 </style>

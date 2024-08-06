@@ -99,7 +99,7 @@ function handlePageChange(val: any) {
 .item-badge {
   display: flex;
   align-items: center;
-  background-color: #1c2025;
+  /* background-color: #1c2025; */
   width: 120px;
   height: 24px;
   padding: 8px 8px 0;
@@ -115,7 +115,7 @@ function handlePageChange(val: any) {
 }
 
 .item-content {
-  background-color: #1c2025;
+  /* background-color: #1c2025; */
   display: flex;
   flex-direction: column;
   position: relative;
@@ -157,7 +157,7 @@ function handlePageChange(val: any) {
   align-items: center;
   justify-content: center;
   height: 320px;
-  background-color: #1c2025;
+  /* background-color: #1c2025; */
   position: relative;
 }
 

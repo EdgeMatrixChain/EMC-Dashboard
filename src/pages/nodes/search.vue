@@ -63,7 +63,7 @@ function onClear() {
   color: #fff;
 }
 .search-icon {
-  background-color: #821be6ff;
+  background-color: #5A1DDD;
   width: 24px;
   height: 24px;
   display: flex;

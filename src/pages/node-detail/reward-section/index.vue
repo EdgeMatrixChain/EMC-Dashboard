@@ -1,6 +1,9 @@
 <template>
   <div class="content">
-    <SectionHeader> <img class="header-icon-inline" :src="logo" /> {{ title }} </SectionHeader>
+    <SectionHeader>
+      <!-- <img class="header-icon-inline" :src="logo" />  -->
+      {{ title }}
+    </SectionHeader>
     <div class="content-body">
       <div class="grid grid-cols-2 sm:grid-cols-2 gap-[8px] sm:gap-[16px]">
         <div class="grid-cols-1">
@@ -58,7 +61,6 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
 .content-body {
   width: 100%;
   padding: 8px;
-  background-color: #1c2025;
   border-radius: 4px;
 }
 

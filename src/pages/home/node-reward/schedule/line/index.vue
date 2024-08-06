@@ -97,7 +97,7 @@ onUnmounted(() => {
 
 <style scoped>
 .chart-pie {
-  position: absolute;
+  /* position: absolute; */
   left: 0;
   top: 0;
   width: 100%;

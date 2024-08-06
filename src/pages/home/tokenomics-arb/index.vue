@@ -1,7 +1,7 @@
 <template>
   <div class="content">
-    <SectionHeader> <img class="header-icon-inline" src="@/assets/icon_arbitrum.svg" /> Tokenomics Arbitrum </SectionHeader>
-    <div class="content-body">
+    <SectionHeader> <img class="header-icon-inline mr-[6px]" src="@/assets/icon_arbitrum.svg" /> Tokenomics Arbitrum </SectionHeader>
+    <div class="content-body emc-card">
       <div class="grid grid-cols-3 sm:grid-cols-3 gap-[8px] sm:gap-[16px]">
         <div class="grid-cols-1">
           <TokenCirculating :size="numericSize" />
@@ -35,7 +35,7 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 12px 0;
 }
 
 .header-icon-inline {
@@ -54,12 +54,11 @@ const numericSize = computed(() => (isMobile.value ? 'small' : 'large'));
 .content-body {
   width: 100%;
   padding: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
 }
 
 @media (min-width: 640px) {
   .content {
-    gap: 16px 0;
+    gap: 30px 0;
   }
 }
 </style>

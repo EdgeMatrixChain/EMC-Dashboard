@@ -107,7 +107,7 @@ function handlePageChange(val: any) {
 .item {
   display: block;
   border-radius: 4px;
-  background-color: #1c2025;
+  /* background-color: #1c2025; */
 }
 
 .item:not(:last-child) {
@@ -119,7 +119,7 @@ function handlePageChange(val: any) {
   flex-direction: column;
   position: relative;
   gap: 16px 0;
-  padding: 12px 16px;
+  /* padding: 12px 16px; */
 }
 
 .item-row {
@@ -156,7 +156,7 @@ function handlePageChange(val: any) {
   align-items: center;
   justify-content: center;
   height: 320px;
-  background-color: #1c2025;
+  /* background-color: #1c2025; */
   position: relative;
 }
 

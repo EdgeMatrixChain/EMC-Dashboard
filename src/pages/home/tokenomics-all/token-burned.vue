@@ -1,6 +1,6 @@
 <template>
   <NumericBasic :title="title" :unit="unit" :value="value" :tips="tips" :loading="loading" size="small">
-    <template #header-suffix>
+    <!-- <template #header-suffix>
       <NPopover :trigger="isMobile ? 'click' : 'hover'">
         <template #trigger>
           <IconTips style="width: 20px; height: 20px; color: #eeddff" />
@@ -9,7 +9,7 @@
           <p class="tips-content-text">{{ totalBridge }} EMC on Arbitrum burned for minting on Solana.</p>
         </div>
       </NPopover>
-    </template>
+    </template> -->
   </NumericBasic>
 </template>
 

@@ -1,23 +1,23 @@
 <template>
   <Background>
-    <div class="page" style="margin: auto">
-      <div class="section">
+    <div class="page relative" style="margin: auto">
+      <div class="section !mb-20">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-[16px] sm:gap-[24px]">
-          <div class="grid-cols-1">
+          <div class="grid-cols-1 base-emc-card computing-card">
             <NodeComputer :size="numericSize" />
           </div>
-          <div class="grid-cols-1">
+          <div class="grid-cols-1 base-emc-card validator-card">
             <NodeValidator :size="numericSize" />
           </div>
-          <div class="grid-cols-1">
+          <div class="grid-cols-1 base-emc-card rpc-card">
             <NodeRpc :size="numericSize" />
           </div>
-          <div class="grid-cols-1">
+          <div class="grid-cols-1 base-emc-card relay-card">
             <NodeRelay :size="numericSize" />
           </div>
         </div>
       </div>
-      <div class="section node">
+      <div class="section node base-emc-card">
         <div class="node-grid">
           <div class="node-header">
             <div class="node-header-row">
@@ -36,10 +36,12 @@
           </div>
         </div>
         <template v-if="isMobile">
-          <ListMobile :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+          <ListMobile :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading"
+            @paging="handlePageChange" />
         </template>
         <template v-else>
-          <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading" @paging="handlePageChange" />
+          <ListDesktop :list="list" :page-no="pageNo" :page-count="pageCount" :loading="loading"
+            @paging="handlePageChange" />
         </template>
       </div>
     </div>
@@ -142,8 +144,8 @@ function formatNodeType(status: number) {
     bgColor = '#4A462F';
     icon = IconRelay;
   } else {
-    color = '#A16EBF';
-    bgColor = '#402F4A';
+    color = '#5A1DDD';
+    bgColor = 'rgba(90, 29, 221, 0.2)';
     icon = IconComputer;
   }
   return { name, color, bgColor, icon };
@@ -205,10 +207,48 @@ const onFilterSearch = () => {
 };
 </script>
 <style scoped>
+
+.computing-card {
+  border-color: rgba(103, 95, 255, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+    linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+    radial-gradient(158% 158% at 7.54% 14.18%, rgba(99, 77, 232, 0.2) 0%, rgba(17, 17, 21, 0.2) 39.37%);
+}
+
+.validator-card {
+  border-color: rgba(152, 68, 237, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(152, 68, 237, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(152, 68, 237, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+    linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+    radial-gradient(158% 158% at 7.54% 14.18%, rgba(152, 68, 237, 0.2) 0%, rgba(17, 17, 21, 0.2) 39.37%);
+}
+
+.rpc-card {
+  border-color: rgba(84, 108, 234, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(84, 108, 234, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(84, 108, 234, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+radial-gradient(158% 158% at 7.54% 14.18%, rgba(84, 108, 234, 0.2) 0%, rgba(17, 17, 21, 0.2) 39.37%);
+}
+
+.relay-card {
+  border-color: rgba(127, 200, 252, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(127, 200, 252, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(127, 200, 252, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+radial-gradient(158% 158% at 7.54% 14.18%, rgba(127, 200, 252, 0.2) 0%, rgba(17, 17, 21, 0.2) 39.37%);
+}
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
+  padding-top: 80px;
+  padding-bottom: 100px; 
 }
 
 .section {
@@ -219,7 +259,12 @@ const onFilterSearch = () => {
 }
 
 .node {
-  background-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(103, 95, 255, 0.5);
+  border-top-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  border-left-image: linear-gradient(325.43deg, rgba(255, 255, 255, 0) 32.53%, rgba(103, 95, 255, 0.5) 84.84%);
+  background: linear-gradient(0deg, rgba(200, 139, 196, 0.01), rgba(200, 139, 196, 0.01)),
+linear-gradient(180deg, rgba(243, 238, 255, 0) 0%, rgba(243, 238, 255, 0.04) 100%),
+linear-gradient(0deg, #111318, #111318);
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -247,8 +292,8 @@ const onFilterSearch = () => {
 .node-title {
   color: #fff;
   font-size: 16px;
-  font-weight: 500;
-  font-family: Oxanium;
+  font-weight: 600;
+  font-family: GeneralSans-Medium;
 }
 
 .node-subtitle-icon {
@@ -257,9 +302,9 @@ const onFilterSearch = () => {
 }
 
 .node-subtitle-text {
-  color: #a0aec0;
-  font-size: 12px;
-  font-weight: 400;
+  color: #A6B6D1;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .node-tools {

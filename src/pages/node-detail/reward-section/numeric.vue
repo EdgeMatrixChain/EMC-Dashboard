@@ -84,7 +84,7 @@ const unitStyle = computed(() => {
 .item-header-text {
   font-size: 16px;
   font-weight: 400;
-  color: #eeddff;
+  color: rgba(137,139,149,1);
 }
 
 .item-data {
@@ -96,7 +96,7 @@ const unitStyle = computed(() => {
   font-size: 28px;
   font-weight: 500;
   color: #ffffff;
-  font-family: Oxanium;
+  font-family: GeneralSans-Semibold;
 }
 
 .item-data-unit {

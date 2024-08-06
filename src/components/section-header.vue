@@ -6,12 +6,13 @@
 <script setup lang="ts"></script>
 <style scoped>
 .section-header {
+
 }
 
 .section-header-title {
-  font-family: Oxanium;
+  font-family: GeneralSans-Semibold;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 @media (min-width: 640px) {

@@ -1,53 +1,54 @@
 <template>
   <div class="header">
     <div class="header-content">
-      <div class="header-cell">
+      <div class="header-cell w-[232px]">
         <RouterLink class="p-[16px]" :to="{ path: '/' }">
           <img class="header-icon" />
         </RouterLink>
-        <template v-if="!isMobile">
-          <div class="header-tabs">
-            <template v-for="item in tabs">
-              <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
-                <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }">
-                  <span class="header-tabs-item-text whitespace-nowrap">{{ item.label }}</span>
-                </div>
-              </RouterLink>
-            </template>
-          </div>
-        </template>
-        <template v-else>
+        <template v-if="isMobile">
           <PopupMenu :configs="tabConfigs" />
         </template>
       </div>
-      <div class="header-cell">
+      <template v-if="!isMobile">
+        <div class="header-tabs flex-1 items-center justify-center">
+          <template v-for="item in tabs">
+            <RouterLink :to="{ path: item.key }" style="text-decoration: none; color: inherit">
+              <!-- <div class="header-tabs-item" :class="{ 'header-tabs-item__actived': item.id === currentTabKey }"> -->
+              <div class="header-tabs-item">
+                <span
+                  class="header-tabs-item-text whitespace-nowrap px-[22.5px] rounded-lg font-GeneralSans-Semibold font-semibold hover:bg-[#1C1B21]">
+                  {{ item.label }}
+                </span>
+              </div>
+            </RouterLink>
+          </template>
+        </div>
+      </template>
+      <div class="header-cell sm:w-[232px] justify-end">
         <template v-if="!ethUserStore.isConnected">
-          <div class="header-user" @click="onPressConnect">
-            <span class="header-user-text">Connect Wallet</span>
+          <div class="header-user xs:!h-[40px] " @click="onPressConnect">
+            <span class="header-user-text xs:!text-[13px]">Connect Wallet</span>
           </div>
         </template>
         <template v-else-if="ethUserStore.isInvalidNetwork">
           <div class="header-user" @click="onPressSwitchNetwork">
-            <span class="header-user-text">Network Error</span>
+            <span class="header-user-text xs:!text-[13px]">Network Error</span>
           </div>
         </template>
         <template v-else>
           <div class="header-user" @click="onPressUser">
-            <span class="header-user-text">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
-            <div class="header-user-balance">
-              <span class="header-user-balance-text" style="margin-right: 4px">{{ ethUserStore.tokens.emc.short }}</span>
+            <span class="header-user-text xs:!text-[13px]">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
+            <div class="header-user-balance opacity-80">
+              <span class="header-user-balance-text" style="margin-right: 4px">({{ ethUserStore.tokens.emc.short || 0
+                }})</span>
               <span class="header-user-balance-unit">{{ ethUserStore.tokens.emc.symbolName }}</span>
             </div>
           </div>
-          <NDrawer
-            v-model:show="visibleWallet"
-            :auto-focus="false"
-            :width="400"
-            :height="'88%'"
-            :placement="walletPlacement"
-            style="background-color: transparent"
-          >
-            <NDrawerContent body-content-style="padding:8px;"> <Wallet @close="onWalletClose" @disconnect="onWalletDisconnect" /> </NDrawerContent>
+          <NDrawer v-model:show="visibleWallet" :auto-focus="false" :width="400" :height="'88%'"
+            :placement="walletPlacement" style="background-color: transparent">
+            <NDrawerContent body-content-style="padding:8px;">
+              <Wallet @close="onWalletClose" @disconnect="onWalletDisconnect" />
+            </NDrawerContent>
           </NDrawer>
         </template>
       </div>
@@ -100,6 +101,8 @@ watch(
 );
 
 async function onPressConnect() {
+  console.log('>>>>>>>>>>>1111');
+
   ethUserStore.signIn();
 }
 
@@ -124,6 +127,7 @@ function onWalletClose() {
 .header {
   height: var(--header-height);
   position: relative;
+  z-index: 99;
 }
 
 .header-content {
@@ -131,13 +135,14 @@ function onWalletClose() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--screen-max-width);
+  /* max-width: var(--screen-max-width); */
   margin: auto;
   box-sizing: border-box;
   /* mobile */
   min-width: 0;
   padding-left: 16px;
   padding-right: 16px;
+  height: var(--header-height);
 }
 
 .header-cell {
@@ -149,10 +154,11 @@ function onWalletClose() {
 }
 
 .header-icon {
-  width: 36px;
-  height: 36px;
+  width: 26px;
+  height: 26px;
   object-fit: cover;
-  content: url('@/assets/logo.simple.png');
+  height: auto;
+  content: url('@/assets/logo-mobile.png');
 }
 
 .header-tabs {
@@ -163,7 +169,7 @@ function onWalletClose() {
   flex-direction: row;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 0 40px;
+  gap: 0 55px;
 }
 
 .header-tabs-item {
@@ -193,6 +199,7 @@ function onWalletClose() {
 
 .header-tabs-item-text {
   font-size: 16px;
+  line-height: 40px;
 }
 
 .header-tabs-item.header-tabs-item__actived .header-tabs-item-text {
@@ -201,8 +208,11 @@ function onWalletClose() {
 
 .header-user {
   position: relative;
-  background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
-  border-radius: 6px;
+  /* background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
+  border-radius: 6px; */
+  border-radius: 68px;
+  background: #5a1ddd;
+  font-size: 16px;
   width: 120px;
   height: 48px;
   cursor: pointer;
@@ -232,18 +242,18 @@ function onWalletClose() {
   vertical-align: top;
 }
 
-.header-user-balance-unit {
-}
+.header-user-balance-unit {}
 
 @media (min-width: 640px) {
   .header-content {
     min-width: var(--screen-min-width);
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 100px;
+    padding-right: 100px;
   }
 
   .header-icon {
     width: 200px;
+    height: auto;
     content: url('@/assets/logo.png');
   }
 
@@ -252,8 +262,8 @@ function onWalletClose() {
   }
 
   .header-user {
-    width: 152px;
-    height: 52px;
+    width: 166px;
+    height: 50px;
   }
 
   .header-user-text {

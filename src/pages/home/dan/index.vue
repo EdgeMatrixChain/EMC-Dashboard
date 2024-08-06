@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <SectionHeader>Daily Active Node</SectionHeader>
-    <div class="content-body w-full">
+    <div class="content-body w-full emc-card ">
       <div class="bar-container">
         <Bar :data="data" />
       </div>
@@ -32,7 +32,7 @@ onMounted(async () => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 12px 0;
 }
 
 .content-body {
@@ -41,17 +41,17 @@ onMounted(async () => {
 
 .bar-container {
   width: 100%;
-  height: 240px;
+  height: 300px;
   position: relative;
 }
 
 @media (min-width: 640px) {
   .content {
-    gap: 16px 0;
+    gap: 30px 0;
   }
   .bar-container {
     height: 36px;
-    height: 260px;
+    height: 324px;
   }
 }
 </style>

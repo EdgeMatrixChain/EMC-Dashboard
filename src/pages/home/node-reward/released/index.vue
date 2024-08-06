@@ -1,22 +1,28 @@
 <template>
   <div class="released">
     <div class="released-header">
-      <span class="released-header-title">Released Node Rewards</span>
+     
     </div>
     <div class="released-body">
-      <div class="released-value">
-        <div class="released-value-icon"></div>
+     <div class="flex flex-col gap-y-[20px]">
+      <span class="released-header-title">Released Node Rewards</span>
+      <div class="released-value gap-x-[12px] flex items-end">
+        <!-- <div class="released-value-icon"></div> -->
+        <img class="size-[32px]" src="@/assets/token/emc.white.png" alt="">
         <template v-if="releasedLoading">
           <NSkeleton :width="40" :height="12" style="display: inline-block" />
         </template>
         <template v-else>
-          <span class="released-value-text">{{ releasedReword }}</span>
-          <span class="released-value-unit">EMC</span>
+           
+          <span class="released-value-text font-GeneralSans-Semibold ">{{ releasedReword }}</span>
+          <span class="released-value-unit font-GeneralSans-Medium mb-[1px]">EMC</span>
         </template>
       </div>
+     </div>
+     
       <div class="released-epoch">
-        <span class="released-epoch-text-1">{{ epochReward }}EMC / Epoch</span>
-        <span class="released-epoch-text-2">{{ periodName }} {{ periodCurrentDays }}/{{ periodTotalDays }} Days</span>
+        <span class="released-epoch-text-1 font-GeneralSans-Semibold ">{{ epochReward }}EMC / Epoch</span>
+        <span class="released-epoch-text-2 font-GeneralSans-Medium ">{{ periodName }} {{ periodCurrentDays }}/{{ periodTotalDays }} Days</span>
       </div>
     </div>
   </div>
@@ -67,7 +73,6 @@ onUnmounted(() => {});
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
 }
 
 .released-header {
@@ -76,8 +81,8 @@ onUnmounted(() => {});
 .released-header-title {
   /* font-family: Oxanium; */
   font-size: 16px;
-  font-weight: 400;
-  color: #eeddff;
+  /* font-weight: 500; */
+  color: var(--text-color3);
 }
 
 .released-body {
@@ -103,14 +108,13 @@ onUnmounted(() => {});
 }
 
 .released-value-text {
-  font-size: 24px;
-  font-weight: 500;
-  font-family: Oxanium;
+  font-size: 20px;
+  /* font-weight: 500; */
 }
 
 .released-value-unit {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  /* font-weight: 500; */
   color: #69656f;
 }
 
@@ -122,9 +126,7 @@ onUnmounted(() => {});
 
 .released-epoch-text-1,
 .released-epoch-text-2 {
-  font-size: 14px;
-  font-weight: 500;
-  font-family: Oxanium;
+  font-size: 16px;
 }
 .released-epoch-text-2 {
   color: var(--text-color2);
@@ -146,8 +148,7 @@ onUnmounted(() => {});
 
   .released-epoch-text-1,
   .released-epoch-text-2 {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 20px;
   }
 }
 </style>

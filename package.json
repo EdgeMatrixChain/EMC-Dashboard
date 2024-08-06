@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "generate": "dfx generate",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run deploy:server",
     "deploy:local": "dfx deploy --network=local",
@@ -52,9 +52,6 @@
     "vite-plugin-mock": "^3.0.0",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vue-tsc": "^1.4.2"
-  },
-  "engines": {
-    "node": "^12 || ^14 || ^16 || ^18"
   },
   "browserslist": [
     "last 2 chrome version",

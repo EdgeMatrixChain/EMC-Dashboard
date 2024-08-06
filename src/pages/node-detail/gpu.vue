@@ -11,7 +11,8 @@ defineProps({ item: { type: Object, default: () => ({}) } });
 <style scoped>
 .gpu-item {
   position: relative;
-  background-color: #76b900;
+  border-radius: 4px;
+  background: linear-gradient(61.09deg, #9844ED 0.16%, #533AE6 38.61%, #546CEA 67.14%, #7FC8FC 99.32%);
   width: 120px;
   height: 40px;
   display: flex;
@@ -26,6 +27,7 @@ defineProps({ item: { type: Object, default: () => ({}) } });
   -webkit-line-clamp: 2;
   overflow: hidden;
   font-size: 12px;
+  line-height: 14px;
   box-sizing: border-box;
   padding: 0 8px;
 }

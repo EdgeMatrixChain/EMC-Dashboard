@@ -1,16 +1,10 @@
 <template>
   <div class="wallet">
     <!-- header -->
-    <NSpace class="px-[16px] py-[12px]" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false" :wrap="false">
-      <NSpace
-        class="cursor-pointer"
-        align="center"
-        justify="space-between"
-        :size="[4, 0]"
-        :wrap-item="false"
-        :wrap="false"
-        @click="onPressCopy(ethUserStore.account0)"
-      >
+    <NSpace class="px-[16px] py-[12px]" align="center" justify="space-between" :size="[0, 0]" :wrap-item="false"
+      :wrap="false">
+      <NSpace class="cursor-pointer" align="center" justify="space-between" :size="[4, 0]" :wrap-item="false"
+        :wrap="false" @click="onPressCopy(ethUserStore.account0)">
         <span class="text-[16px]">{{ Utils.formatAddress(ethUserStore.account0, 5) }}</span>
         <img src="@/assets/icon_copy.svg" width="12" height="12" />
       </NSpace>
@@ -23,39 +17,37 @@
     <!-- dex -->
     <div class="wallet-dex px-[16px]">
       <NSpace class="mb-[8px]" vertical align="center" justify="center" :size="[0, 0]" :wrap-item="false" :wrap="false">
-        <span class="text-[14px] font-[400]">EMC/USDT</span>
-        <NSpace class="h-[56px]" vertical align="center" justify="center" :size="[0, 0]" :wrap-item="false" :wrap="false">
+        <span class="text-[16px] font-[400] text-[rgba(255,255,255,0.82)]">EMC/USDT</span>
+        <NSpace class="h-[56px]" vertical align="center" justify="center" :size="[0, 0]" :wrap-item="false"
+          :wrap="false">
           <template v-if="loadings.priceUsd">
             <NSkeleton :width="40" :height="12" />
           </template>
           <template v-else>
-            <span class="text-[32px] font-[800]">${{ priceUsd }}</span>
+            <span class="text-[36px] font-[600]">${{ priceUsd }}</span>
           </template>
         </NSpace>
       </NSpace>
-      <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressDex"
-        >Trade on DEXs
+      <NButton type="primary" strong class="w-full text-[16px] font-GeneralSans-Semibold" icon-placement="right" @click="onPressDex">EMC DEX
         <template #icon>
           <NIcon><img src="@/assets/icon_link.svg" /></NIcon>
         </template>
       </NButton>
-      <NButton type="primary" strong class="w-full" icon-placement="right" @click="onPressLocks">Staking Status</NButton>
+      <NButton strong class="w-full  text-[16px]" icon-placement="right" @click="onPressLocks">Staking Status</NButton>
     </div>
-    <div class="wallet-body px-[16px] mt-[8px]">
-      <NTabs type="bar" animated>
-        <NTabPane name="nodes" tab="Nodes">
-          <template v-if="!loadings.priceUsd">
-            <Nodes @press-item="onPressNode" />
-          </template>
-        </NTabPane>
-        <NTabPane name="tokens" tab="Tokens">
-          <template v-if="!loadings.priceUsd">
-            <Tokens :price-usd="priceUsd" />
-          </template>
-        </NTabPane>
-        <!-- <NTabPane name="nodes" tab="Nodes"> Hey Jude </NTabPane> -->
-        <!-- <NTabPane name="activity" tab="Activity"> Activity </NTabPane> -->
-      </NTabs>
+    <div class="wallet-body px-[16px] mt-[40px] text-[16px]">
+      <div class="tab-title flex items-center gap-x-[20px]">
+        <div class="text-[#898B95] text-[16px] font-semibold cursor-pointer" @click="onPressTab('nodes')"
+          :class="{ '!text-[#fff]': currentTab === 'nodes' }">Nodes</div>
+        <div class="text-[#898B95] text-[16px] font-semibold cursor-pointer" @click="onPressTab('tokens')"
+          :class="{ '!text-[#fff]': currentTab === 'tokens' }">Tokens</div>
+      </div>
+      <template v-if="!loadings.priceUsd && currentTab === 'nodes'">
+        <Nodes class="pt-[20px]" @press-item="onPressNode" />
+      </template>
+      <template v-if="!loadings.priceUsd && currentTab === 'tokens'">
+        <Tokens class="pt-[20px]" :price-usd="priceUsd" />
+      </template>
     </div>
   </div>
 </template>
@@ -82,6 +74,11 @@ const message = useMessage();
 const priceUsd = ref<string>('0.0');
 const loadings = ref({ priceUsd: false });
 const networkConfig = getDefaultNetwork();
+const currentTab = ref('nodes')
+
+const onPressTab = (tab: string) => {
+  currentTab.value = tab
+}
 
 const onPressCopy = (text: string) => {
   copy(text);
@@ -120,16 +117,25 @@ onMounted(async () => {
   flex-direction: column;
   height: 100%;
   border-radius: 12px;
-  border: solid 1px #4c4c5a;
-  background-color: #212121;
+  background-color: #1E2129;
+  border-left: 1px solid transparent;
+  border-top: 1px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(to right, #1E2129, #1E2129),
+    linear-gradient(to bottom,
+      rgba(103, 95, 255, 0.5) 0%,
+      rgba(103, 95, 255, 0) 100%);
 }
+
 .wallet-dex {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px 0;
+  gap: 16px 0;
 }
+
 .wallet-body {
   flex: 1;
   box-sizing: border-box;

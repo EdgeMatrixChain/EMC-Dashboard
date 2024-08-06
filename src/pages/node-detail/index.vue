@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page relative">
     <template v-if="error === -1">
       <div class="page-empty">
         <NSpin />
@@ -12,6 +12,7 @@
     </template>
     <template v-else>
       <div class="page-body">
+        
         <template v-if="status === 1">
           <Alert title="Warning" type="warning" content="Nodes need to be bound before stake">
             <PrimaryButton @press="onPressBind">Bind</PrimaryButton>
@@ -25,7 +26,7 @@
           <SectionHeader>Node Infomation</SectionHeader>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-[16px] sm:gap-[24px]">
             <div class="grid-cols-1">
-              <div class="main-table" style="border-left-color: #8f7df8">
+              <div class="main-table">
                 <LabelWithValue>
                   <template #label>
                     <span class="info-item-label">Node ID</span>
@@ -109,7 +110,9 @@
                       <span class="info-item-value">{{ ethers.formatUnits(nodeInfo.currentStaked || 0n, 18) }} EMC </span>
                       <NTooltip trigger="hover">
                         <template #trigger>
-                          <NIcon size="16" color="#f2d6ff"><IconTips /></NIcon>
+                          <NIcon size="16" color="#f2d6ff">
+                            <IconTips />
+                          </NIcon>
                         </template>
                         <div>
                           <p>Maximum limit: {{ ethers.formatUnits(nodeInfo.maxStakeAmount || 0n, 18) }}EMC</p>
@@ -149,7 +152,7 @@
               </div>
             </div>
             <div class="grid-cols-1">
-              <div class="main-table" style="border-left-color: #5554fe">
+              <div class="main-table" style="border-left-color: #546cea">
                 <LabelWithValue>
                   <template #label>
                     <span class="info-item-label">CPU</span>
@@ -796,6 +799,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.page {
+  padding-top: 80px;
+  padding-bottom: 100px;
+}
+
 .page-empty {
   display: flex;
   flex-direction: row;
@@ -808,29 +816,31 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   margin: auto;
-  gap: 16px 0;
+  gap: 60px 0;
 }
 
 .node-info {
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
+  gap: 30px 0;
 }
 
 .main-table {
   width: 100%;
-  background-color: #1c2025;
-  border-left: solid 4px #1c2025;
-  border-radius: 4px;
+  background-color: #111318;
+  border-left: 4px solid #5a1ddd;
+  border-radius: 16px;
 }
 
 .info-item-label {
   font-size: 12px;
-  color: var(--text-color1);
+  color: #898b95;
 }
 
 .info-item-value {
   font-size: 14px;
+  font-weight: 600;
+  font-family: GeneralSans-Semibold;
   color: #ffffff;
 }
 
@@ -843,12 +853,12 @@ onUnmounted(() => {
 .node-tasks {
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
+  gap: 30px 0;
 }
 
 @media (min-width: 640px) {
   .page-body {
-    gap: 24px 0;
+    gap: 60px 0;
     max-width: var(--screen-max-width);
     min-width: var(--screen-min-width);
   }

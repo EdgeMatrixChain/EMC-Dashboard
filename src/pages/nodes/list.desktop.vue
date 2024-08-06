@@ -25,7 +25,7 @@
             <RouterLink class="m-table-row" :to="{ name: 'node-detail', params: { id: item._id } }">
               <div class="m-table-row-item w-[25%] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">
-                <div class="m-table-row-item-badge" :style="{ color: item.type.color, backgroundColor: item.type.bgColor }">{{ item.type.name }}</div>
+                <div class="m-table-row-item-badge" :style="{ border: `1px solid ${item.type.color}`, color: item.type.color, backgroundColor: item.type.bgColor }">{{ item.type.name }}</div>
               </div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">{{ item.cpus || '-' }}</div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">{{ item.gpus || '-' }}</div>
@@ -78,8 +78,8 @@ function handlePageChange(val: any) {
   justify-content: space-between;
   padding: 0 24px;
   height: 56px;
-  background-color: #1c2025;
-  margin-bottom: 2px;
+  /* margin-bottom: 2px; */
+  border-bottom: 1px solid #2D343F;
 }
 
 .m-table-header-item {
@@ -87,8 +87,8 @@ function handlePageChange(val: any) {
   align-items: center;
   height: 100%;
   font-size: 14px;
-  font-weight: 400;
-  color: #a0aec0;
+  font-weight: 500;
+  color: #898B95;
 }
 
 .m-table-row {
@@ -98,21 +98,26 @@ function handlePageChange(val: any) {
   padding: 0 24px;
   width: 100%;
   height: 56px;
-  background-color: #1c2025;
+  border-bottom: 1px solid #2D343F;
 }
 
-.m-table-row:not(:last-child) {
+/* .m-table-row:last-child {
+  border-bottom: none;
+} */
+
+/* .m-table-row:not(:last-child) {
   margin-bottom: 2px;
-}
+} */
 
 .m-table-row-item {
   display: flex;
   align-items: center;
   height: 100%;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   color: #fff;
   cursor: pointer;
+  font-family: GeneralSans-Semibold;
 }
 
 .m-table-row-item-badge {

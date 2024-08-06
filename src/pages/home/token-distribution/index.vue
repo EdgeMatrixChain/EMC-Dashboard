@@ -1,9 +1,10 @@
 <template>
   <div class="content">
     <SectionHeader>Distribution of Tokens</SectionHeader>
-    <div class="content-body">
-      <div class="chart-container">
+    <div class="content-body emc-card py-[36px]">
+      <div class="chart-container ">
         <Pie :data="data" />
+        <!-- <div class="emc-gradient-color-text absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] text-[14px] z-[999]">Tokens</div> -->
       </div>
       <div class="chart-badges">
         <div class="chart-badges-scroller">
@@ -37,15 +38,15 @@ import Pie from './pie/index.vue';
 import { formatNumber } from '@/tools/format-number';
 
 const data = ref([
-  { value: 200000000, name: 'Transaction Reward', color: '#5470c6' },
-  { value: 150000000, name: 'Foundation/Treasury', color: '#91cc75' },
-  { value: 150000000, name: 'Founding Developer Team', color: '#fac858' },
-  { value: 150000000, name: 'Developer Reward', color: '#ee6666' },
-  { value: 100000000, name: 'Public Sale', color: '#73c0de' },
-  { value: 100000000, name: 'Node Reward', color: '#3ba272' },
-  { value: 100000000, name: 'VC Investors', color: '#fc8452' },
-  { value: 20000000, name: 'Governance Reward', color: '#9a60b4' },
-  { value: 30000000, name: 'Airdrop', color: '#ea7ccc' },
+  { value: 200000000, name: 'Transaction Reward', color: '#5A3FFF' },
+  { value: 150000000, name: 'Foundation/Treasury', color: '#268AFF' },
+  { value: 150000000, name: 'Founding Developer Team', color: '#1ED6FF' },
+  { value: 150000000, name: 'Developer Reward', color: '#3DFFDC' },
+  { value: 100000000, name: 'Public Sale', color: '#B5179E' },
+  { value: 100000000, name: 'Node Reward', color: '#3B009A' },
+  { value: 100000000, name: 'VC Investors', color: '#560BAD' },
+  { value: 20000000, name: 'Governance Reward', color: '#7209B7' },
+  { value: 30000000, name: 'Airdrop', color: '#00B4D8' },
 ]);
 </script>
 
@@ -55,7 +56,7 @@ const data = ref([
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 12px 0;
 }
 
 .content-body {
@@ -130,7 +131,7 @@ const data = ref([
 }
 
 .pie-badge-item-value {
-  font-family: Oxanium;
+  /* font-family: Oxanium; */
   font-size: 14px;
   font-weight: 500;
 }
@@ -143,7 +144,7 @@ const data = ref([
 
 @media (min-width: 640px) {
   .content {
-    gap: 16px 0;
+    gap: 30px 0;
   }
   .pie-badge {
     padding: 16px;

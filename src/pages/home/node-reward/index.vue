@@ -1,12 +1,10 @@
 <template>
   <div class="content">
     <SectionHeader>Token Reward of Node</SectionHeader>
-    <div class="content-body">
+    <div class="content-body bg-[url('/src/assets/images/node-bg.png')] bg-cover bg-no-repeat">
       <Released />
     </div>
-    <div class="content-body">
-      <Schedule />
-    </div>
+    <Schedule class="xs:mt-[46px]"/>
   </div>
 </template>
 
@@ -25,21 +23,23 @@ onUnmounted(() => {});
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px 0;
+  gap: 12px 0;
 }
 
 .content-body {
   width: 100%;
   padding: 12px 16px;
-  background-color: rgba(0, 0, 0, 0.3);
+  padding-bottom: 24px;
+  border-radius: 16px;
 }
 
 @media (min-width: 640px) {
   .content {
-    gap: 16px 0;
+    gap: 30px 0;
   }
   .content-body {
     padding: 24px;
+    /* padding-bottom: 60px; */
   }
 }
 </style>

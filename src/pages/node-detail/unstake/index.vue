@@ -28,7 +28,7 @@
             <NText depth="3" strong>Node staked</NText>
             <template v-if="!loadings.info">
               <NSpace align="center" :wrap-item="false" :size="[4, 0]">
-                <img src="@/assets/token/emc.svg" style="width: 20px; height: 20px" />
+                <!-- <img src="@/assets/token/emc.svg" style="width: 20px; height: 20px" /> -->
                 <NText strong>{{ stakeTokenBalanceStr }}{{ tokenSymbol }}</NText>
               </NSpace>
             </template>

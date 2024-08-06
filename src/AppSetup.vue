@@ -37,4 +37,6 @@ const theme = darkTheme;
 const lightThemeOverrides = CustomThemeDark;
 const darkThemeOverrides = CustomThemeDark;
 const themeOverrides = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeOverrides : lightThemeOverrides);
+console.log('>>>>>>>>>>>>>>>>>>>themeOverrides', themeOverrides);
+
 </script>

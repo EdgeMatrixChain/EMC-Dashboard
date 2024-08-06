@@ -2,7 +2,7 @@
   <div class="bg">
     <BgTop />
     <slot></slot>
-    <BgBottom />
+    <!-- <BgBottom /> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -14,5 +14,6 @@ import BgBottom from './bg-bottom.vue';
   position: relative;
   overflow: clip;
   min-height: 100vh;
+  background-color: #030003;
 }
 </style>

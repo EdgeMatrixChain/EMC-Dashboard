@@ -1,5 +1,4 @@
 :root {
-  font-family: Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -17,6 +16,7 @@
   --bg-color2: #212121;
   --text-color1: #a0aec0;
   --text-color2: #69656f;
+  --text-color3: #898B95;
 
   --screen-max-width: 1200px;
   --screen-min-width: 1200px;
@@ -26,8 +26,10 @@
   --page-px: 16px;
 }
 
-html {
+html,
+body {
   font-size: 16px;
+  font-family: GeneralSans-Medium !important;
 }
 
 h1,
@@ -88,7 +90,7 @@ a {
 
 .page {
   position: relative;
-  z-index: 1;
+  z-index: 5;
   box-sizing: border-box;
   padding: var(--page-py) var(--page-px);
 }
@@ -97,7 +99,70 @@ a {
   :root {
     --page-py: 40px;
     --page-px: 0;
-    --header-height: 80px;
-    --footer-height: 120px;
+    --header-height: 84px;
+    --footer-height: 264px;
   }
+}
+
+@font-face {
+  font-family: 'GeneralSans-Medium';
+  src: url('@/assets/fonts/GeneralSans-Medium.otf');
+  font-weight: 500;
+  font-size: 16px;
+}
+
+@font-face {
+  font-family: 'GeneralSans-Semibold';
+  src: url('@/assets/fonts/GeneralSans-Semibold.otf');
+  font-weight: 600;
+  font-size: 16px;
+}
+.emc-border {
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  border-color: rgba(103, 95, 255, 0.4);
+}
+
+.emc-card {
+  border-radius: 16px;
+  border-width: 0.5px 0 0 0.5px;
+  border-style: solid;
+  border-color: rgba(103, 95, 255, 0.4);
+  border-top-image: linear-gradient(to right, rgba(103, 95, 255, 0.5), rgba(200, 139, 196, 0.2)) 1 100%;
+  border-left-image: linear-gradient(to bottom, rgba(103, 95, 255, 0.5), rgba(200, 139, 196, 0.2)) 1 100%;
+  background: radial-gradient(158.39% 171.82% at 7.54% 14.18%, rgba(99, 77, 232, 0.20) 0%, rgba(17, 17, 21, 0.20) 39.37%), linear-gradient(180deg, rgba(243, 238, 255, 0.00) 0%, rgba(243, 238, 255, 0.04) 100%), rgba(200, 139, 196, 0.01);
+}
+
+.emc-gradient-color-text {
+  background: linear-gradient(142deg, #fc58b3 10.68%, #feae68 78.62%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.base-emc-card {
+  border-radius: 16px;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+}
+
+.emc-select-none {
+  user-select: none;
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
+
+.emc-top-bg {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.n-drawer-mask,
+.n-modal-mask {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(2px);
 }

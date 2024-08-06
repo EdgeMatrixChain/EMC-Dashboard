@@ -1,8 +1,18 @@
 <template>
-  <div class="page">
+  <div class="page home-page relative">
+    <div v-show="$route.name === 'home'" class="home-bg xs:hidden">
+      <div class="home-bg-overlay"></div>
+    </div>
+    <!-- <div class="emc-top-bg absolute top-0 left-0">
+        <img class="w-[38%] h-auto emc-select-none" src="/src/assets/images/home-left.png"
+          alt="">
+        <img class="w-[24%] h-auto emc-select-none"
+          src="/src/assets/images/home-right.png" alt="">
+      </div> -->
     <div class="body">
       <div class="section">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-[16px] sm:gap-[24px]">
+        <div
+          class="grid grid-cols-2 sm:mt-[80px] sm:mb-[60px] sm:grid-cols-4 gap-[16px] sm:gap-x-[24px] sm:gap-y-[60px]">
           <div class="grid-cols-1">
             <NumericBlocks :size="numericSize" />
           </div>
@@ -32,18 +42,20 @@
       <div class="section">
         <WorldMap :data="mapData" />
       </div>
-      <div class="section">
-        <TokenomicsAll />
+      <div class="section ">
+        <div class="sm:mt-[60px] xs:!mt-[20px]">
+          <TokenomicsAll />
+        </div>
       </div>
       <div class="section">
-        <TokenomicsArb />
+        <TokenomicsArb class="mt-[20px]" />
       </div>
       <div class="section">
-        <TokenomicsSol />
+        <TokenomicsSol class="mt-[20px]" />
       </div>
       <!-- tokens -->
       <div class="section">
-        <div class="token-container">
+        <div class="token-container mt-[20px]">
           <div class="token-pie-container">
             <TokenDistribution />
           </div>
@@ -54,7 +66,7 @@
         </div>
       </div>
       <div class="section">
-        <NodeReward />
+        <NodeReward class="mt-[20px] xs:mb-[60px] sm:mb-[80px]" />
       </div>
     </div>
   </div>
@@ -123,6 +135,35 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.home-bg {
+  /* display: block; */
+  position: absolute;
+  z-index: -2;
+  left: 50%;
+  /* top: var(--header-height); */
+  top: 0;
+  width: 664px;
+  height: 664px;
+  transform: translateX(-50%);
+  background-image: url(/src/assets/images/home.gif);
+  background-size: 100%;
+  opacity: 0.7;
+  /* background-color: #030003; */
+}
+
+.home-bg-overlay {
+  position: absolute;
+  width: 80vw;
+  height: 200px;
+  border-radius: 100%;
+  left: 50%;
+  top: 220px;
+  transform: translate(-50%, 0);
+  background-image: linear-gradient(180deg, rgba(255, 174, 223, 0.3744) 12.31%, rgba(19, 0, 94, 0.1924) 64.89%);
+  filter: blur(80px);
+  opacity: 0.4;
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -141,7 +182,7 @@ onUnmounted(() => {
 .footer {
   width: 100%;
   z-index: 1;
-  background-color: rgba(24, 24, 28, 0.4);
+  background-color: linear-gradient(148.85deg, #141318 22%, rgba(14, 15, 21, 0.7) 82%);
 }
 
 .section {
@@ -153,7 +194,7 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 32px 0;
+  gap: 60px 0;
 }
 
 .token-pie-container {
@@ -181,7 +222,7 @@ onUnmounted(() => {
   top: 48px;
   bottom: 0;
   position: absolute;
-  background-image: linear-gradient(180deg, rgba(127, 58, 185, 0) 0%, #391a53 50%, rgba(127, 58, 185, 0) 80%);
+  /* background-image: linear-gradient(180deg, rgba(127, 58, 185, 0) 0%, #391a53 50%, rgba(127, 58, 185, 0) 80%); */
 }
 
 @media (min-width: 640px) {

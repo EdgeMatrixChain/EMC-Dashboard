@@ -1,20 +1,25 @@
 <template>
-  <div class="w-screen flex flex-col bg-[rgb(0,2,27)] fixed left-0 h-screen top-0 overflow-y-scroll">
-    <!-- 背景 -->
-    <Star />
+  <div class="w-screen flex flex-col bg-[#030003] h-full">
+    <div class="emc-top-bg absolute z-10">
+      <img class="w-[38%] h-auto emc-select-none" src="/src/assets/images/home-left.png" alt="" />
+      <img class="w-[24%] h-auto emc-select-none" src="/src/assets/images/home-right.png" alt="" />
+    </div>
 
-    <!-- 头部 -->
-    <Header />
+    <Star class="z-50 relative hidden sm:flex" />
 
-    <!-- 第一页 -->
+    <div class="w-full h-full bg-[#00021a] absolute top-0 left-0"></div>
+
+    <!-- <Header /> -->
+
     <Banner :earnings="totalEarnings" :totalStaked="totalStaked" />
 
-    <!-- 第二页 -->
     <NSpin :show="loadings.userInfo">
-      <div class="w-full relative z-10 flex flex-col pt-[70px] lg:pt-[90px] flex-shrink-0">
+      <div class="w-full relative flex flex-col pt-[70px] lg:pt-[90px] flex-shrink-0 bg-[#030003]">
         <h2 class="text-[32px] leading-[32px] lg:text-[48px] font-bold lg:leading-[84px] text-[#fff] flex justify-center">Staking with EMC</h2>
         <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 lg:mt-[50px] mt-[40px] flex-shrink-0">
-          <div class="bg-[#1A1C34] lg:pt-[76px] pt-[33px] flex-col lg:pb-[68px] pb-[50px] rounded-[24px] border-[2px] border-[#fff]/20 flex w-full mb-[30px]">
+          <div
+            class="bg-[#111318] relative z-50 lg:pt-[76px] pt-[33px] flex-col lg:pb-[68px] pb-[50px] rounded-[24px] border border-[#fff]/20 flex w-full mb-[30px]"
+          >
             <div class="flex flex-col lg:pl-[80px] pl-[15px]">
               <div class="flex items-center">
                 <p class="mr-[10px] text-[24px] lg:text-[28px] leading-[24px] lg:leading-[28px] text-[#fff]">Duration (Days)</p>
@@ -38,12 +43,12 @@
                 <div
                   v-for="item in daysList"
                   :key="item.day"
-                  class="relative rounded-[8px] duration-300 cursor-pointer border-[2px] lg:mr-[36px] mr-[18px] mb-[20px] lg:mb-[40px] border-[#fff]/20 lg:w-[144px] w-[87px] lg:h-[54px] h-[42px] flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
-                  :class="item.day === currentDay.day && '!border-[#FFB017]'"
+                  class="relative rounded-[8px] duration-300 cursor-pointer border-[1px] lg:mr-[36px] mr-[18px] mb-[20px] lg:mb-[40px] border-[#fff]/20 lg:w-[144px] w-[87px] lg:h-[54px] h-[42px] flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
+                  :class="item.day === currentDay.day && '!border-[#5A1DDD]'"
                   @click="currentDay = item"
                 >
                   <div v-show="item.day === currentDay.day" class="lg:w-8 w-6 overflow-hidden inline-block absolute right-0 top-0">
-                    <div class="h-16 bg-[#FFB017] -rotate-45 transform origin-top-left"></div>
+                    <div class="h-16 bg-[#5A1DDD] -rotate-45 transform origin-top-left"></div>
                     <i class="absolute top-0 right-[2px] hidden lg:flex">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path
@@ -77,7 +82,7 @@
 
             <div class="flex mt-[10px] lg:mt-0 flex-col justify-center lg:pr-[80px] relative">
               <div
-                class="flex flex-col w-[calc(100%-30px)] lg:w-[calc(100%-80px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border-[2px] border-[#fff]/20"
+                class="flex flex-col w-[calc(100%-30px)] lg:w-[calc(100%-80px)] flex-1 lg:py-[33px] py-[25px] lg:px-[40px] px-[18px] ml-[15px] lg:ml-auto flex-shrink-0 rounded-[16px] border border-[#33363f] bg-[#1E2129]"
               >
                 <div class="flex lg:mb-[35px] mb-[20px] justify-between lg:justify-start">
                   <p class="text-[15px] lg:text-[18px] text-white/70 font-medium leading-[18px]">Est. APR:</p>
@@ -103,11 +108,11 @@
 
               <div class="w-[calc(100%-30px)] lg:w-[calc(100%-80px)] ml-[15px] lg:ml-auto lg:mt-[60px] mt-[40px]">
                 <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
-                <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] bg-[#2A2C47]">
+                <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] border border-[#33363f] bg-[#1E2129]">
                   <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
                     <n-input-number
                       :disabled="useETHUser.isInvalidConnect"
-                      class="number-input"
+                      class="number-input iii"
                       size="large"
                       :bordered="false"
                       v-model:value="inputAmount"
@@ -120,27 +125,29 @@
                   </p>
                   <span class="flex mr-[20px] items-center">
                     <p class="flex lg:mr-[20px] mr-[11px] lg:text-[24px] lg:leading-[24px] text-[20px] leading-[20px] text-white">EMC</p>
-                    <em @click="inputAmount = inputAmountMax" class="not-italic text-[18px] leading-[18px] text-[#FFB017] cursor-pointer">Max</em>
+                    <em @click="inputAmount = inputAmountMax" class="not-italic text-[18px] leading-[18px] text-[#5A1DDD] cursor-pointer">Max</em>
                   </span>
                 </div>
                 <div class="flex mt-[20px] w-full justify-between">
                   <p class="text-white/70 text-[16px] leading-[16px] font-medium">Balance:</p>
-                  <p class="text-white/70 text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.balance, decimals), 4) }} EMC</p>
+                  <p class="text-white text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.balance, decimals), 4) }} EMC</p>
                 </div>
                 <div class="flex mt-[20px] w-full justify-between">
                   <p class="text-white/70 text-[16px] leading-[16px] font-medium">Staked:</p>
-                  <p class="text-white/70 text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.locked, decimals), 4) }} EMC</p>
+                  <p class="text-white text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.locked, decimals), 4) }} EMC</p>
                 </div>
                 <div class="flex mt-[20px] w-full justify-between">
                   <p class="text-white/70 text-[16px] leading-[16px] font-medium">Available:</p>
-                  <p class="text-white/70 text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.available, decimals), 4) }} EMC</p>
+                  <p class="text-white text-[16px] leading-[16px] font-medium">{{ toFixedClip(ethers.formatUnits(userInfo.available, decimals), 4) }} EMC</p>
                 </div>
               </div>
 
-              <div v-if="!useETHUser.isInvalidConnect" class="flex flex-col justify-center w-[420px] mt-8 mx-auto text-center">
+              <div v-if="!useETHUser.isInvalidConnect" class="flex flex-col justify-center w-[420px] mt-8 mx-auto text-center text-white">
                 <div class="flex items-center mb-3 cursor-pointer" @click="onPressEnterAddress">
-                  <img class="inline-block" src="@/assets/icon_editor.svg" width="20" height="20" />
-                  <div class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center bg-[#323557] text-white/88 text-[14px] font-normal overflow-hidden">
+                  <img class="inline-block text-teal-200" src="@/assets/icon_editor.svg" width="20" height="20" />
+                  <div
+                    class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center border border-[#33363f] bg-[#1E2129] text-white/88 text-[14px] font-normal overflow-hidden"
+                  >
                     {{ transferAddress }}
                   </div>
                 </div>
@@ -148,20 +155,17 @@
                   After the staking ends, only the address owner can withdraw all EMC and other earnings. Please ensure all the information is correct.
                 </p>
               </div>
-              <div
-                v-if="!useETHUser.isInvalidConnect"
-                class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[32px] justify-between lg:justify-center flex"
-              >
+              <div v-if="!useETHUser.isInvalidConnect" class="w-[calc(100%-30px)] ml-[15px] items-center lg:ml-auto mt-[32px] justify-center flex text-white">
                 <div
                   :class="stakingLoading ? 'opacity-60 cursor-pointer' : 'opacity-100'"
-                  class="btn-bg2 cursor-pointer lg:mr-[73px] duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
+                  class="bg-[#5A1DDD] mr-[24px] cursor-pointer lg:mr-[73px] duration-300 rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
                   @click="staking"
                 >
                   <img v-if="stakingLoading" class="w-[18px] h-[18px] mr-[5px]" src="./images/loading.svg" alt="" />
                   Staking Now
                 </div>
                 <div
-                  class="bg-[#323557] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
+                  class="bg-[#1E2129] border border-[#33363f] cursor-pointer rounded-[8px] flex justify-center items-center text-[16px] font-medium w-[136px] lg:w-[240px] h-[44px]"
                   @click="onWithdraw"
                 >
                   Withdraw
@@ -170,7 +174,7 @@
               <div
                 v-else
                 @click="onPressConnect"
-                class="w-[calc(100%-30px)] lg:w-[417px] mx-auto h-[44px] duration-300 btn-bg rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] lg:ml-auto mt-[30px] justify-between flex"
+                class="w-[calc(100%-30px)] lg:w-[417px] mx-auto h-[44px] duration-300 bg-[#5A1DDD] rounded-[8px] cursor-pointer flex-shrink-0 items-center ml-[15px] lg:ml-auto mt-[30px] justify-between flex"
               >
                 <p
                   :class="initLoading ? 'opacity-60 duration-300' : ''"
@@ -186,7 +190,7 @@
               class="border-[#fff]/20 border-t-[2px] lg:mt-[64px] mt-[20px] pt-[20px] lg:pt-[32px] flex lg:mx-[40px] mx-[15px] lg:w-[calc(100%-80px)] w-[calc(100%-30px)]"
             >
               <div
-                class="relative flex-col rounded-[8px] w-full duration-300 cursor-pointer border-[2px] border-[#fff]/20 flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
+                class="relative flex-col rounded-[8px] w-full duration-300 cursor-pointer border border-[#fff]/20 flex items-center justify-center lg:text-[24px] text-[14px] font-medium text-[#fff]"
               >
                 <div class="flex px-[10px] lg:px-[30px] border-b border-[#fff]/10 h-[50px] items-center w-full">
                   <p class="flex text-[12px] lg:text-[14px] flex-1 text-[#fff]/70 font-medium">Start Time</p>
@@ -210,11 +214,9 @@
         </div>
       </div>
     </NSpin>
-    <!-- 第三页 -->
     <Ask />
     <!-- enter address -->
     <EnterAddress v-model:visible="isVisibleEnter" v-model:address="transferAddress" />
-    <!-- 解押模态框 -->
     <n-modal v-model:show="decompressionModal">
       <n-card class="withdraw-modal w-[calc(100%-30px)] md:w-[550px]" title="" :bordered="false" size="huge" role="dialog" aria-modal="true">
         <div class="flex flex-col items-center relative bg-[#1A1C34] rounded-[24px]">
@@ -262,9 +264,7 @@
         </div>
       </n-card>
     </n-modal>
-    <!-- 质押成功 -->
     <StakingSuccess :show="stakingSuccess" @close="closeStakingSuccess" />
-    <!-- 解押成功 -->
     <ReleasableSuccess :show="releasableSuccess" @close="closeReleasableSuccess" />
   </div>
 </template>
@@ -362,11 +362,10 @@ const currentDay = ref<DayItem>(daysList[0]);
 const emcContract = networkConfig.smarts.rewardStake.contract;
 const useETHUser = useETHUserStore();
 const apiManager = ApiManager.getInstance();
-// 周期
+
 const phase = ref<number>(1);
-//开始时间
 const timestamp = ref<number>(new Date().getTime() + 1800000);
-//开发者模式（暂时用来控制是否可以选择时间）
+
 const isDev = ref<boolean>(false);
 
 const inputAmount = ref(0);
@@ -395,11 +394,10 @@ const loadings = ref<any>({
   userInfo: false,
 });
 
-// 质押成功
 const stakingSuccess = ref(false);
 
 const closeStakingSuccess = () => (stakingSuccess.value = false);
-// 解押成功
+
 const releasableSuccess = ref(false);
 const closeReleasableSuccess = () => (releasableSuccess.value = false);
 
@@ -408,7 +406,6 @@ const transferAddress = ref('');
 let stakeApi: null | StakeApi = null;
 let erc20Api: null | ERC20Api = null;
 
-// 链接钱包
 const onPressConnect = async () => {
   if (initLoading.value) {
     return;
@@ -443,7 +440,6 @@ async function initUserInfo(account: string) {
   transferAddress.value = useETHUser.account0;
 }
 
-// 质押
 const stakingLoading = ref(false);
 const staking = async () => {
   if (stakingLoading.value) {
@@ -467,7 +463,6 @@ const staking = async () => {
   }
   stakingLoading.value = true;
 
-  // 授权支付
   const approve = await erc20Api!.approve({ amount, spender: emcContract });
   if (approve._result !== 0) {
     message.error(`Approve Error`);
@@ -475,7 +470,7 @@ const staking = async () => {
     return;
   }
   await approve.data.wait();
-  // 确认交易
+
   const pay = await stakeApi!.createVestingSchedule({
     account: beneficiary,
     start: start,
@@ -494,7 +489,6 @@ const staking = async () => {
   initUserInfo(useETHUser.account0);
 };
 
-// 解押模态框
 const decompressionModal = ref(false);
 const onWithdraw = () => {
   if (useETHUser.isInvalidConnect) {
@@ -511,7 +505,6 @@ const closeModal = () => {
   decompressionModal.value = false;
 };
 
-// 解压
 const decompressionLoading = ref(false);
 async function onDecompression() {
   if (decompressionLoading.value) {
@@ -536,7 +529,6 @@ async function onDecompression() {
   initUserInfo(useETHUser.account0);
 }
 
-// 交易记录
 const queryTradingList = async (account: string): Promise<Array<TradingItem>> => {
   const getDaysItemWithId = (() => {
     let map: any = null;
@@ -591,10 +583,9 @@ const onPressEnterAddress = () => {
 //   console.log(event);
 // };
 
-// 实际收益
 const rewardEarnings = ref<string>('0');
 
-// 计算apr
+// apr
 watch(
   () => [currentDay.value, inputAmount.value, phase.value],
   () => {
@@ -650,6 +641,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.iii .n-input:not(.n-input--disabled).n-input--focus {
+  background-color: transparent !important;
+}
+
 .withdraw-modal {
   background: none;
 }

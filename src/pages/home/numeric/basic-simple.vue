@@ -8,7 +8,7 @@
       <NSkeleton :width="40" :height="12" />
     </template>
     <template v-else>
-      <div class="item-data">
+      <div class="item-data xs:mt-[8px] sm:mt-[20px]">
         <span class="item-data-value" :style="valueStyle">{{ value }}</span>
         <span class="item-data-unit" :style="unitStyle">&nbsp;{{ unit }}</span>
       </div>
@@ -35,7 +35,7 @@ const titleStyle = computed(() => {
     fontSize: '16px',
   };
   if (props.size === 'small') {
-    style.fontSize = '14px';
+    style.fontSize = '12px';
   }
   return style;
 });
@@ -45,7 +45,9 @@ const valueStyle = computed(() => {
     fontSize: '28px',
   };
   if (props.size === 'small') {
-    style.fontSize = '20px';
+    style.fontSize = '16px';
+  } else if (props.size === 'huge') {
+    style.fontSize = '32px';
   }
   return style;
 });
@@ -84,7 +86,7 @@ const unitStyle = computed(() => {
 .item-header-text {
   font-size: 16px;
   font-weight: 400;
-  color: #eeddff;
+  color: rgba(137,139,149,1);
 }
 
 .item-data {
@@ -93,10 +95,10 @@ const unitStyle = computed(() => {
 }
 
 .item-data-value {
-  font-size: 28px;
-  font-weight: 500;
+  font-size: 32px;
+  font-weight: 600;
   color: #ffffff;
-  font-family: Oxanium;
+  font-family: GeneralSans-Semibold;
 }
 
 .item-data-unit {

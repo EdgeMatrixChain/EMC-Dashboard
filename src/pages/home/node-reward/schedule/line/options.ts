@@ -23,14 +23,14 @@ export function getDefaultOption(): any {
         data: [],
         axisTick: { show: false },
         axisLine: { lineStyle: { color: '#666666', width: 0.5 } },
-        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
+        axisLabel: { color: '#ccc', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
       },
     ],
     yAxis: [
       {
         type: 'value',
         splitLine: { lineStyle: { color: ['#b1b1b166'], type: 'dashed', width: 0.5 } },
-        axisLabel: { color: '#ffffff', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
+        axisLabel: { color: '#ccc', fontWeight: 500, fontFamily: 'Roboto, sans-serif' },
       },
     ],
     // dataZoom: [{ type: 'inside', start: 0, end: 10 }],

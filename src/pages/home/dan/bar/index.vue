@@ -54,8 +54,8 @@ function getSeriesBar(name: string, itemStyle: any, data: number[]) {
   return {
     name: name,
     type: 'bar',
-    barGap: 0,
-    barWidth: isMobile.value ? 4 : 16,
+    barGap: '60%',
+    barWidth: isMobile.value ? 4 : 14,
     label: labelOption,
     itemStyle,
     emphasis: { focus: 'series' },
@@ -75,17 +75,19 @@ const updateChart = (data: DataItem[]) => {
   });
   const gpuBarStyle = {
     normal: {
+      borderRadius: [10, 10, 0, 0],
       color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: '#35E2FA' },
-        { offset: 1, color: '#9B27F2' },
+        { offset: 0, color: '#533AE6' },
+        { offset: 1, color: '#1985FE' },
       ]),
     },
   };
   const nodeBarStyle = {
     normal: {
+      borderRadius: [10, 10, 0, 0],
       color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: '#F55E87' },
-        { offset: 1, color: '#F6997A' },
+        { offset: 0, color: '#36EBCA' },
+        { offset: 1, color: '#1882FF' },
       ]),
     },
   };
@@ -119,10 +121,8 @@ onUnmounted(() => {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  border: 1px solid #3d1a5a;
-  border-radius: 4px;
 }
+
 @media (min-width: 640px) {
   .chart-pie {
     border-radius: 16px;

@@ -1,15 +1,14 @@
 export const routes = [
-  {
-    name: 'staking',
-    path: '/staking',
-    component: () => import('@/pages/staking/index.vue'),
-  },
+  // {
+  //   name: 'staking',
+  //   path: '/staking',
+  //   component: () => import('@/pages/staking/index.vue'),
+  // },
   {
     name: 'airdrop',
     path: '/airdrop',
     component: () => import('@/pages/airdrop/index.vue'),
   },
-
   {
     name: 'layout',
     path: '/',
@@ -60,6 +59,11 @@ export const routes = [
         name: 'node-unstake',
         path: 'node-unstake',
         component: () => import('@/pages/node-unstake/index.vue'),
+      },
+      {
+        name: 'staking',
+        path: 'staking',
+        component: () => import('@/pages/staking/index.vue'),
       },
       // {
       //   name: 'strategy-sale',

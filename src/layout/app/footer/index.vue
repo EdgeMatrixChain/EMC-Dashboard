@@ -4,8 +4,7 @@
       <div class="footer-cell">
         <img class="footer-logo" />
         <div class="footer-text">
-          <span class="footer-text-1">2023-2024 EMC FOUNDATION. </span>
-          <span class="footer-text-2">All Rights Reserved.</span>
+          2023-2024 EMC FOUNDATION. All Rights Reserved.
         </div>
       </div>
       <div class="footer-cell" align="center" :size="[16, 0]" :wrap-item="false" :wrap="false">
@@ -33,7 +32,7 @@
 <script lang="ts" setup></script>
 <style scoped>
 .footer {
-  background-color: #101422b3;
+  background-color: linear-gradient(148.85deg, #141318 22%, rgba(14, 15, 21, 0.7) 82%);
   height: var(--footer-height);
 }
 
@@ -52,9 +51,9 @@
 }
 
 .footer-logo {
-  width: 56px;
-  object-fit: contain;
-  content: url('@/assets/logo.outline.png');
+  width: 164px;
+  height: auto;
+  content: url('@/assets/logo.png');
 }
 
 .footer-cell {
@@ -63,7 +62,7 @@
   flex-direction: column;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 16px 0;
+  gap: 24px 0;
 }
 
 .footer-text {
@@ -72,27 +71,27 @@
   align-items: center;
   flex-wrap: nowrap;
   gap: 8px;
+  color: #898B95;
+  font-weight: 400;
 }
 
 .footer-socials {
   display: flex;
   align-items: center;
-  gap: 0 8px;
-}
-
-.footer-text-1 {
-  font-size: 14px;
-}
-.footer-text-2 {
-  font-size: 14px;
+  gap: 0 20px;
 }
 
 .social-icon {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
 }
 
 @media (min-width: 640px) {
+
+  .footer-logo {
+    width: 200px;
+  }
+
   .footer-content {
     min-width: var(--screen-min-width);
     max-width: var(--screen-max-width);
@@ -101,24 +100,25 @@
     justify-content: space-between;
   }
 
-  .footer-logo {
-    width: 80px;
-    margin-right: 40px;
-  }
-
   .footer-cell {
-    flex-direction: row;
-    align-items: center;
-    gap: 0;
+    align-items: flex-start;
+    gap: 34px 0;
   }
 
   .footer-text {
     align-items: flex-start;
   }
 
-  .social-icon {
-    width: 28px;
-    height: 28px;
+  .footer-socials {
+    display: flex;
+    align-items: center;
+    gap: 0 24px;
   }
+
+  .social-icon {
+    width: 48px;
+    height: 48px;
+  }
+
 }
 </style>

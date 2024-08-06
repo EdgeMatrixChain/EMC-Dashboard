@@ -14,16 +14,16 @@
     <template v-else>
       <NSpace vertical :wrap-item="false" align="center" justify="center" :size="[16, 16]">
         <NSpin :show="currentLoading">
-          <NCard title="Strategy Sale" style="max-width: 880px">
+          <NCard class="card-box emc-border rounded-[16px] p-[6px] font-GeneralSans-Semibold" title="Staking Status" :bordered="false" style="max-width: 880px">
             <template #header>
               <NSpace justify="space-between" :wrap-item="false" :size="[4, 4]">
                 <NSpace vertical justify="space-between" :wrap-item="false" :size="[4, 4]">
                   <NSpace :wrap-item="false" :size="[16, 4]">
-                    <NText>{{ title }}</NText>
-                    <NButton text tag="a" type="default" icon-placement="right" @click="onPressExplorer(cliffsContract)">
+                    <NText class="text-[#7F32FF]" style="color: #7F32FF; " >{{ title }}</NText>
+                    <NButton text tag="a" icon-placement="right" style="background-color: #7F32FF" @click="onPressExplorer(cliffsContract)">
                       {{ Utils.formatAddress(cliffsContract, 6) }}
                       <template #icon>
-                        <NIcon size="18">
+                        <NIcon size="18" color="#7F32FF">
                           <IconLink />
                         </NIcon>
                       </template>
@@ -55,26 +55,26 @@
                 </template>
               </NSpace>
             </template>
-            <NSpace vertical justify="center" :wrap-item="false" :size="[16, 16]">
+            <NSpace class="pb-[6px]" vertical justify="center" :wrap-item="false" :size="[30, 30]">
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="2" style="font-size: 14px">Total locked</NText>
-                <NText class="text-[18px]" strong>{{ ethers.formatUnits(totalLockedAmount, 18) }} EMC</NText>
+                <NText depth="2" class="text-[#898B95] font-GeneralSans-Medium " style="font-size: 14px">Total locked</NText>
+                <NText class="text-[18px] " strong>{{ ethers.formatUnits(totalLockedAmount, 18) }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="2" style="font-size: 14px">Current locked</NText>
-                <NText class="text-[18px]" strong>{{ ethers.formatUnits(currentStakeAmount, 18) }} EMC</NText>
+                <NText depth="2" class="text-[#898B95] font-GeneralSans-Medium " style="font-size: 14px">Current locked</NText>
+                <NText class="text-[18px] " strong>{{ ethers.formatUnits(currentStakeAmount, 18) }} EMC</NText>
               </NSpace>
               <NSpace vertical justify="center" :wrap-item="false" :size="[16, 4]">
-                <NText depth="2" style="font-size: 14px">Eligible for claiming</NText>
+                <NText depth="2" class="text-[#898B95] font-GeneralSans-Medium " style="font-size: 14px">Eligible for claiming</NText>
                 <NText class="text-[18px]" strong>{{ ethers.formatUnits(currentClaimAmount, 18) }} EMC</NText>
               </NSpace>
-              <NButton type="primary" strong size="large" :loading="claimLoading" :disabled="!currentCanWithdraw" round @click="onPressClaim">
+              <NButton class="rounded-[8px] h-[44px]" type="primary" strong size="large" :loading="claimLoading" :disabled="!currentCanWithdraw"  @click="onPressClaim">
                 Claim Now
               </NButton>
             </NSpace>
           </NCard>
-          <NCard class="mt-[24px]" title="Vesting schedules" style="max-width: 880px">
-            <Table :data="currentSchedule" />
+          <NCard class="mt-[40px] card-box emc-border rounded-[16px] p-[6px] pb-[10px] font-GeneralSans-Semibold" title="Vesting schedules" :bordered="false" style="max-width: 880px">
+            <Table class="bg-[#1E2129]" :data="currentSchedule" />
           </NCard>
         </NSpin>
       </NSpace>
@@ -90,8 +90,8 @@
             <NInput v-model:value="filterAccount" size="large" style="width: 100%; max-width: 880px"> </NInput>
           </NSpace>
           <NSpace class="mt-[16px]" align="center" justify="end" :wrap-item="false" :size="[16, 0]">
-            <NButton type="default" round @click="onPressFilterCancel">Cancel</NButton>
-            <NButton type="primary" round @click="onPressFilterSubmit">Submit</NButton>
+            <NButton class="h-[34px]"  type="default" round @click="onPressFilterCancel">Cancel</NButton>
+            <NButton class="h-[34px]"  type="primary" round @click="onPressFilterSubmit">Submit</NButton>
           </NSpace>
         </NCard>
       </NModal>
@@ -255,4 +255,8 @@ async function onPressClaim() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.card-box{
+  background: linear-gradient(0deg, #111318 0%, #111318 100%), linear-gradient(180deg, rgba(243, 238, 255, 0.00)0%, rgba(243, 238, 255, 0.04)100%), rgba(200, 139, 196, 0.01);
+}
+</style>

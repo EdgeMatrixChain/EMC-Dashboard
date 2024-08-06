@@ -37,7 +37,7 @@ function onPress() {
   color: #ffffff;
   user-select: none;
   transition: opacity 0.2s;
-  background-image: linear-gradient(90deg, #2f0593 0%, #861cb9 100%);
+  background-color: #5a1ddd;
   border-radius: 6px;
 }
 

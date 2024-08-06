@@ -20,12 +20,20 @@ export function getDefaultOption(data: any[]): any {
         center: ['50%', '50%'],
         avoidLabelOverlap: false,
         padAngle: 5,
-        // itemStyle: {
-        //   borderRadius: 4
-        // },
+        itemStyle: {
+          borderRadius: 2
+        },
         label: {
           show: false,
+          position: 'center'
         },
+        // emphasis: {
+        //   label: {
+        //     show: true,
+        //     fontSize: 40,
+        //     fontWeight: 'bold'
+        //   }
+        // },
         data: data,
       },
     ],

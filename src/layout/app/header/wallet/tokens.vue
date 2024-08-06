@@ -1,23 +1,30 @@
 <template>
-  <div>
+  <div class="mt-[16px]">
     <template v-if="loading">
       <NSpace align="center" justify="center" vertical :size="[0, 16]" :wrap-item="false" :wrap="false" style="height: 80px">
         <NSpin />
       </NSpace>
     </template>
     <template v-else>
-      <NSpace vertical :size="[0, 16]" :wrap-item="false" :wrap="false">
+      <NSpace vertical :size="[0, 28]" :wrap-item="false" :wrap="false">
         <template v-for="item in list">
-          <NSpace class="cursor-pointer" align="center" :wrap-item="false" :wrap="false" :size="[8, 0]" @click="onPressItem(item)">
-            <img class="w-[40px] h-[40px] rounded-[40px]" :src="item.icon" />
+          <NSpace class="cursor-pointer" align="center" :wrap-item="false" :wrap="false" :size="[12, 0]" @click="onPressItem(item)">
+            <div class="relative">
+              <img class="w-[40px] h-[40px] rounded-[40px]" :src="item.icon" />
+              <div class="w-[20px]  absolute right-[-4px] bottom-[-8px] flex p-[2px] items-center justify-center  rounded-[4px] bg-[#191919]">
+                <div class="p-[2px] items-center justify-center  rounded-[4px] bg-[#163749]"> 
+                  <img class="size-full" src="/src/assets/token/My Site Logo 1.png" />
+                </div>
+              </div>
+            </div>
             <div class="flex-1 w-[0px]">
               <div class="whitespace-nowrap text-ellipsis overflow-hidden w-full">
-                <NText class="text-[14px]">{{ item.name }}</NText>
+                <NText class="text-[16px] font-semibold">{{ item.formatted }}{{ item.symbolName }}</NText>
               </div>
-              <NText class="text-[14px]" depth="3">{{ item.formatted }}{{ item.symbolName }}</NText>
+              <NText class="text-[12px] text-[#8A8A8A]" depth="3">{{ item.name }}</NText>
             </div>
             <div class="whitespace-nowrap text-ellipsis overflow-hidden w-[80px] text-right">
-              <NText class="text-[14px] whitespace-nowrap">${{ item.amount }}</NText>
+              <NText class="text-[16px] font-semibold whitespace-nowrap">${{ item.amount }}</NText>
             </div>
           </NSpace>
         </template>
