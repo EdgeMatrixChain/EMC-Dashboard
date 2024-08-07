@@ -132,20 +132,20 @@ function formatNodeType(status: number) {
   let bgColor = '';
   let icon = '';
   if (status === 11) {
-    color = '#6EA6BF';
-    bgColor = '#2F454A';
+    color = '#1ED6FF';
+    bgColor = '#1ED6FF1A';
     icon = IconValidator;
   } else if (status === 12) {
-    color = '#74BF6E';
-    bgColor = '#2F4A3D';
+    color = '#268AFF';
+    bgColor = '#268AFF1A';
     icon = IconRPC;
   } else if (status === 13) {
-    color = '#BF946E';
-    bgColor = '#4A462F';
+    color = '#5A3FFF';
+    bgColor = '#5A3FFF33';
     icon = IconRelay;
   } else {
-    color = '#5A1DDD';
-    bgColor = 'rgba(90, 29, 221, 0.2)';
+    color = '#3DFFDC';
+    bgColor = '#3DFFDC26';
     icon = IconComputer;
   }
   return { name, color, bgColor, icon };
@@ -293,7 +293,7 @@ linear-gradient(0deg, #111318, #111318);
   color: #fff;
   font-size: 16px;
   font-weight: 600;
-  font-family: GeneralSans-Medium;
+  font-family: GeneralSans-Semibold;
 }
 
 .node-subtitle-icon {

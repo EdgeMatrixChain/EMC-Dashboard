@@ -25,7 +25,7 @@
             <RouterLink class="m-table-row" :to="{ name: 'node-detail', params: { id: item._id } }">
               <div class="m-table-row-item w-[25%] text-[12px] xl:text-[14px]">{{ item.nodeIdFormat }}</div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">
-                <div class="m-table-row-item-badge" :style="{ border: `1px solid ${item.type.color}`, color: item.type.color, backgroundColor: item.type.bgColor }">{{ item.type.name }}</div>
+                <div class="m-table-row-item-badge" :style="{ color: item.type.color, backgroundColor: item.type.bgColor }">{{ item.type.name }}</div>
               </div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">{{ item.cpus || '-' }}</div>
               <div class="m-table-row-item text-[12px] xl:text-[14px] w-[15%] justify-center">{{ item.gpus || '-' }}</div>
