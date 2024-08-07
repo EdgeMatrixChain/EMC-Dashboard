@@ -14,7 +14,8 @@
     "deploy": "npm run deploy:server",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
-    "deploy:server": "bash ./deploy/deploy.sh"
+    "deploy:server": "bash ./deploy/deploy.sh",
+    "deploy:server-new": "bash ./deploy/deploy-new.sh"
   },
   "dependencies": {
     "@connect2ic/core": "0.2.0-beta.23",
