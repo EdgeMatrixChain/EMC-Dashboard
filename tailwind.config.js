@@ -8,6 +8,10 @@ module.exports = {
         'GeneralSans-Medium': ['GeneralSans-Medium'],
         'GeneralSans-Semibold': ['GeneralSans-Semibold'],
       },
+      backgroundImage: {
+        iconHoverBg:
+          'linear-gradient(61.09deg, #9844ED 0.16%, #533AE6 38.61%, #546CEA 67.14%, #7FC8FC 99.32%)',
+      },
     },
     screens: {
       xs: { max: '520px' },

@@ -15,14 +15,18 @@
 
     <NSpin :show="loadings.userInfo">
       <div class="w-full relative flex flex-col pt-[70px] lg:pt-[90px] flex-shrink-0 bg-[#030003]">
-        <h2 class="text-[32px] leading-[32px] lg:text-[48px] font-bold lg:leading-[84px] text-[#fff] flex justify-center">Staking with EMC</h2>
+        <h2
+          class="text-[32px] leading-[32px] lg:text-[48px] font-bold lg:leading-[84px] text-[#fff] flex justify-center relative z-50 font-GeneralSans-Semibold"
+        >
+          Staking with EMC
+        </h2>
         <div class="max-w-[1340px] mx-auto flex w-full flex-1 px-5 lg:mt-[50px] mt-[40px] flex-shrink-0">
           <div
             class="bg-[#111318] relative z-50 lg:pt-[76px] pt-[33px] flex-col lg:pb-[68px] pb-[50px] rounded-[24px] border border-[#fff]/20 flex w-full mb-[30px]"
           >
             <div class="flex flex-col lg:pl-[80px] pl-[15px]">
               <div class="flex items-center">
-                <p class="mr-[10px] text-[24px] lg:text-[28px] leading-[24px] lg:leading-[28px] text-[#fff]">Duration (Days)</p>
+                <p class="mr-[10px] text-[24px] lg:text-[28px] leading-[24px] lg:leading-[28px] text-[#fff] font-GeneralSans-Semibold">Duration (Days)</p>
                 <n-popover trigger="hover">
                   <template #trigger>
                     <i class="flex cursor-pointer">
@@ -142,11 +146,14 @@
                 </div>
               </div>
 
-              <div v-if="!useETHUser.isInvalidConnect" class="flex flex-col justify-center w-[420px] mt-8 mx-auto text-center text-white">
+              <div
+                v-if="!useETHUser.isInvalidConnect"
+                class="flex flex-col justify-center max-w-[420px] w-full overflow-hidden mt-8 mx-auto text-center text-white"
+              >
                 <div class="flex items-center mb-3 cursor-pointer" @click="onPressEnterAddress">
                   <img class="inline-block text-teal-200" src="@/assets/icon_editor.svg" width="20" height="20" />
                   <div
-                    class="w-full h-8 leading-8 px-4 ml-2 rounded-[4px] text-center border border-[#33363f] bg-[#1E2129] text-white/88 text-[14px] font-normal overflow-hidden"
+                    class="w-full h-8 leading-8 px-4 ml-2 mr-2 sm:mr-0 rounded-[4px] text-center border border-[#33363f] bg-[#1E2129] text-white/88 text-[14px] font-normal overflow-hidden"
                   >
                     {{ transferAddress }}
                   </div>

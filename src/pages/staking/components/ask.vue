@@ -1,7 +1,9 @@
 <template>
   <div class="w-full flex flex-col md:pt-[90px] pt-[30px] flex-shrink-0 pb-[54px] md:pb-[300px] px-[24px]">
     <div class="w-full h-full absolute top-0 left-0 bg-[#030003]"></div>
-    <h2 class="md:text-[48px] mb-[15px] md:mb-0 text-[32px] font-bold leading-[32px] md:leading-[84px] text-[#fff] flex justify-center relative z-50">
+    <h2
+      class="md:text-[48px] mb-[15px] md:mb-0 text-[32px] font-bold leading-[52px] md:leading-[84px] text-[#fff] flex justify-center relative z-50 font-GeneralSans-Semibold"
+    >
       Why Stake with EMC?
     </h2>
     <div class="max-w-[742px] flex-col mx-auto flex w-full flex-1 mt-[20px] md:mt-[50px] flex-shrink-0 relative z-50">

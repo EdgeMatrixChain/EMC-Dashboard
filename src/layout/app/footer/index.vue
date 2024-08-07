@@ -9,27 +9,57 @@
       </div>
       <div class="footer-cell" align="center" :size="[16, 0]" :wrap-item="false" :wrap="false">
         <div class="footer-socials">
-          <a href="https://medium.com/@EMCProtocol" target="_blank">
-            <img class="social-icon" src="@/assets/icon_medium.png" />
-          </a>
-          <a href="https://discord.gg/edgematrix" target="_blank">
-            <img class="social-icon" src="@/assets/icon_discord.png" />
-          </a>
-          <a href="https://t.me/emc_network" target="_blank">
-            <img class="social-icon" src="@/assets/icon_telegram.png" />
-          </a>
-          <a href="https://twitter.com/EMCprotocol" target="_blank">
-            <img class="social-icon" src="@/assets/icon_x.png" />
-          </a>
-          <a href="https://github.com/EMCProtocol-dev" target="_blank">
-            <img class="social-icon" src="@/assets/icon_github.png" />
-          </a>
+          <div v-for="(item, index) in footerIconList" :key="item.name"
+            class="size-[48px] xs:size-[40px] relative group flex items-center justify-center cursor-pointer border border-solid border-[#FFFFFF1A] rounded-3xl">
+            <div
+              className="w-full h-full rounded-3xl absolute top-0 left-0 z-10 bg-iconHoverBg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            </div>
+            <a :href="item.url" target="_blank">
+              <img class="size-[28px] xs:size-[20px] relative z-20" :src="item.imgUrl" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { ref } from 'vue'
+import iconTwitter from '@/assets/footer/icon_x.png'
+import iconDiscord from '@/assets/footer/icon_discord.png'
+import iconTelegram from '@/assets/footer/icon_telegram.png'
+import iconMedium from '@/assets/footer/icon_medium.png'
+import iconGithub from '@/assets/footer/icon_github.png'
+
+const footerIconList = ref([
+  {
+    name: 'twitter',
+    url: 'https://twitter.com/EMCprotocol',
+    imgUrl: iconTwitter,
+  },
+  {
+    name: 'discord',
+    url: 'https://discord.gg/edgematrix',
+    imgUrl: iconDiscord,
+  },
+  {
+    name: 'telegram',
+    url: 'https://t.me/emc_network',
+    imgUrl: iconTelegram,
+  },
+  {
+    name: 'medium',
+    url: 'https://medium.com/@EMCProtocol',
+    imgUrl: iconMedium,
+  },
+  {
+    name: 'github',
+    url: 'https://github.com/EMCProtocol-dev',
+    imgUrl: iconGithub,
+  },
+])
+
+</script>
 <style scoped>
 .footer {
   background-color: linear-gradient(148.85deg, #141318 22%, rgba(14, 15, 21, 0.7) 82%);
@@ -82,8 +112,8 @@
 }
 
 .social-icon {
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
 }
 
 @media (min-width: 640px) {
@@ -116,8 +146,8 @@
   }
 
   .social-icon {
-    width: 48px;
-    height: 48px;
+    width: 28px;
+    height: 28px;
   }
 
 }
