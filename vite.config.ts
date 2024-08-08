@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'url';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import vue from '@vitejs/plugin-vue';
-const PUBLIC_URL = '';
+const PUBLIC_URL = '/';
 
 export default defineConfig((options) => {
   const mode = options.mode; //development production
