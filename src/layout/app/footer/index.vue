@@ -39,7 +39,7 @@ const footerIconList = ref([
   },
   {
     name: 'discord',
-    url: 'https://discord.gg/edgematrix',
+    url: 'https://discord.com/invite/emcnetwork',
     imgUrl: iconDiscord,
   },
   {

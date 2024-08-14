@@ -31,7 +31,7 @@
 const items = [
   {
     key: 1,
-    label: '1.Earn EMC Ecosystem Rewards.',
+    label: '1. Earn EMC Ecosystem Rewards.',
     describe:
       'A simple way to increase your holdings: staking your EMC tokens provides an opportunity to earn additional EMC tokens. Come and actively participate in the growth of our ecosystem.',
   },
