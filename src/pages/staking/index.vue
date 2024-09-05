@@ -113,23 +113,22 @@
               <div class="w-[calc(100%-30px)] lg:w-[calc(100%-80px)] ml-[15px] lg:ml-auto lg:mt-[60px] mt-[40px]">
                 <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
                 <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] border border-[#33363f] bg-[#1E2129]">
-                  <p class="ml-[15px] text-[24px] leading-[24px] text-white/70 font-medium">
-                    <n-input-number
-                      :disabled="useETHUser.isInvalidConnect"
-                      class="number-input iii"
-                      size="large"
-                      :bordered="false"
-                      v-model:value="inputAmount"
-                      :update-value-on-input="false"
-                      placeholder=""
-                      :min="0"
-                      :max="inputAmountMax"
-                      :show-button="false"
-                    />
-                  </p>
+                  <n-input-number
+                    :disabled="useETHUser.isInvalidConnect"
+                    class="ml-[15px] mr-[15px] iii"
+                    size="large"
+                    :bordered="false"
+                    v-model:value="inputAmount"
+                    :update-value-on-input="false"
+                    placeholder=""
+                    :min="0"
+                    :max="inputAmountMax"
+                    :show-button="false"
+                    style="width: 100%"
+                  />
                   <span class="flex mr-[20px] items-center">
                     <p class="flex lg:mr-[20px] mr-[11px] lg:text-[24px] lg:leading-[24px] text-[20px] leading-[20px] text-white">EMC</p>
-                    <em @click="inputAmount = inputAmountMax" class="not-italic text-[18px] leading-[18px] text-[#5A1DDD] cursor-pointer">Max</em>
+                    <em @click="onPressInputAmountMax" class="not-italic text-[18px] leading-[18px] text-[#5A1DDD] cursor-pointer">Max</em>
                   </span>
                 </div>
                 <div class="flex mt-[20px] w-full justify-between">
@@ -401,6 +400,10 @@ const loadings = ref<any>({
   userInfo: false,
 });
 
+function onPressInputAmountMax() {
+  inputAmount.value = inputAmountMax.value;
+}
+
 const stakingSuccess = ref(false);
 
 const closeStakingSuccess = () => (stakingSuccess.value = false);
@@ -426,6 +429,10 @@ async function initUserInfo(account: string) {
   transferAddress.value = '';
 
   if (!account) return;
+  if (!erc20Api) {
+    console.error('erc20Api is null');
+    return;
+  }
   loadings.value.userInfo = true;
   const [{ data: _balance }, { data: releaseInfo }, { data: _locked }, list] = await Promise.all([
     erc20Api!.balanceOf({ account }),
@@ -443,7 +450,7 @@ async function initUserInfo(account: string) {
     rewards = releaseInfo[1] || 0n;
   }
   userInfo.value = { balance, releasable, rewards, locked, available: releasable + rewards, tradingList: list };
-  inputAmountMax.value = Number(ethers.formatUnits(balance, decimals.value));
+  inputAmountMax.value = Number(toFixedClip(ethers.formatUnits(balance, decimals.value), 14));
   transferAddress.value = useETHUser.account0;
 }
 
@@ -658,11 +665,5 @@ onMounted(async () => {
 
 .withdraw-modal :deep(.n-card__content) {
   padding: 0;
-}
-
-@media screen and (max-width: 767px) {
-  .number-input :deep(.n-input input) {
-    width: 87px !important;
-  }
 }
 </style>

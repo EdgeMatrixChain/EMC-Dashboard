@@ -34,7 +34,7 @@ async function init() {
   loading.value = true;
   const resp = await http.get({
     url: '/nodesign/list',
-    data: { owner: account },
+    data: { owner: account, size: 50, page: 1 },
   });
   loading.value = false;
   const _list = resp.data || [];
