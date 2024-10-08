@@ -5,7 +5,7 @@
       <img class="w-[24%] h-auto emc-select-none" src="/src/assets/images/home-right.png" alt="" />
     </div>
 
-    <Star class="z-50 relative hidden sm:flex" />
+    <!-- <Star class="z-50 relative hidden sm:flex" /> -->
 
     <div class="w-full h-full bg-[#00021a] absolute top-0 left-0"></div>
 
@@ -113,17 +113,13 @@
               <div class="w-[calc(100%-30px)] lg:w-[calc(100%-80px)] ml-[15px] lg:ml-auto lg:mt-[60px] mt-[40px]">
                 <p class="mr-[10px] text-[18px] leading-[18px] text-[#fff]">Add funds</p>
                 <div class="mt-[15px] flex justify-between items-center w-full h-[54px] rounded-[8px] border border-[#33363f] bg-[#1E2129]">
-                  <n-input-number
+                  <n-input
                     :disabled="useETHUser.isInvalidConnect"
                     class="ml-[15px] mr-[15px] iii"
                     size="large"
                     :bordered="false"
                     v-model:value="inputAmount"
-                    :update-value-on-input="false"
                     placeholder=""
-                    :min="0"
-                    :max="inputAmountMax"
-                    :show-button="false"
                     style="width: 100%"
                   />
                   <span class="flex mr-[20px] items-center">
@@ -278,11 +274,10 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { NPopover, NInputNumber, NDatePicker, NSpin, NModal, NCard, useMessage } from 'naive-ui';
+import { NPopover, NInput, NDatePicker, NSpin, NModal, NCard, useMessage } from 'naive-ui';
 import Star from './components/star.vue';
 import Ask from './components/ask.vue';
-// import Header from './components/header.vue';
-import Header from '@/layout/app/header/index.vue';
+
 import EnterAddress from './components/enter-address.vue';
 
 import Banner from './components/banner.vue';
@@ -290,9 +285,9 @@ import { useETHUserStore } from '@/stores/eth-user';
 import { ApiManager } from '@/web3/api';
 import { ERC20Api } from '@/web3/api/erc20';
 import { StakeApi } from '@/web3/api/stake';
-import { ceil } from 'lodash';
+
 import moment from 'moment';
-import { ethers } from 'ethers';
+import { ethers, formatUnits, parseUnits } from 'ethers';
 import StakingSuccess from './components/stakingSuccess.vue';
 import ReleasableSuccess from './components/releasableSuccess.vue';
 import { Http } from '@/tools/http';
@@ -374,8 +369,8 @@ const timestamp = ref<number>(new Date().getTime() + 1800000);
 
 const isDev = ref<boolean>(false);
 
-const inputAmount = ref(0);
-const inputAmountMax = ref(0);
+const inputAmount = ref('0');
+const inputAmountMax = ref('0');
 
 // total erc20 balcnce in contract
 const contractBalanceTotal = ref<bigint>(0n);
@@ -425,7 +420,7 @@ const onPressConnect = async () => {
 
 async function initUserInfo(account: string) {
   userInfo.value = { balance: 0n, releasable: 0n, rewards: 0n, locked: 0n, available: 0n, tradingList: [] };
-  inputAmountMax.value = 0;
+  inputAmountMax.value = '0';
   transferAddress.value = '';
 
   if (!account) return;
@@ -450,11 +445,24 @@ async function initUserInfo(account: string) {
     rewards = releaseInfo[1] || 0n;
   }
   userInfo.value = { balance, releasable, rewards, locked, available: releasable + rewards, tradingList: list };
-  inputAmountMax.value = Number(toFixedClip(ethers.formatUnits(balance, decimals.value), 14));
+  inputAmountMax.value = ethers.formatUnits(balance, decimals.value);
   transferAddress.value = useETHUser.account0;
 }
 
 const stakingLoading = ref(false);
+
+const parseInputAmount = (input: string, decimals: number) => {
+  // 检查是否为有效的数值格式（正整数、正小数且小数位数不超过 18 位）
+  const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,18})?$/;
+  if (!decimalRegex.test(input)) {
+    return 0n;
+  }
+  try {
+    return ethers.parseUnits(input, decimals);
+  } catch (error) {
+    return 0n;
+  }
+};
 const staking = async () => {
   if (stakingLoading.value) {
     return;
@@ -464,7 +472,7 @@ const staking = async () => {
   const start = parseInt(String(timestamp.value / 1000));
   const cycles = phase.value;
   const cycleUnit = currentDay.value.id as any;
-  const amount = ethers.parseUnits(inputAmount.value.toString(), decimals.value);
+  const amount = parseInputAmount(inputAmount.value, decimals.value);
 
   if (!amount || amount === 0n) {
     message.warning('Please enter the EMC quantity');
@@ -576,14 +584,16 @@ const queryTradingList = async (account: string): Promise<Array<TradingItem>> =>
       startTimeStr: moment(start).format('YYYY-MM-DD'),
       endTimeStr: moment(start).add(days, 'days').format('YYYY-MM-DD'),
       staked: amount,
-      earn: calcEarning(Number(amount), apr, days),
+      earn: calcEarning(amount, apr, days),
       nAPR: apr,
     };
   });
 };
 
-const calcEarning = (amount: number, apr: number, day: number) => {
-  return (((amount * apr) / 100 / 360) * day).toFixed(4);
+const calcEarning = (amountStr: string, apr: number, day: number) => {
+  const amount = parseInputAmount(amountStr, 18);
+  const aprBN = parseUnits(String(apr), 18);
+  return toFixedClip(formatUnits(((amount * aprBN) / 100n / 360n) * BigInt(day), 36), 4);
 };
 
 const isVisibleEnter = ref(false);
@@ -606,6 +616,7 @@ watch(
     if (!phase.value) {
       phase.value = 1;
     }
+
     rewardEarnings.value = calcEarning(inputAmount.value, currentDay.value.nAPR, currentDay.value.day);
   },
   { immediate: true }
