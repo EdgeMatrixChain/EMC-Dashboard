@@ -156,13 +156,9 @@ export class Web3Service {
   async estimateGas(transaction: { from: string; to: string; value: string | number | bigint | null }) {
     const provider = this.provider || this.defaultProvider;
     const [gasEstimate, feeData] = await Promise.all([provider.estimateGas(transaction), provider.getFeeData()]);
-    console.log('Estimated gas:', gasEstimate.toString());
-
     const gasPrice = feeData.gasPrice || 0n;
-    console.log('Current gas price:', gasPrice.toString());
-
     const totalGasCost = gasEstimate * gasPrice;
-    console.log('Total gas cost:', formatEther(totalGasCost));
+    
     return totalGasCost;
   }
 
